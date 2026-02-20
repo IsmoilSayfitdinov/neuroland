@@ -1,11 +1,55 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Trans, useTranslation } from "react-i18next";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import ImageBannerPeople from "@/assets/images/bannerImagePeoples.png"
 import { Navbar } from "./Navbar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+const consultationSchema = z.object({
+  name: z.string().min(2),
+  phone: z.string().min(9),
+  childAge: z.string().optional(),
+  message: z.string().optional(),
+});
+
+type ConsultationForm = z.infer<typeof consultationSchema>;
+
 export const HeroSection = () => {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ConsultationForm>({
+    resolver: zodResolver(consultationSchema),
+  });
+
+  const onSubmit = (_data: ConsultationForm) => {
+    setSubmitted(true);
+    setTimeout(() => {
+      setOpen(false);
+      setSubmitted(false);
+      reset();
+    }, 2000);
+  };
+
   return (
-    <section 
+    <section
       className="relative mx-auto lg:rounded-[30px] 2xl:h-[720px] 3xl:h-full px-4 md:px-[32px] pt-4 md:pt-[32px] overflow-hidden max-w-7xl 2xl:max-w-[1536px] 3xl:max-w-[1920px]"
       style={{
         background: "linear-gradient(108.32deg, rgba(31, 97, 249, 0.1) 0%, rgba(89, 176, 3, 0.1) 111.59%)"
@@ -26,7 +70,7 @@ export const HeroSection = () => {
             className="space-y-6 md:space-y-8 2xl:space-y-6 3xl:space-y-8"
           >
             {/* Tag */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
@@ -51,9 +95,10 @@ export const HeroSection = () => {
 
             {/* Buttons */}
             <div className="flex flex-wrap gap-4 pt-2">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setOpen(true)}
                 className="bg-[#1F61F9] hover:bg-[#1F61F9] text-white px-6 md:px-8 py-3 md:py-4 rounded-[24px] font-semibold text-base md:text-lg transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform cursor-pointer w-full md:w-auto"
               >
                 {t("hero.cta")}
@@ -86,9 +131,9 @@ export const HeroSection = () => {
           >
             <div className="relative min-h-[300px] md:min-h-[420px] xl:min-h-[480px] 2xl:min-h-[450px] 3xl:min-h-[594px] w-full lg:min-w-[500px] xl:min-w-[560px] 3xl:min-w-[630px] aspect-square md:aspect-[4/3]">
               <div className="absolute inset-0 bg-transparent rounded-[2rem] md:rounded-[3rem] overflow-hidden flex items-end justify-center">
-                 <img 
-                   src={ImageBannerPeople} 
-                   alt="3D Doctor Illustration" 
+                 <img
+                   src={ImageBannerPeople}
+                   alt="3D Doctor Illustration"
                    className="w-full h-full object-contain"
                  />
               </div>
@@ -96,6 +141,86 @@ export const HeroSection = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Consultation Modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[480px] rounded-[20px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-slate-900">
+              {t("consultation.title")}
+            </DialogTitle>
+            <DialogDescription className="text-[#65758B]">
+              {t("consultation.description")}
+            </DialogDescription>
+          </DialogHeader>
+
+          {submitted ? (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                <svg className="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-center text-sm text-slate-600 font-medium">
+                {t("consultation.success")}
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">{t("consultation.name")}</Label>
+                <Input
+                  id="name"
+                  placeholder={t("consultation.namePlaceholder")}
+                  className={`rounded-xl ${errors.name ? "border-red-500" : ""}`}
+                  {...register("name")}
+                />
+                {errors.name && (
+                  <p className="text-xs text-red-500">{t("consultation.name")} *</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">{t("consultation.phone")}</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder={t("consultation.phonePlaceholder")}
+                  className={`rounded-xl ${errors.phone ? "border-red-500" : ""}`}
+                  {...register("phone")}
+                />
+                {errors.phone && (
+                  <p className="text-xs text-red-500">{t("consultation.phone")} *</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="childAge">{t("consultation.childAge")}</Label>
+                <Input
+                  id="childAge"
+                  placeholder={t("consultation.childAgePlaceholder")}
+                  className="rounded-xl"
+                  {...register("childAge")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message">{t("consultation.message")}</Label>
+                <textarea
+                  id="message"
+                  placeholder={t("consultation.messagePlaceholder")}
+                  rows={3}
+                  className="flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+                  {...register("message")}
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-[#1F61F9] hover:bg-[#1a54d9] text-white py-3 rounded-xl font-semibold text-base transition-colors cursor-pointer"
+              >
+                {t("consultation.submit")}
+              </button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

@@ -205,6 +205,20 @@
     "login": "Tizimga kirish",
     "copyright": "Neuroland. Barcha huquqlar himoyalangan."
   },
+  "consultation": {
+    "title": "Konsultatsiya olish",
+    "description": "Ma'lumotlaringizni qoldiring, mutaxassisimiz siz bilan tez orada bog'lanadi.",
+    "name": "Ismingiz",
+    "namePlaceholder": "Ismingizni kiriting",
+    "phone": "Telefon raqamingiz",
+    "phonePlaceholder": "+998 90 123 45 67",
+    "childAge": "Bolangiz yoshi",
+    "childAgePlaceholder": "Masalan: 3",
+    "message": "Xabar",
+    "messagePlaceholder": "Qo'shimcha ma'lumot yoki savol...",
+    "submit": "Yuborish",
+    "success": "Murojaatingiz qabul qilindi! Tez orada siz bilan bog'lanamiz."
+  },
   "loading": {
     "subtitle": "RIVOJLANISH PLATFORMASI"
   }
