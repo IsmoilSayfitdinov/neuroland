@@ -45,7 +45,7 @@ export const TeamSection = () => {
   return (
     <section
       id="team"
-      className="w-full py-20 relative overflow-hidden"
+      className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] relative overflow-hidden"
       style={{
         background:
           "linear-gradient(193.72deg, #FFFFFF 9.81%, #EBF4FF 51.76%, #FFFFFF 93.7%)",

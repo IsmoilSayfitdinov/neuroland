@@ -1,75 +1,49 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Award, Calendar, ChevronRight } from "lucide-react";
-
-const successStories = [
-  {
-    id: 1,
-    name: "Aziz",
-    age: "4 yosh",
-    diagnosis: "Nutq rivojlanishining kechikishi",
-    period: "6 oy",
-    stats: {
-      before: "Faqat 5-10 ta so'z ishlatardi, ko'rsatma bilan muloqot qilardi.",
-      after: "50+ so'z, oddiy jumlalar tuzadi, tengdoshlari bilan muloqot qiladi.",
-      metrics: [
-        { label: "Nutq ko'rsatkichi", value: 78, color: "bg-green-500" },
-        { label: "Ijtimoiylashuv", value: 65, color: "bg-green-500" },
-        { label: "Mashqlarga ishtirok", value: 85, color: "bg-green-500" },
-      ],
-    },
-  },
-  {
-    id: 2,
-    name: "Dilnoza",
-    age: "6 yosh",
-    diagnosis: "Autizm spektri buzilishi (yengil daraja)",
-    period: "12 oy",
-    stats: {
-      before: "Ko'z kontakti yo'q, takroriy harakatlar, yangi muhitga moslashish qiyin.",
-      after: "Ko'z kontakti barqaror, maktabga tayyorgarlik kursiga qatnashmoqda.",
-      metrics: [
-        { label: "Ko'z kontakti", value: 72, color: "bg-green-500" },
-        { label: "Adaptatsiya", value: 60, color: "bg-yellow-500" },
-        { label: "Mustaqillik", value: 70, color: "bg-green-500" },
-      ],
-    },
-  },
-  {
-    id: 3,
-    name: "Jasur",
-    age: "3 yosh",
-    diagnosis: "Motorik rivojlanish kechikishi",
-    period: "4 oy",
-    stats: {
-      before: "Qalam ushlay olmas, zinapoyadan ko'tarilishda qiyinchilik.",
-      after: "Chizish, kesish ko'nikmalari shakllandi, jismoniy faolligi oshdi.",
-      metrics: [
-        { label: "Yirik motorika", value: 88, color: "bg-green-500" },
-        { label: "Mayda motorika", value: 75, color: "bg-green-500" },
-        { label: "Koordinatsiya", value: 80, color: "bg-green-500" },
-      ],
-    },
-  },
-];
+import { TrendingUp, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const SuccessStoriesSection = () => {
+  const { t } = useTranslation();
+
+  const stories = (t("successStories.stories", { returnObjects: true }) as any[]).map((story: any, idx: number) => ({
+    id: idx + 1,
+    name: story.name,
+    age: story.age,
+    diagnosis: story.diagnosis,
+    period: story.period,
+    stats: {
+      before: story.before,
+      after: story.after,
+      metrics: story.metrics.map((m: any) => ({
+        label: m.label,
+        value: m.value,
+        color: "bg-green-500",
+      })),
+    },
+  }));
+
   return (
-    <section className="w-full py-20 bg-slate-50 relative overflow-hidden">
+    <section className="w-full py-[48px] md:py-[112px] mt-[48px] md:mt-[112px] bg-slate-50 relative overflow-hidden">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-4"
+        >
           <div className="inline-block px-4 py-1.5 bg-[#EBF4FF] text-[#1F61F9] rounded-full font-medium text-sm">
-            Natijalarimiz
+            {t("successStories.badge")}
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900">
-            Haqiqiy <span className="text-green-600">muvaffaqiyat</span> tarixlari
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
+            {t("successStories.title")}
           </h2>
-          <p className="text-slate-500 text-lg">
-            Har bir raqam ortida — bolaning tabassumi, ota-onaning ishonchi va shifokorning mehnati bor
+          <p className="text-slate-500 text-base md:text-lg">
+            {t("successStories.description")}
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {successStories.map((story, index) => (
+          {stories.map((story: any, index: number) => (
             <motion.div
               key={story.id}
               initial={{ opacity: 0, y: 30 }}
@@ -99,7 +73,7 @@ export const SuccessStoriesSection = () => {
                 <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-xs font-bold text-red-600 uppercase tracking-wide">Oldin</span>
+                    <span className="text-xs font-bold text-red-600 uppercase tracking-wide">{t("successStories.before")}</span>
                   </div>
                   <p className="text-sm text-slate-600 leading-relaxed">
                     {story.stats.before}
@@ -112,7 +86,7 @@ export const SuccessStoriesSection = () => {
                    </div>
                   <div className="flex items-center gap-2 mb-2 relative z-10">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-xs font-bold text-green-600 uppercase tracking-wide">Keyin</span>
+                    <span className="text-xs font-bold text-green-600 uppercase tracking-wide">{t("successStories.after")}</span>
                   </div>
                   <p className="text-sm text-slate-700 font-medium leading-relaxed relative z-10">
                     {story.stats.after}
@@ -122,7 +96,7 @@ export const SuccessStoriesSection = () => {
 
               {/* Metrics */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
-                {story.stats.metrics.map((metric, i) => (
+                {story.stats.metrics.map((metric: any, i: number) => (
                   <div key={i}>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-xs font-semibold text-slate-500">{metric.label}</span>

@@ -1,45 +1,33 @@
 import { motion } from "framer-motion";
 import { X, Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const ProblemSolutionSection = () => {
-  const items = [
-    {
-      problem: "Qog'oz hujjatlar",
-      problemDesc: "Barcha ma'lumotlar qog'ozda, yo'qolish xavfi yuqori.",
-      solution: "Raqamli tashxis",
-      solutionDesc: "Barcha tashxis natijalari bulutda, xavfsiz saqlangan.",
-    },
-    {
-      problem: "Kuzatuv yo'q",
-      problemDesc: "Bolaning rivojlanishini kuzatish imkoni cheklangan.",
-      solution: "Dinamik monitoring",
-      solutionDesc: "Haftalik va oylik grafiklar orqali o'zgarishlarni real vaqtda ko'rish.",
-    },
-    {
-      problem: "Aloqa uzilishi",
-      problemDesc: "Shifokor va ota-onalar o'rtasida axborot almashish qiyin.",
-      solution: "Aloqa ko'prigi",
-      solutionDesc: "Chat, video qo'ng'iroq va bildirishnomalar orqali doimiy aloqa.",
-    },
-     {
-      problem: "Shaxsiy yondashuv yo'q",
-      problemDesc: "Barcha bolalarga bir xil umumiy tavsiyalar beriladi.",
-      solution: "AI davolash rejalari",
-      solutionDesc: "Sun'iy intellekt har bir bola uchun individual mashqlarni tanlaydi.",
-    },
-  ];
+  const { t } = useTranslation();
+
+  const items = (t("problemSolution.items", { returnObjects: true }) as any[]).map((item: any) => ({
+    problem: item.problem,
+    problemDesc: item.problemDesc,
+    solution: item.solution,
+    solutionDesc: item.solutionDesc,
+  }));
 
   return (
-    <section className="w-full py-20 bg-white" id="solutions">
+    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="solutions">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900">
-            Muammo va <span className="text-blue-600">yechim</span>
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-4"
+        >
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
+            {t("problemSolution.title")}
           </h2>
-          <p className="text-slate-500 text-lg">
-            An'anaviy usullardan zamonaviy raqamli platformaga o'tish
+          <p className="text-slate-500 text-base md:text-lg">
+            {t("problemSolution.description")}
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid gap-6 max-w-5xl mx-auto">
           {items.map((item, index) => (

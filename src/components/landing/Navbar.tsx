@@ -1,43 +1,52 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Facebook, Instagram, Linkedin, Twitter, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import Logo from "@/assets/images/logo.png"
 
 export const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
+  const toggleLang = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
+
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   const navLinks = [
-    { name: "Biz haqimizda", href: "#about" },
-    { name: "Platforma haqida", href: "#platform" },
-    { name: "Bog'lanish", href: "#contact" },
+    { name: t("navbar.about"), href: "#about" },
+    { name: t("navbar.platform"), href: "#platform" },
+    { name: t("navbar.contact"), href: "#contact" },
   ];
 
   const menuVariants = {
     closed: {
       x: "100%",
       transition: {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 40,
+        type: "tween" as const,
+        duration: 0.3,
+        ease: "easeInOut" as const
       },
     },
     open: {
       x: 0,
       transition: {
         type: "spring" as const,
-        stiffness: 400,
-        damping: 40,
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        stiffness: 300,
+        damping: 30,
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
       },
     },
   };
@@ -51,7 +60,7 @@ export const Navbar = () => {
     <nav
       className="bg-white max-w-[1312px] 2xl:max-w-[1750px] flex flex-col md:flex-row items-center justify-between mx-auto rounded-[24px] md:rounded-[100px] px-4 md:px-[32px] 2xl:px-[48px] py-3 md:py-0 relative z-50 transition-all duration-300"
     >
-      <div className="w-full mx-auto flex items-center justify-between md:h-[70px] 2xl:h-[90px]">
+      <div className="w-full mx-auto flex items-center justify-between md:h-[70px] 2xl:h-[70px]">
         {/* Logo */}
         <div className="flex items-center gap-2 group cursor-pointer">
           <img src={Logo} alt="Neuroland Logo" className="h-8 md:h-auto 2xl:h-12 transition-all" />
@@ -71,11 +80,29 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <div className="hidden md:block">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 2xl:px-10 py-2.5 2xl:py-4 rounded-full font-medium text-sm md:text-base 2xl:text-xl transition-all transform hover:scale-105 shadow-lg shadow-blue-200 cursor-pointer">
-            Tizimga kirish
-          </button>
+        {/* Language Switcher + CTA Button */}
+        <div className="hidden md:flex items-center gap-4">
+          <div className="flex items-center bg-slate-100 rounded-full p-0.5">
+            <button
+              onClick={() => toggleLang("uz")}
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer ${i18n.language === "uz" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              UZ
+            </button>
+            <button
+              onClick={() => toggleLang("ru")}
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer ${i18n.language === "ru" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              RU
+            </button>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 2xl:px-10 py-[8px] 2xl:py-[8px] rounded-full font-medium text-sm md:text-base 2xl:text-xl transition-all shadow-lg shadow-blue-200 cursor-pointer"
+          >
+            {t("navbar.login")}
+          </motion.button>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -131,8 +158,24 @@ export const Navbar = () => {
               </div>
 
               <motion.div variants={itemVariants} className="mt-auto space-y-6 pb-6">
+                {/* Mobile Language Switcher */}
+                <div className="flex items-center justify-center bg-slate-100 rounded-full p-1">
+                  <button
+                    onClick={() => toggleLang("uz")}
+                    className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${i18n.language === "uz" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"}`}
+                  >
+                    O'zbek
+                  </button>
+                  <button
+                    onClick={() => toggleLang("ru")}
+                    className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all ${i18n.language === "ru" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"}`}
+                  >
+                    Русский
+                  </button>
+                </div>
+
                 <button className="bg-blue-600 active:scale-95 text-white p-4 rounded-2xl font-bold w-full text-center shadow-lg shadow-blue-200 transition-all text-lg flex items-center justify-center gap-2">
-                  Tizimga kirish
+                  {t("navbar.login")}
                 </button>
                 
                 <div className="flex justify-center gap-6 pt-6 border-t border-slate-100">

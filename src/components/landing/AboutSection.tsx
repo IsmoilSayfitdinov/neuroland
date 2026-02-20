@@ -1,28 +1,28 @@
 import { motion } from "framer-motion";
 import { Target, Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Image from "@/assets/images/image 2.png"
 export const AboutSection = () => {
+  const { t } = useTranslation();
   return (
-    <section className="w-full py-20 bg-white xl:mt-[112px]" id="about">
-      <div className="max-w-[1920px] mx-auto px-4 md:px-0">
-        <div className="xl:flex gap-[49px] ">
+    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="about">
+      <div className="max-w-[1920px] mx-auto px-4 md:px-8">
+        <div className="xl:flex gap-[49px] items-center">
           {/* Left Image Side */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="relative w-full xl:max-w-[541px]"
           >
-            <div className="relative rounded-[2rem] overflow-hidden ">
-              {/* Using a placeholder that represents the medical team meeting from the screenshot */}
-              <div className="aspect-[541/436] relative w-full">
+            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
+              <div className="aspect-4/3 xl:aspect-541/436 relative w-full">
                  <img 
                    src={Image} 
                    alt="Medical Team"
                    className="w-full h-full object-cover"
                  />
-                 {/* Overlay gradient for better text integration if needed, but keeping it clean for now */}
                  <div className="absolute inset-0 bg-blue-900/10"></div>
               </div>
             </div>
@@ -30,49 +30,55 @@ export const AboutSection = () => {
 
           {/* Right Content Side */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="space-y-8 xl:mt-0 mt-9"
+            className="space-y-6 md:space-y-8 xl:mt-0 mt-10"
           >
             {/* Badge */}
             <div className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full font-medium text-sm">
-              Biz haqimizda
+              {t("about.badge")}
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-                Neuroland haqida
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
+                {t("about.title")}
               </h2>
-              <p className="text-slate-600 text-lg leading-relaxed">
-                Neuroland — bu faqat texnologiya emas, bu bolalar kelajagiga investitsiya. Biz shifokorlar, ota-onalar va texnologiya mutaxassislarining birgalikdagi sa'y-harakati natijasida tug'ilgan platformamiz.
+              <p className="text-slate-500 text-base md:text-lg leading-relaxed max-w-2xl">
+                {t("about.description")}
               </p>
             </div>
 
             {/* Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
               {/* Mission Card */}
-              <div className="p-6 rounded-[24px] bg-white border border-slate-100 backdrop-blur-[24px] shadow-[0px_5px_10px_3px_#0000000D]">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="p-6 md:p-8 rounded-[24px] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-6">
                   <Target size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Missiyamiz</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Bolalar neyro-rivojlanishini kuzatish va davolash jarayonini raqamlashtirish va har bir oilaga sifatli tibbiy xizmatlarni yetkazish.
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.missionTitle")}</h3>
+                <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+                  {t("about.missionText")}
                 </p>
-              </div>
+              </motion.div>
 
               {/* Vision Card */}
-              <div className="p-6 backdrop-blur-[24px] shadow-[0px_5px_10px_3px_#0000000D] rounded-[24px] bg-white border border-slate-100 shadow-lg shadow-slate-100/50 hover:shadow-xl transition-shadow">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="p-6 md:p-8 rounded-[24px] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6">
                   <Eye size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Maqsadimiz</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  2030-yilgacha O'zbekistondagi barcha bolalar neyrologiya klinikalarini yagona raqamli platformaga birlashtirish.
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.goalTitle")}</h3>
+                <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+                   {t("about.goalText")}
                 </p>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>

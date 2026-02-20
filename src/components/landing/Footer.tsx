@@ -1,53 +1,119 @@
-import { Brain, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
-
+import { Mail, Phone, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
+import Logo from "@/assets/images/logo.png"
 export const Footer = () => {
+  const { t } = useTranslation();
   return (
-    <footer className="bg-slate-50 border-t border-slate-200 py-12 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-gradient-to-br from-green-400 to-blue-500 p-1.5 rounded-lg text-white">
-              <Brain size={20} />
+      <footer className="w-full px-[32px] bg-white pt-16 md:pt-20 pb-10 border-t border-slate-100">
+      <div className="max-w-[1920px] mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16 md:mb-20">
+          {/* Logo & Description */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            <div className="flex items-center gap-3">
+                    <img src={Logo} alt="Neuroland Logo" className="w-[63px] h-[63px] object-contain" />      
             </div>
-            <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-blue-600">
-              NEUROLAND
-            </span>
-          </div>
-          <p className="text-slate-500 text-sm">
-            Bolalar neyro-rivojlanishini raqamli nazorat qilishning zamonaviy yechimi.
+            <p className="text-slate-400 text-base md:text-lg leading-relaxed max-w-[280px]">
+              {t("footer.description")}
+            </p>
+          </motion.div>
+
+          {/* Platforma */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <h4 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8">{t("footer.platformTitle")}</h4>
+            <ul className="space-y-3 md:space-y-4">
+              {(t("footer.platformLinks", { returnObjects: true }) as string[]).map((item) => (
+                <li key={item}>
+                  <motion.a 
+                    href="#" 
+                    whileHover={{ x: 5 }}
+                    className="text-slate-400 text-base md:text-lg hover:text-[#1F61F9] transition-colors inline-block"
+                  >
+                    {item}
+                  </motion.a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Yordam */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h4 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8">{t("footer.helpTitle")}</h4>
+            <ul className="space-y-3 md:space-y-4">
+              {(t("footer.helpLinks", { returnObjects: true }) as string[]).map((item) => (
+                <li key={item}>
+                  <motion.a 
+                    href="#" 
+                    whileHover={{ x: 5 }}
+                    className="text-slate-400 text-base md:text-lg hover:text-[#1F61F9] transition-colors inline-block"
+                  >
+                    {item}
+                  </motion.a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Contact & Login */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="space-y-8"
+          >
+            <h4 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8">{t("footer.contactTitle")}</h4>
+            <ul className="space-y-3 md:space-y-4">
+              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                <Mail size={18} className="text-[#1F61F9]" />
+                <a href="mailto:info@neuroland.uz" className="hover:text-[#1F61F9] transition-colors">
+                  info@neuroland.uz
+                </a>
+              </li>
+              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                <Phone size={18} className="text-[#1F61F9]" />
+                <a href="tel:+998712000000" className="hover:text-[#1F61F9] transition-colors">
+                  +998 71 200 00 00
+                </a>
+              </li>
+              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                <MapPin size={18} className="text-[#1F61F9]" />
+                <span>{t("footer.address")}</span>
+              </li>
+            </ul>
+
+            <motion.a
+              href="/login"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-slate-200 text-slate-900 font-bold hover:bg-slate-50 transition-colors w-full sm:w-auto"
+            >
+              {t("footer.login")}
+            </motion.a>
+          </motion.div>
+        </div>
+
+        {/* Bottom Line */}
+        <div className="pt-8 border-t border-slate-50 text-center">
+          <p className="text-slate-400 font-medium text-sm md:text-base">
+            © {new Date().getFullYear()} {t("footer.copyright")}
           </p>
         </div>
-
-        <div>
-          <h4 className="font-semibold text-slate-900 mb-4">Platforma</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><a href="#" className="hover:text-blue-600">Biz haqimizda</a></li>
-            <li><a href="#" className="hover:text-blue-600">Xizmatlar</a></li>
-            <li><a href="#" className="hover:text-blue-600">Narxlar</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold text-slate-900 mb-4">Yordam</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><a href="#" className="hover:text-blue-600">Bog'lanish</a></li>
-            <li><a href="#" className="hover:text-blue-600">F.A.Q</a></li>
-            <li><a href="#" className="hover:text-blue-600">Maxfiylik siyosati</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold text-slate-900 mb-4">Ijtimoiy tarmoqlar</h4>
-          <div className="flex gap-4">
-            <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors"><Facebook size={20} /></a>
-            <a href="#" className="text-slate-400 hover:text-pink-600 transition-colors"><Instagram size={20} /></a>
-            <a href="#" className="text-slate-400 hover:text-sky-500 transition-colors"><Twitter size={20} /></a>
-            <a href="#" className="text-slate-400 hover:text-blue-700 transition-colors"><Linkedin size={20} /></a>
-          </div>
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-        © {new Date().getFullYear()} Neuroland. Barcha huquqlar himoyalangan.
       </div>
     </footer>
   );

@@ -1,0 +1,211 @@
+{
+  "navbar": {
+    "about": "Biz haqimizda",
+    "platform": "Platforma haqida",
+    "contact": "Bog'lanish",
+    "login": "Tizimga kirish"
+  },
+  "hero": {
+    "badge": "#1 Neyro-rivojlanish platformasi",
+    "title": "Bolalar neyro-rivojlanishini <highlight>raqamli nazorat</highlight> qilish davri",
+    "description": "Neuroland — tashxisdan tortib, natijagacha bo'lgan jarayonni avtomatlashtiruvchi klinika va ota-onalar uchun yagona platforma.",
+    "cta": "Konsultatsiya olish",
+    "activeUsers": "Faol foydalanuvchilar",
+    "clinics": "Klinikalar",
+    "trust": "Mijozlar ishonchi"
+  },
+  "about": {
+    "badge": "Biz haqimizda",
+    "title": "Neuroland haqida",
+    "description": "Neuroland — bu faqat texnologiya emas, bu bolalar kelajagiga investitsiya. Biz shifokorlar, ota-onalar va texnologiya mutaxassislarining birgalikdagi sa'y-harakati natijasida tug'ilgan platformamiz.",
+    "missionTitle": "Missiyamiz",
+    "missionText": "Bolalar neyro-rivojlanishini kuzatish va davolash jarayonini raqamlashtirish.",
+    "goalTitle": "Maqsadimiz",
+    "goalText": "2030-yilgacha barcha bolalar klinikalarini yagona platformaga birlashtirish."
+  },
+  "values": {
+    "careTitle": "Mehr bilan yondashish",
+    "careText": "Har bir bolaning rivojlanishi biz uchun nafaqat ish, balki yuksak mas'uliyatdir.",
+    "accuracyTitle": "Aniqlik",
+    "accuracyText": "Zamonaviy neyrologik metodikalar orqali eng kichik o'zgarishni aniqlaymiz.",
+    "transparencyTitle": "Shaffoflik",
+    "transparencyText": "Ota-onalar jarayonning bosqichini real vaqt rejimida kuzatib boradilar.",
+    "innovationTitle": "Innovatsiya",
+    "innovationText": "Sun'iy intellektga asoslangan tahlillar orqali rivojlanishni tezlashtiramiz."
+  },
+  "team": {
+    "badge": "Professional jamoa",
+    "title": "Tajribali mutaxassislar jamoasi",
+    "description": "Bizning shifokorlar xalqaro sertifikatlarga ega va minglab bolalarning sog'lom rivojlanishiga hiss qo'shgan",
+    "doctors": [
+      { "name": "Dr. Alisher Rahimov", "role": "Bolalar nevropatologi", "experience": "15 yillik tajriba" },
+      { "name": "Dr. Malika Karimova", "role": "Defektolog", "experience": "10 yillik tajriba" },
+      { "name": "Dr. Jamshid Sobirov", "role": "Bolalar psixologi", "experience": "12 yillik tajriba" },
+      { "name": "Dr. Laylo Tursunova", "role": "Logoped", "experience": "8 yillik tajriba" },
+      { "name": "Dr. Bekzod Alimov", "role": "Neyrofizolog", "experience": "14 yillik tajriba" }
+    ]
+  },
+  "howItWorks": {
+    "title": "Qanday",
+    "titleHighlight": "ishlaydi?",
+    "description": "4 oddiy qadam orqali bolangiz rivojlanishini boshqaring",
+    "steps": [
+      { "title": "Tashxis", "description": "Bolaning rivojlanish darajasini aniqlash" },
+      { "title": "Reja", "description": "Shaxsiy mashq rejasini tuzish" },
+      { "title": "Mashqlar", "description": "Kundalik mashqlarni bajarish va kuzatish" },
+      { "title": "Tahlil", "description": "Natijalarni ko'rish va yangilash" }
+    ]
+  },
+  "platform": {
+    "title": "Bizning platformamiz haqida",
+    "description": "Platformamiz har bir rol uchun moslashtirilgan interfeysga ega",
+    "doctorTitle": "Shifokor",
+    "doctorDesc": "Tashxis va davolash jarayonini boshqarish",
+    "doctorFeatures": [
+      "Raqamli tashxis qo'yish",
+      "Mashq rejalarini yaratish",
+      "Natijalarni tahlil qilish",
+      "Ota-onalarga xabar yuborish"
+    ],
+    "parentTitle": "Ota-ona",
+    "parentDesc": "Bolangiz rivojlanishini kuzating",
+    "parentFeatures": [
+      "Mashqlarni bajarish",
+      "Rivojlanish hisobotlari",
+      "Shifokor bilan aloqa",
+      "Video qo'llanmalar"
+    ]
+  },
+  "successStories": {
+    "badge": "Natijalarimiz",
+    "title": "Haqiqiy muvaffaqiyat tarixlari",
+    "description": "Har bir raqam ortida — bolaning tabassumi, ota-onaning ishonchi va shifokorning mehnati bor",
+    "before": "Oldin",
+    "after": "Keyin",
+    "stories": [
+      {
+        "name": "Aziz",
+        "age": "4 yosh",
+        "diagnosis": "Nutq rivojlanishining kechikishi",
+        "period": "6 oy",
+        "before": "Faqat 5-10 ta so'z ishlatardi, ko'rsatma bilan muloqot qilardi.",
+        "after": "50+ so'z, oddiy jumlalar tuzadi, tengdoshlari bilan muloqot qiladi.",
+        "metrics": [
+          { "label": "Nutq ko'rsatkichi", "value": 78 },
+          { "label": "Ijtimoiylashuv", "value": 65 },
+          { "label": "Mashqlarga ishtirok", "value": 85 }
+        ]
+      },
+      {
+        "name": "Dilnoza",
+        "age": "6 yosh",
+        "diagnosis": "Autizm spektri buzilishi (yengil daraja)",
+        "period": "12 oy",
+        "before": "Ko'z kontakti yo'q, takroriy harakatlar, yangi muhitga moslashish qiyin.",
+        "after": "Ko'z kontakti barqaror, maktabga tayyorgarlik kursiga qatnashmoqda.",
+        "metrics": [
+          { "label": "Ko'z kontakti", "value": 72 },
+          { "label": "Adaptatsiya", "value": 60 },
+          { "label": "Mustaqillik", "value": 70 }
+        ]
+      },
+      {
+        "name": "Jasur",
+        "age": "3 yosh",
+        "diagnosis": "Motorik rivojlanish kechikishi",
+        "period": "4 oy",
+        "before": "Qalam ushlay olmas, zinapoyadan ko'tarilishda qiyinchilik.",
+        "after": "Chizish, kesish ko'nikmalari shakllandi, jismoniy faolligi oshdi.",
+        "metrics": [
+          { "label": "Yirik motorika", "value": 88 },
+          { "label": "Mayda motorika", "value": 75 },
+          { "label": "Koordinatsiya", "value": 80 }
+        ]
+      }
+    ]
+  },
+  "problemSolution": {
+    "title": "Muammo va yechim",
+    "description": "An'anaviy usullardan zamonaviy raqamli platformaga o'tish",
+    "items": [
+      {
+        "problem": "Qog'oz hujjatlar",
+        "problemDesc": "Barcha ma'lumotlar qog'ozda, yo'qolish xavfi yuqori.",
+        "solution": "Raqamli tashxis",
+        "solutionDesc": "Barcha tashxis natijalari bulutda, xavfsiz saqlangan."
+      },
+      {
+        "problem": "Kuzatuv yo'q",
+        "problemDesc": "Bolaning rivojlanishini kuzatish imkoni cheklangan.",
+        "solution": "Dinamik monitoring",
+        "solutionDesc": "Haftalik va oylik grafiklar orqali o'zgarishlarni real vaqtda ko'rish."
+      },
+      {
+        "problem": "Aloqa uzilishi",
+        "problemDesc": "Shifokor va ota-onalar o'rtasida axborot almashish qiyin.",
+        "solution": "Aloqa ko'prigi",
+        "solutionDesc": "Chat, video qo'ng'iroq va bildirishnomalar orqali doimiy aloqa."
+      },
+      {
+        "problem": "Shaxsiy yondashuv yo'q",
+        "problemDesc": "Barcha bolalarga bir xil umumiy tavsiyalar beriladi.",
+        "solution": "AI davolash rejalari",
+        "solutionDesc": "Sun'iy intellekt har bir bola uchun individual mashqlarni tanlaydi."
+      }
+    ]
+  },
+  "gallery": {
+    "badge": "Kichik galereya",
+    "title": "Bizning muhit",
+    "description": "Zamonaviy uskunalar va bolalar uchun qulay muhit — bizning markazimizning asosiy standarti",
+    "items": [
+      { "title": "Amaliy xonalar", "desc": "Maxsus jihozlangan xonalar" },
+      { "title": "Tashxis xonasi", "desc": "Eng so'nggi diagnostika uskunalari" },
+      { "title": "Sensor zal", "desc": "Turli sezgi organlarini rivojlantirish" },
+      { "title": "Logopedik xona", "desc": "Nutq kamchiliklarini tuzatish" },
+      { "title": "O'yin maydoni", "desc": "Foydali va qiziqarli o'yinlar" },
+      { "title": "Kutish zali", "desc": "Ota-onalar uchun qulay sharoit" }
+    ],
+    "address": "Toshkent shahri, Chilonzor tumani, Bunyodkor ko'chasi 4",
+    "landmark": "Mo'ljal: Mirzo Ulug'bek metro bekati",
+    "showOnMap": "Xaritada ko'rsatish"
+  },
+  "reviews": {
+    "title": "Mijozlarimiz fikrlari",
+    "reviewers": [
+      { "name": "Kamola", "role": "5 yoshli Malikaning onasi", "text": "Oldinlari oylab mashg'ulotga borardik, lekin o'zgarish bor-yo'qligini faqat taxmin qilardik. Neuroland platformasiga o'tganimizdan beri har haftalik progress-grafiklarni ko'rib boryapmiz." },
+      { "name": "Kamola", "role": "5 yoshli Malikaning onasi", "text": "Oldinlari oylab mashg'ulotga borardik, lekin o'zgarish bor-yo'qligini faqat taxmin qilardik. Neuroland platformasiga o'tganimizdan beri har haftalik progress-grafiklarni ko'rib boryapmiz." },
+      { "name": "Kamola", "role": "5 yoshli Malikaning onasi", "text": "Oldinlari oylab mashg'ulotga borardik, lekin o'zgarish bor-yo'qligini faqat taxmin qilardik. Neuroland platformasiga o'tganimizdan beri har haftalik progress-grafiklarni ko'rib boryapmiz." },
+      { "name": "Kamola", "role": "5 yoshli Malikaning onasi", "text": "Oldinlari oylab mashg'ulotga borardik, lekin o'zgarish bor-yo'qligini faqat taxmin qilardik. Neuroland platformasiga o'tganimizdan beri har haftalik progress-grafiklarni ko'rib boryapmiz. Nutq boyligi 3 oyda 40% ga oshgani raqamlarda ko'ringanda, to'g'ri yo'lda ekanligimizga ishonchim komil bo'ldi. Rahmat!" },
+      { "name": "Kamola", "role": "5 yoshli Malikaning onasi", "text": "Oldinlari oylab mashg'ulotga borardik, lekin o'zgarish bor-yo'qligini faqat taxmin qilardik. Neuroland platformasiga o'tganimizdan beri har haftalik progress-grafiklarni ko'rib boryapmiz. Nutq boyligi 3 oyda 40% ga oshgani raqamlarda ko'ringanda, to'g'ri yo'lda ekanligimizga ishonchim komil bo'ldi. Rahmat!" }
+    ]
+  },
+  "faq": {
+    "title": "Ko'p beriladigan",
+    "titleHighlight": "savollar",
+    "description": "Platformamiz haqida eng ko'p so'raladigan savollarga javoblar",
+    "securityTitle": "Xavfsizlik — birinchi o'rinda",
+    "securityText": "Barcha ma'lumotlar AES-256 bilan shifrlangan. HIPAA va GDPR standartlariga mos. Sizning ma'lumotlaringiz bizning ustuvor vazifamiz",
+    "contactBtn": "Bog'lanish",
+    "items": [
+      { "question": "Xizmatdan foydalanish pullikmi?", "answer": "Platformaning asosiy funksiyalari (bepul tahlil, oddiy mashqlar) bepul. Maxsus shifokor nazorati va kengaytirilgan mashqlar to'plami uchun oyiga 49,000 so'mdan boshlanadigan tariflar mavjud." },
+      { "question": "Qaysi yoshdagilar uchun mo'ljallangan?", "answer": "Platformamiz 2 yoshdan 12 yoshgacha bo'lgan bolalar rivojlanishini kuzatish va korreksiya qilish uchun moslashtirilgan. Har bir yosh guruhiga alohida yondashuv qo'llaniladi." },
+      { "question": "Natijalar qanchalik aniq?", "answer": "Bizning metodikalarimiz xalqaro standartlarga (ASQ-3, M-CHAT) asoslangan bo'lib, sun'iy intellekt yordamida qayta ishlanadi. Aniqlik darajasi 92% dan yuqori." },
+      { "question": "Shifokor bilan qanday bog'lanishim mumkin?", "answer": "Platformadagi 'Mutaxassis bilan chat' bo'limi orqali istalgan vaqtda savollaringizni yo'llashingiz mumkin. Premium tarif foydalanuvchilari uchun haftalik video qo'ng'iroqlar ham mavjud." }
+    ]
+  },
+  "footer": {
+    "description": "Bolalar neyro-rivojlanishini raqamli boshqarish platformasi.",
+    "platformTitle": "Platforma",
+    "platformLinks": ["Loyiha haqida", "Imkoniyatlar", "Tariflar"],
+    "helpTitle": "Yordam",
+    "helpLinks": ["Qo'llanma", "Maxfiylik siyosati", "Foydalanish shartlari"],
+    "contactTitle": "Bog'lanish",
+    "address": "Toshkent, O'zbekiston",
+    "login": "Tizimga kirish",
+    "copyright": "Neuroland. Barcha huquqlar himoyalangan."
+  },
+  "loading": {
+    "subtitle": "RIVOJLANISH PLATFORMASI"
+  }
+}

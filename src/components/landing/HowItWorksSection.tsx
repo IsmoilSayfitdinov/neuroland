@@ -1,48 +1,55 @@
 import { motion } from "framer-motion";
 import { ClipboardCheck, Calendar, Activity, LineChart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const HowItWorksSection = () => {
+  const { t } = useTranslation();
   const steps = [
     {
       id: "01",
       icon: ClipboardCheck,
-      title: "Tashxis",
-      description: "Bolaning rivojlanish darajasini aniqlash",
+      title: t("howItWorks.steps.0.title"),
+      description: t("howItWorks.steps.0.description"),
     },
     {
       id: "02",
       icon: Calendar,
-      title: "Reja",
-      description: "Shaxsiy mashq rejasini tuzish",
+      title: t("howItWorks.steps.1.title"),
+      description: t("howItWorks.steps.1.description"),
     },
     {
       id: "03",
       icon: Activity,
-      title: "Mashqlar",
-      description: "Kundalik mashqlarni bajarish va kuzatish",
+      title: t("howItWorks.steps.2.title"),
+      description: t("howItWorks.steps.2.description"),
     },
     {
       id: "04",
       icon: LineChart,
-      title: "Tahlil",
-      description: "Natijalarni ko'rish va yangilash",
+      title: t("howItWorks.steps.3.title"),
+      description: t("howItWorks.steps.3.description"),
     },
   ];
 
   return (
-    <section className="w-full py-20 bg-white relative overflow-hidden">
+    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] relative overflow-hidden" style={{ background: 'linear-gradient(193.72deg, #FFFFFF 9.81%, #EBF4FF 51.76%, #FFFFFF 93.7%)' }}>
         {/* Background Gradients */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-[100px] -z-10" />
+        <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-50/50 rounded-full blur-[80px] md:blur-[100px] -z-10" />
 
-      <div className="max-w-[1920px] mx-auto px-4 md:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900">
-            Qanday <span className="text-[#1F61F9]">ishlaydi?</span>
+      <div className="max-w-7xl 2xl:max-w-7xl 3xl:max-w-[1920px] mx-auto px-4 md:px-8">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-12 md:mb-20 space-y-4"
+        >
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
+            {t("howItWorks.title")}{" "}<span className="text-[#1F61F9]">{t("howItWorks.titleHighlight")}</span>
           </h2>
-          <p className="text-slate-500 text-lg">
-            4 oddiy qadam orqali bolangiz rivojlanishini boshqaring
+          <p className="text-slate-500 text-base md:text-lg">
+            {t("howItWorks.description")}
           </p>
-        </div>
+        </motion.div>
 
         <div className="relative">
           {/* Connector Line (Desktop) */}
