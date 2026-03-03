@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Menu, X, Facebook, Instagram, Linkedin, Twitter, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@tanstack/react-router";
 import Logo from "@/assets/images/logo.png"
 
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   const toggleLang = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -99,6 +101,7 @@ export const Navbar = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate({ to: "/login" })}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 2xl:px-10 py-[8px] 2xl:py-[8px] rounded-full font-medium text-sm md:text-base 2xl:text-xl transition-all shadow-lg shadow-blue-200 cursor-pointer"
           >
             {t("navbar.login")}
@@ -174,7 +177,10 @@ export const Navbar = () => {
                   </button>
                 </div>
 
-                <button className="bg-blue-600 active:scale-95 text-white p-4 rounded-2xl font-bold w-full text-center shadow-lg shadow-blue-200 transition-all text-lg flex items-center justify-center gap-2">
+                <button
+                  onClick={() => { navigate({ to: "/login" }); setMobileMenuOpen(false); }}
+                  className="bg-blue-600 active:scale-95 text-white p-4 rounded-2xl font-bold w-full text-center shadow-lg shadow-blue-200 transition-all text-lg flex items-center justify-center gap-2"
+                >
                   {t("navbar.login")}
                 </button>
                 
