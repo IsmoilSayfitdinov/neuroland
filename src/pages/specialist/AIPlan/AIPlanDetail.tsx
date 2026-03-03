@@ -48,12 +48,12 @@ const currentMonthPlans: CategoryPlan[] = [
 export default function AIPlanDetail() {
   return (
     <div className="flex flex-col gap-8 pb-12">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 mb-1">AI Rejalashtiruvchi – Guruh uchun 12 oylik rivojlanish dasturi</h1>
           <p className="text-xs text-slate-400">Diagnostika natijalari asosida sun'iy intelekt tomonidan shakllantirilgan</p>
         </div>
-        <Button className="bg-blue-50 text-blue-600 hover:bg-blue-100 h-10 px-4 rounded-xl flex items-center gap-2 text-xs font-bold border-none">
+        <Button className="w-full sm:w-auto bg-blue-50 text-blue-600 hover:bg-blue-100 h-10 px-4 rounded-xl flex items-center justify-center sm:justify-start gap-2 text-xs font-bold border-none">
           <RefreshCw className="w-3 h-3" />
           Rejani qayta generatsiya qilish
         </Button>
@@ -88,9 +88,9 @@ export default function AIPlanDetail() {
 
       {/* Current Month Detail Section */}
       <div className="mt-12 bg-white rounded-[40px] p-10 border border-slate-50">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-2xl font-bold text-slate-800">Joriy oy rejasi — Yanvar</h2>
-          <Button variant="ghost" className="bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 h-10 px-6 rounded-xl flex items-center gap-2 text-xs font-bold border-none">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-2 gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Joriy oy rejasi — Yanvar</h2>
+          <Button variant="ghost" className="w-full sm:w-auto bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 h-10 px-6 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border-none">
             <RefreshCw className="w-3.5 h-3.5" />
             Faol oy
           </Button>

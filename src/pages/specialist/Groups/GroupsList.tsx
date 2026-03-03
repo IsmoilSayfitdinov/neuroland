@@ -16,22 +16,22 @@ const groups = [
 export default function GroupsList() {
   return (
     <div className="flex flex-col gap-10 pb-12">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-black text-slate-800">Guruhlar</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700 h-14 px-8 rounded-2xl flex items-center gap-3 text-sm font-bold shadow-lg shadow-blue-100">
+        <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 h-14 px-8 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold shadow-lg shadow-blue-100">
           <Plus size={20} />
           Yangi guruh yaratish
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl flex items-center gap-2 text-slate-400">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="bg-white border border-slate-100 px-4 py-3 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
           <Filter size={18} />
         </div>
-        <div className="bg-white border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-500">
+        <div className="flex-1 min-w-[150px] bg-white border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-500 text-center sm:text-left">
           Barcha mutaxassislar
         </div>
-        <div className="bg-white border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-500">
+        <div className="flex-1 min-w-[150px] bg-white border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-500 text-center sm:text-left">
           Barcha darajalar
         </div>
       </div>

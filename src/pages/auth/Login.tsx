@@ -1,38 +1,41 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { Eye, EyeOff, Phone } from "lucide-react";
 import Logo from "@/assets/images/logo.png";
-import { useForm } from "react-hook-form";
+import LoginIllustration from "@/assets/images/Rectangle 20.png";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchema } from "@/schemas/auth";
-
 import { useAuthStore } from "@/store/useAuthStore";
 import Role from "@/types/auth";
+import { IMaskInput } from "react-imask";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
+  const { control, register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema)
   });
 
   const onSubmit = (data: LoginSchema) => {
-    // Mocking a successful login for demonstration based on username
-    let role: Role = Role.SPECIALIST; // Default for testing
+    // Mocking a successful login
+    let role: Role = Role.SPECIALIST;
     
-    if (data.username.includes("admin")) {
+    // Simple logic for mocking roles via specific input suffix if needed, 
+    // but default for now
+    if (data.phone.endsWith("00")) {
       role = Role.ADMIN;
-    } else if (data.username.includes("parent")) {
+    } else if (data.phone.endsWith("11")) {
       role = Role.PARENT;
     }
 
-    login({ username: data.username, role }, "mock-token");
-
-    // Role-based redirection
-    if (role === Role.ADMIN) {
-      navigate({ to: "/admin" }); // Assuming an admin route exists or will exist
+    login({ username: data.phone, role }, "mock-token");
+    toast.success("Tizimga muvaffaqiyatli kirdingiz!");
+    if (role === Role.ADMIN)   {
+      navigate({ to: "/admin" });
     } else if (role === Role.SPECIALIST) {
       navigate({ to: "/specialist/dashboard" });
     } else if (role === Role.PARENT) {
@@ -41,96 +44,112 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-md"
-      >
-        {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-blue-100 p-8 md:p-10">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+      {/* Left Section: Form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 lg:p-16">
+        <div className="w-full max-w-[400px] flex flex-col">
           {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <img src={Logo} alt="Neuroland" className="h-10" />
+          <div className="flex justify-center mb-16">
+            <img src={Logo} alt="Neuroland" className="h-20" />
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-800 text-center mb-1">
-            Xush kelibsiz!
+          <h1 className="text-2xl font-black text-slate-800 text-center mb-10">
+            Tizimga kirish
           </h1>
-          <p className="text-slate-500 text-center text-sm mb-8">
-            Davom etish uchun tizimga kiring
-          </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Username */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Foydalanuvchi nomi
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Phone */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">
+                Telefon raqam
               </label>
-              <input
-                type="text"
-                {...register("username")}
-                placeholder="username"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 placeholder-slate-400 text-sm"
-              />
-              {errors.username && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.username.message}
+              <div className="relative group">
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => (
+                    <IMaskInput
+                      mask="+{998} 00 000 00 00"
+                      value={field.value}
+                      unmask={false} // Match what's displayed for validation or mask logic
+                      onAccept={(value) => field.onChange(value)}
+                      placeholder="+998 99 999 99 99"
+                      className="w-full bg-[#F8FAFC] border border-slate-100 px-6 py-4 rounded-3xl text-sm font-medium text-slate-800 placeholder-slate-300 outline-none focus:ring-2 focus:ring-blue-100 transition-all pl-14"
+                    />
+                  )}
+                />
+                <Phone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none group-focus-within:text-blue-500 transition-colors" />
+              </div>
+              {errors.phone && (
+                <p className="text-red-500 text-[10px] font-bold ml-4 uppercase tracking-tighter">
+                  {errors.phone.message}
                 </p>
               )}
             </div>
 
             {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">
                 Parol
               </label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 placeholder-slate-400 text-sm pr-12"
+                  placeholder="123456"
+                  className="w-full bg-[#F8FAFC] border border-slate-100 px-6 py-4 rounded-3xl text-sm font-medium text-slate-800 placeholder-slate-300 outline-none focus:ring-2 focus:ring-blue-100 transition-all pr-14"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 text-[10px] font-bold ml-4 uppercase tracking-tighter">
                   {errors.password.message}
                 </p>
               )}
             </div>
 
             {/* Submit */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2 mt-2"
+            <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 h-14 rounded-3xl text-white font-bold text-base shadow-lg shadow-blue-100 transition-all mt-4"
             >
-              <LogIn size={18} />
-              Kirish
-            </motion.button>
+                Kirish
+            </Button>
           </form>
         </div>
+      </div>
 
-        {/* Back to home */}
-        <p className="text-center text-sm text-slate-500 mt-6">
-          <button
-            onClick={() => navigate({ to: "/" })}
-            className="text-blue-600 hover:underline font-medium"
-          >
-            ← Bosh sahifaga qaytish
-          </button>
-        </p>
-      </motion.div>
+      {/* Right Section: Illustration */}
+      <div className="hidden lg:flex flex-1 p-8 items-center justify-center">
+        <div className="w-full h-full bg-[#E5EEFF] rounded-[60px] relative overflow-hidden flex items-center justify-center bg-linear-to-br from-[#E2EDFF] to-[#E8F8EE]">
+          <motion.img 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            src={LoginIllustration} 
+            alt="Secure Login Illustration" 
+            className="w-[80%] max-w-[338px] object-contain drop-shadow-2xl"
+          />
+        </div>
+      </div>
     </div>
   );
+}
+
+// Minimal Button component to avoid dependency issues if Shadcn Button is complex
+function Button({ className, children, ...props }: any) {
+    return (
+        <button 
+            className={`flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] ${className}`}
+            {...props}
+        >
+            {children}
+        </button>
+    );
 }
