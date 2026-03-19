@@ -1,52 +1,64 @@
 import { ChevronUp, Activity, User, Home, MessageSquare } from "lucide-react";
+import type { Anamnesis } from "@/types/children.types";
 
-export default function DevelopmentHistoryTab() {
+interface DevelopmentHistoryTabProps {
+  anamnesis: Anamnesis | null | undefined;
+}
+
+export default function DevelopmentHistoryTab({ anamnesis }: DevelopmentHistoryTabProps) {
+  if (!anamnesis) {
+    return (
+      <div className="py-16 text-center bg-white rounded-3xl border border-dashed border-slate-200">
+        <p className="text-slate-400">Rivojlanish tarixi hali kiritilmagan</p>
+      </div>
+    );
+  }
+
   const sections = [
     {
       title: "Homiladorlik davri",
       icon: Activity,
       fields: [
-        { label: "1-trimestr", value: "Norma, toksikoz kuzatilgan" },
-        { label: "2-trimestr", value: "Norma" },
-        { label: "3-trimestr", value: "Norma, kam harakatlanish" },
-        { label: "Tug'ruq jarayoni", value: "Tabiiy, 38-hafta" },
+        { label: "1-trimestr", value: anamnesis.pregnancy_1_trimester || "-" },
+        { label: "2-trimestr", value: anamnesis.pregnancy_2_trimester || "-" },
+        { label: "3-trimestr", value: anamnesis.pregnancy_3_trimester || "-" },
+        { label: "Tug'ruq jarayoni", value: anamnesis.birth_process || "-" },
       ]
     },
     {
       title: "Ilk rivojlanish",
       icon: User,
       fields: [
-        { label: "Tug'ilgandagi vazni", value: "3200 g" },
-        { label: "Birinchi 40 kunlik", value: "Tinch, yaxshi ovqatlanilgan" },
-        { label: "1 yoshgacha davr", value: "O'tirish – 6 oy, emaklanish – 8 oy" },
-        { label: "Necha yoshgacha emgan", value: "1.5 yosh" },
-        { label: "So'rg'ichdan foydalanish davr", value: "3 yoshgacha" },
-        { label: "Necha yoshda yurgan", value: "13 oy" },
+        { label: "Tug'ilgandagi vazni", value: anamnesis.birth_weight || "-" },
+        { label: "Birinchi 40 kunlik", value: anamnesis.first_40_days || "-" },
+        { label: "1 yoshgacha davr", value: anamnesis.up_to_1_year || "-" },
+        { label: "Necha yoshgacha emgan", value: anamnesis.breastfeeding_duration || "-" },
+        { label: "So'rg'ichdan foydalanish davr", value: anamnesis.pacifier_usage_period || "-" },
+        { label: "Necha yoshda yurgan", value: anamnesis.walking_age || "-" },
       ]
     },
     {
       title: "Muhit va odatlar",
       icon: Home,
       fields: [
-        { label: "Gadjetlarga qachon o'tirga", value: "1 yoshdan" },
-        { label: "Bog'chaga chiqqanmi (yoshi)", value: "Yo'q" },
-        { label: "Uxlash vaqti va kim bila", value: "21:00, onasi bilan" },
-        { label: "Nimalar iste'mol qilad", value: "Suyuq ovqat, makaron" },
-        { label: "Ich qotishim", value: "Ba'zan" },
-        { label: "Ich ketidim", value: "Yo'q" },
-        { label: "Pampers taqadim", value: "Ha" },
-        { label: "Cho'milishni yaxshi ko'radim", value: "Ha" },
+        { label: "Gadjetlarga qachon o'tirgan", value: anamnesis.gadget_usage_age || "-" },
+        { label: "Bog'chaga chiqqanmi (yoshi)", value: anamnesis.kindergarten_age || "-" },
+        { label: "Uxlash vaqti va odatlari", value: anamnesis.sleep_habits || "-" },
+        { label: "Nimalar iste'mol qiladi", value: anamnesis.eating_habits || "-" },
+        { label: "Ich qotishi", value: anamnesis.has_constipation ? "Ha" : "Yo'q" },
+        { label: "Ich ketishi", value: anamnesis.has_diarrhea ? "Ha" : "Yo'q" },
+        { label: "Pampers taqadimi", value: anamnesis.wears_pampers ? "Ha" : "Yo'q" },
+        { label: "Cho'milishni yaxshi ko'radimi", value: anamnesis.likes_bathing ? "Ha" : "Yo'q" },
       ]
     },
     {
       title: "Nutq va kognitiv",
       icon: MessageSquare,
       fields: [
-        { label: "Ichki nutqi borm", value: "Cheklangan" },
-        { label: "Birinchi so'zi qachon paydo bo'lga", value: "2 yosh" },
-        { label: "Hozirda nechta so'zi bo", value: "~15-20 ta" },
-        { label: "Emlash holat", value: "To'liq" },
-        { label: "Tashxis", value: "F84.0 – Autizm" },
+        { label: "Ichki nutqi bormi", value: anamnesis.has_inner_speech ? "Ha" : "Yo'q" },
+        { label: "Birinchi so'zi qachon paydo bo'lgan", value: anamnesis.first_word_age || "-" },
+        { label: "Hozirda nechta so'zi bor", value: anamnesis.current_vocabulary_count || "-" },
+        { label: "Emlash holati", value: anamnesis.vaccination || "-" },
       ]
     }
   ];

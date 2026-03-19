@@ -1,4 +1,5 @@
 import { createRoute, Outlet, redirect } from "@tanstack/react-router";
+import { OfflineBanner } from "@/components/admin/ui/OfflineBanner";
 import { rootRoute } from "./__root";
 import Sidebar from "@/components/specialist/Sidebar";
 import Navbar from "@/components/specialist/Navbar";
@@ -9,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export const specialistLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: "_specalits",
+  id: "_specialist",
   beforeLoad: () => {
     const { user } = useAuthStore.getState();
     if (!user) {
@@ -27,6 +28,7 @@ function SpecialistLayout() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#F8F9FD]">
+      <OfflineBanner />
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 

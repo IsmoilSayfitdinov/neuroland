@@ -1,79 +1,100 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { SessionsAPI } from "@/api/sessions.api";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import type { ScheduleSlot } from "@/types/session.types";
 
-const days = ["Dush", "Sesh", "Chor", "Pay", "Jum", "Shan"];
-const times = ["9:00", "10:00", "11:00", "12:00", "13:00"];
-
-const schedule = [
-  { day: "Dush", items: [
-    { time: "9:00", title: "Nutq ...", type: "Nutq" },
-    { time: "10:00", title: "Motori...", type: "Motorika" },
-    { time: "11:00", title: "Individ...", type: "Individual" },
-  ]},
-  { day: "Sesh", items: [
-    { time: "9:00", title: "Senso...", type: "Sensor" },
-    { time: "10:00", title: "Nutq ...", type: "Nutq" },
-    { time: "11:00", title: "Kenga...", type: "Individual" },
-  ]},
-  { day: "Chor", items: [
-    { time: "9:00", title: "Nutq ...", type: "Nutq" },
-    { time: "10:00", title: "Senso...", type: "Sensor" },
-  ]},
-  { day: "Pay", items: [
-    { time: "9:00", title: "Motori...", type: "Motorika" },
-    { time: "11:00", title: "Nutq ...", type: "Nutq" },
-  ]},
-  { day: "Jum", items: [
-    { time: "9:00", title: "Senso...", type: "Sensor" },
-    { time: "10:00", title: "Individ...", type: "Individual" },
-    { time: "11:00", title: "Nutq ...", type: "Nutq" },
-  ]},
-  { day: "Shan", items: [
-    { time: "9:00", title: "Motori...", type: "Motorika" },
-    { time: "11:00", title: "Individ...", type: "Individual" },
-  ]},
+const DAYS: { key: number; label: string }[] = [
+  { key: 1, label: "Dushanba" },
+  { key: 2, label: "Seshanba" },
+  { key: 3, label: "Chorshanba" },
+  { key: 4, label: "Payshanba" },
+  { key: 5, label: "Juma" },
+  { key: 6, label: "Shanba" },
+  { key: 7, label: "Yakshanba" },
 ];
 
-const typeStyles: Record<string, string> = {
-  "Nutq": "bg-blue-50 text-blue-600 border-blue-100",
-  "Motorika": "bg-[#F0FDFA] text-[#0D9488] border-[#CCFBF1]",
-  "Sensor": "bg-orange-50 text-orange-600 border-orange-100",
-  "Individual": "bg-slate-50 text-slate-600 border-slate-100",
+const typeStyles: Record<string, { cell: string; dot: string; label: string }> = {
+  group:       { cell: "bg-blue-50 border-blue-100 text-blue-700",   dot: "bg-blue-500",   label: "Guruh" },
+  mini_group:  { cell: "bg-teal-50 border-teal-100 text-teal-700",   dot: "bg-teal-500",   label: "Mini guruh" },
+  individual:  { cell: "bg-purple-50 border-purple-100 text-purple-700", dot: "bg-purple-500", label: "Individual" },
 };
 
-export default function WeeklySchedule() {
-  return (
-    <Card className="border-none shadow-xs rounded-[40px] bg-white overflow-hidden">
-      <CardContent className="p-10">
-        <h3 className="text-xl font-bold text-slate-800 mb-10">Haftalik jadval</h3>
+function formatTime(t: string) {
+  return t.slice(0, 5);
+}
 
+interface Props {
+  groupId: number;
+  label: string;
+}
+
+export default function WeeklySchedule({ groupId, label }: Props) {
+  const { data: slots = [], isLoading } = useQuery({
+    queryKey: ["schedule-slots", groupId],
+    queryFn: () => SessionsAPI.listSlots({ group: groupId }),
+    enabled: !!groupId,
+  });
+
+  // Collect unique times sorted
+  const times = [...new Set(slots.map((s) => s.start_time))].sort();
+
+  // Active days only (days that have at least one slot)
+  const activeDays = DAYS.filter((d) => slots.some((s) => s.weekday === d.key));
+
+  const getSlot = (day: number, time: string): ScheduleSlot | undefined =>
+    slots.find((s) => s.weekday === day && s.start_time === time);
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="p-5 pb-0">
+        <h3 className="text-[16px] font-bold text-[#2D3142] mb-4">{label}</h3>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+        </div>
+      ) : slots.length === 0 ? (
+        <div className="py-10 text-center text-[#9EB1D4] text-[13px] font-medium">
+          Jadval mavjud emas
+        </div>
+      ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-separate border-spacing-2">
+          <table className="w-full min-w-[500px]">
             <thead>
-              <tr>
-                <th className="w-16 text-xs text-slate-400 font-medium pb-4">Vaqt</th>
-                {days.map(day => (
-                  <th key={day} className="text-sm font-bold text-slate-800 pb-4">{day}</th>
+              <tr className="border-b border-gray-50">
+                <th className="w-16 text-[11px] text-[#9EB1D4] font-medium py-3 px-4 text-left">Vaqt</th>
+                {activeDays.map((d) => (
+                  <th key={d.key} className="text-[12px] font-bold text-[#2D3142] py-3 px-3 text-left">
+                    {d.label}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {times.map((time) => (
-                <tr key={time}>
-                  <td className="text-[10px] text-slate-400 font-medium py-3 text-center">{time}</td>
-                  {days.map((day) => {
-                    const session = schedule.find(s => s.day === day)?.items.find(i => i.time === time);
+                <tr key={time} className="border-b border-gray-50 last:border-0">
+                  <td className="text-[11px] text-[#9EB1D4] font-medium px-4 py-3 whitespace-nowrap">
+                    {formatTime(time)}
+                  </td>
+                  {activeDays.map((d) => {
+                    const slot = getSlot(d.key, time);
+                    const style = slot ? typeStyles[slot.session_type] ?? typeStyles.group : null;
                     return (
-                      <td key={`${day}-${time}`} className="p-0 min-w-[100px]">
-                        {session ? (
-                          <div className={cn(
-                            "h-14 rounded-2xl border flex items-center justify-center text-[10px] font-bold px-2 text-center",
-                            typeStyles[session.type]
-                          )}>
-                            {session.title}
+                      <td key={d.key} className="px-3 py-2 min-w-[120px]">
+                        {slot && style ? (
+                          <div
+                            className={cn(
+                              "rounded-xl border px-3 py-2 text-[11px] font-semibold leading-snug",
+                              style.cell
+                            )}
+                          >
+                            <div className="font-bold truncate">{slot.specialist_name}</div>
+                            <div className="opacity-70 mt-0.5">{style.label}</div>
                           </div>
                         ) : (
-                          <div className="h-14 rounded-2xl border border-slate-50 bg-[#FDFDFD]" />
+                          <div className="h-12 rounded-xl border border-gray-50 bg-[#FDFDFD]" />
                         )}
                       </td>
                     );
@@ -83,16 +104,19 @@ export default function WeeklySchedule() {
             </tbody>
           </table>
         </div>
+      )}
 
-        <div className="flex items-center gap-6 mt-10 ml-8">
-          {Object.entries(typeStyles).map(([type, styles]) => (
-            <div key={type} className="flex items-center gap-2">
-              <div className={cn("w-2.5 h-2.5 rounded-full", styles.split(' ')[0])} />
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{type}</span>
+      {/* Legend */}
+      {slots.length > 0 && (
+        <div className="flex items-center gap-4 px-5 py-3 border-t border-gray-50">
+          {Object.entries(typeStyles).map(([key, s]) => (
+            <div key={key} className="flex items-center gap-1.5">
+              <div className={cn("w-2 h-2 rounded-full", s.dot)} />
+              <span className="text-[10px] text-[#9EB1D4] font-bold uppercase tracking-wider">{s.label}</span>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

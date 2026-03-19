@@ -1,112 +1,94 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, CheckCircle2 } from "lucide-react";
 
 interface MonthlyPlanCardProps {
   month: string;
-  status: 'good' | 'average' | 'poor';
+  status: "good" | "average" | "poor";
   category: string;
   progress: number;
   tasks: string[];
   isActive?: boolean;
+  onClick?: () => void;
 }
 
-export default function MonthlyPlanCard({
-  month,
-  status,
-  category,
-  progress,
-  tasks,
-  isActive = false,
-}: MonthlyPlanCardProps) {
-  const statusConfig = {
-    good: { 
-      label: 'Yaxshi', 
-      color: 'text-emerald-500 border-emerald-100 bg-emerald-50/30', 
-      dot: 'bg-emerald-500',
-      bar: 'bg-emerald-500'
-    },
-    average: { 
-      label: 'O\'rta', 
-      color: 'text-orange-500 border-orange-100 bg-orange-50/30', 
-      dot: 'bg-orange-500',
-      bar: 'bg-orange-500'
-    },
-    poor: { 
-      label: 'Past', 
-      color: 'text-red-500 border-red-100 bg-red-50/30', 
-      dot: 'bg-red-500',
-      bar: 'bg-red-500'
-    },
-  };
+const statusCfg = {
+  good:    { label: "Yaxshi", cls: "text-emerald-600 bg-emerald-50 border-emerald-100", dot: "bg-emerald-500", bar: "bg-emerald-500" },
+  average: { label: "O'rta",  cls: "text-orange-500 bg-orange-50 border-orange-100",   dot: "bg-orange-400",  bar: "bg-orange-400"  },
+  poor:    { label: "Past",   cls: "text-red-500 bg-red-50 border-red-100",             dot: "bg-red-500",     bar: "bg-red-400"     },
+};
 
-  const categoryConfig: Record<string, string> = {
-    "Diqqat": "bg-blue-50 text-blue-600",
-    "Nutq": "bg-purple-50 text-purple-600",
-    "Emotsional": "bg-pink-50 text-pink-600",
-    "Sensor": "bg-emerald-50 text-emerald-600",
-    "Motor": "bg-orange-50 text-orange-600",
-    "Kognitiv": "bg-indigo-50 text-indigo-600",
-    "Ijtimoiy": "bg-cyan-50 text-cyan-600",
-    "O-o'ziga": "bg-amber-50 text-amber-600",
-    "O'yin": "bg-lime-50 text-lime-600",
-  };
+const categoryCls: Record<string, string> = {
+  Diqqat:           "bg-blue-100 text-blue-600",
+  Nutq:             "bg-purple-100 text-purple-600",
+  Emotsional:       "bg-pink-100 text-pink-600",
+  Sensor:           "bg-emerald-100 text-emerald-600",
+  Motor:            "bg-orange-100 text-orange-600",
+  Motorika:         "bg-orange-100 text-orange-600",
+  Kognitiv:         "bg-indigo-100 text-indigo-600",
+  Ijtimoiy:         "bg-cyan-100 text-cyan-600",
+  "O'yin":          "bg-lime-100 text-lime-600",
+  "O-o'ziga":       "bg-amber-100 text-amber-600",
+  "O'z-o'ziga":     "bg-amber-100 text-amber-600",
+};
+
+export default function MonthlyPlanCard({
+  month, status, category, progress, tasks, isActive = false, onClick,
+}: MonthlyPlanCardProps) {
+  const s = statusCfg[status];
 
   return (
-    <Card className={cn(
-      "border-slate-100 shadow-sm transition-all relative overflow-hidden rounded-[32px]",
-      isActive ? "ring-2 ring-blue-600 ring-offset-0 border-blue-600" : "bg-white"
-    )}>
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex flex-col gap-2">
-            <h4 className="font-bold text-slate-800 text-lg">{month}</h4>
-            <span className={cn(
-              "text-[10px] font-bold px-2.5 py-1 rounded-md w-fit",
-              categoryConfig[category] || "bg-slate-100 text-slate-500"
-            )}>
-              {category}
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className={cn(
-              "text-[10px] font-bold px-3 py-1 rounded-full border flex items-center gap-1.5",
-              statusConfig[status].color
-            )}>
-              <span className={cn("w-1.5 h-1.5 rounded-full", statusConfig[status].dot)}></span>
-              {statusConfig[status].label}
-            </span>
-            <button className="text-slate-300 hover:text-slate-400 transition-colors">
-              <Edit2 size={16} />
-            </button>
-          </div>
+    <div
+      onClick={onClick}
+      className={cn(
+        "bg-white rounded-2xl border shadow-sm p-5 flex flex-col gap-4 transition-all",
+        isActive ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-100",
+        onClick && "cursor-pointer hover:shadow-md"
+      )}>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-1.5">
+          <h4 className="font-bold text-[#2D3142] text-[16px]">{month}</h4>
+          <span className={cn(
+            "text-[10px] font-bold px-2 py-0.5 rounded-md w-fit",
+            categoryCls[category] ?? "bg-gray-100 text-gray-500"
+          )}>
+            {category}
+          </span>
         </div>
-
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-slate-400 font-bold">Progress</span>
-            <span className="text-xs text-slate-800 font-black">{progress}%</span>
-          </div>
-          <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                "h-full rounded-full transition-all duration-1000",
-                statusConfig[status].bar
-              )} 
-              style={{ width: `${progress}%` }} 
-            />
-          </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={cn(
+            "text-[10px] font-bold px-2.5 py-1 rounded-full border flex items-center gap-1",
+            s.cls
+          )}>
+            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", s.dot)} />
+            {s.label}
+          </span>
+          <button className="text-[#9EB1D4] hover:text-[#2D3142] transition-colors">
+            <Edit2 size={14} />
+          </button>
         </div>
+      </div>
 
-        <ul className="space-y-3">
-          {tasks.map((task, idx) => (
-            <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-500">
-              <CheckCircle2 size={14} className="text-slate-300 mt-0.5 shrink-0" />
-              <span className="leading-snug">{task}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+      {/* Progress */}
+      <div>
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-[11px] text-[#9EB1D4] font-bold">Progress</span>
+          <span className="text-[11px] text-[#2D3142] font-bold">{progress}%</span>
+        </div>
+        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div className={cn("h-full rounded-full", s.bar)} style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      {/* Tasks */}
+      <ul className="space-y-2">
+        {tasks.map((task, i) => (
+          <li key={i} className="flex items-start gap-2 text-[12px] text-[#5A6484]">
+            <CheckCircle2 size={13} className="text-gray-300 mt-0.5 shrink-0" />
+            <span className="leading-snug">{task}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

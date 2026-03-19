@@ -1,54 +1,65 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { User, Activity } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PatientDetailHeaderProps {
   name: string;
-  alias: string;
+  alias?: string;
   birthDate: string;
   age: string;
+  diagnosis: string;
+  photo?: string | null;
 }
 
 export default function PatientDetailHeader({
-  name,
-  alias,
-  birthDate,
-  age,
+  name, alias, birthDate, age, diagnosis, photo,
 }: PatientDetailHeaderProps) {
+  const isActive = true;
+
   return (
-    <div className="space-y-4">
-      <div className="bg-blue-600 text-white rounded-t-2xl px-6 py-3 flex items-center justify-between">
-        <span className="text-sm font-bold">Bemor profili</span>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* Blue label bar */}
+      <div className="bg-blue-600 px-6 py-2">
+        <span className="text-white text-xs font-bold tracking-wide">Bemor profili</span>
       </div>
-      
-      <Card className="rounded-t-none border-t-0 shadow-sm border-slate-100">
-        <CardContent className="p-8 flex items-center gap-8">
-          <div className="w-20 h-20 rounded-2xl bg-blue-50 flex items-center justify-center">
-            <User className="w-10 h-10 text-blue-600" />
+
+      <div className="p-5 sm:p-7 flex flex-col sm:flex-row items-start gap-5">
+        {/* Avatar */}
+        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden shrink-0">
+          {photo ? (
+            <img src={photo} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <User className="w-8 h-8 text-blue-400" />
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#2D3142]">{name}</h1>
+            <span className={cn(
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border uppercase tracking-wide",
+              "bg-blue-50 text-blue-600 border-blue-100"
+            )}>
+              <Activity size={11} /> {diagnosis}
+            </span>
+            <span className={cn(
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border",
+              isActive ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-gray-50 text-gray-500 border-gray-100"
+            )}>
+              <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500" : "bg-gray-400")} />
+              {isActive ? "Active" : "Nofaol"}
+            </span>
           </div>
-          
-          <div className="flex-1">
-            <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-3xl font-bold text-slate-800">{name}</h1>
-              <div className="flex gap-2">
-                <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-blue-100 uppercase tracking-wider">
-                  <Activity size={12} className="text-blue-600" /> RAS (Autizm spektri)
-                </span>
-                <span className="bg-emerald-50 text-[#2ECC71] text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-emerald-100 uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71]"></span> Active
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-6 text-slate-500 text-sm">
-              <p>Taxallusi: <span className="text-slate-700 font-medium">{alias}</span></p>
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              <p>Tug'ilgan sana: <span className="text-slate-700 font-medium">{birthDate}</span></p>
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              <p>Yoshi: <span className="text-slate-700 font-medium">{age}</span></p>
-            </div>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#9EB1D4]">
+            {alias && (
+              <span>Taxallusi: <span className="text-[#2D3142] font-medium">{alias}</span></span>
+            )}
+            <span>Tug'ilgan sana: <span className="text-[#2D3142] font-medium">{birthDate}</span></span>
+            <span>Yoshi: <span className="text-[#2D3142] font-medium">{age}</span></span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

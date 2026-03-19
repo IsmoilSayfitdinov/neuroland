@@ -32,7 +32,7 @@ export const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] relative overflow-hidden" style={{ background: 'linear-gradient(193.72deg, #FFFFFF 9.81%, #EBF4FF 51.76%, #FFFFFF 93.7%)' }}>
+    <section className="w-full pt-[48px] md:pt-[112px] pb-[48px] md:pb-[112px] relative overflow-hidden" style={{ background: 'linear-gradient(193.72deg, #FFFFFF 9.81%, #EBF4FF 51.76%, #FFFFFF 93.7%)' }}>
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-50/50 rounded-full blur-[80px] md:blur-[100px] -z-10" />
 

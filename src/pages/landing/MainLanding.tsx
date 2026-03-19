@@ -40,8 +40,8 @@ function MainLanding() {
           </div>
           
           <TeamSection />
-          <HowItWorksSection />
           <PlatformSection />
+          <HowItWorksSection />
           <SuccessStoriesSection />
           <ProblemSolutionSection />
           

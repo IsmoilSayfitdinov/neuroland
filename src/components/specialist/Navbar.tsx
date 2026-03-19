@@ -1,5 +1,6 @@
-import { Search, Bell, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -27,10 +28,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           />
         </div>
 
-        <button className="relative p-2 text-[#2D3142] hover:bg-gray-100 rounded-full transition-colors">
-          <Bell className="h-6 w-6" />
-          <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white" />
-        </button>
+        <NotificationBell basePath="specialist" />
 
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF4FF] text-[#4D89FF] font-bold">

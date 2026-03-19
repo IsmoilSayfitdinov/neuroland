@@ -1,13 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { 
-  LayoutGrid, 
-  Users, 
-  ClipboardList, 
-  FileEdit, 
-  Calendar, 
-  BookOpen, 
+import {
+  LayoutGrid,
+  Users,
+  ClipboardList,
+  FileEdit,
+  Calendar,
+  BookOpen,
   Users2,
-  LogIn
+  LogIn,
+  Table,
+  AlignLeftIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/assets/images/logo.png";
@@ -47,6 +49,16 @@ const sidebarItems = [
     title: "Guruhlar",
     icon: Users2,
     href: "/specialist/groups",
+  },
+  {
+    title: "Mavzular",
+    icon: AlignLeftIcon,
+    href: "/specialist/topics",
+  },
+  {
+    title: "Hisobotlar",
+    icon: Table,
+    href: "/specialist/reports",
   },
 ];
 

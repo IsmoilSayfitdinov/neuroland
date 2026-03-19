@@ -1,46 +1,26 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, Phone } from "lucide-react";
 import Logo from "@/assets/images/logo.png";
 import LoginIllustration from "@/assets/images/Rectangle 20.png";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchema } from "@/schemas/auth";
-import { useAuthStore } from "@/store/useAuthStore";
-import Role from "@/types/auth";
 import { IMaskInput } from "react-imask";
-import { toast } from "sonner";
+import { useLogin } from "@/hooks/auth/useLogin";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
+  const { mutate: loginMutation, isPending } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
   const { control, register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema)
   });
 
   const onSubmit = (data: LoginSchema) => {
-    // Mocking a successful login
-    let role: Role = Role.SPECIALIST;
-    
-    // Simple logic for mocking roles via specific input suffix if needed, 
-    // but default for now
-    if (data.phone.endsWith("00")) {
-      role = Role.ADMIN;
-    } else if (data.phone.endsWith("11")) {
-      role = Role.PARENT;
-    }
-
-    login({ username: data.phone, role }, "mock-token");
-    toast.success("Tizimga muvaffaqiyatli kirdingiz!");
-    if (role === Role.ADMIN)   {
-      navigate({ to: "/admin" });
-    } else if (role === Role.SPECIALIST) {
-      navigate({ to: "/specialist/dashboard" });
-    } else if (role === Role.PARENT) {
-      navigate({ to: "/parent" });
-    }
+    loginMutation({
+      username: data.phone.replace(/\s/g, ""), // Remove spaces from phone
+      password: data.password,
+    });
   };
 
   return (
@@ -53,7 +33,7 @@ export default function Login() {
             <img src={Logo} alt="Neuroland" className="h-20" />
           </div>
 
-          <h1 className="text-2xl font-black text-slate-800 text-center mb-10">
+          <h1 className="text-2xl font-bold text-slate-800 text-center mb-10">
             Tizimga kirish
           </h1>
 
@@ -117,9 +97,10 @@ export default function Login() {
             {/* Submit */}
             <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 h-14 rounded-3xl text-white font-bold text-base shadow-lg shadow-blue-100 transition-all mt-4"
+                disabled={isPending}
+                className={`w-full bg-blue-600 hover:bg-blue-700 h-14 rounded-3xl text-white font-bold text-base shadow-lg shadow-blue-100 transition-all mt-4 ${isPending ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-                Kirish
+                {isPending ? "Yuklanmoqda..." : "Kirish"}
             </Button>
           </form>
         </div>

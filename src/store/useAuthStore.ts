@@ -10,7 +10,7 @@ interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
-  login: (user: User, token: string) => void;
+  login: (user: User, token: string, refreshToken?: string) => void;
   logout: () => void;
 }
 
@@ -19,12 +19,16 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
-      login: (user, token) => {
+      login: (user, token, refreshToken) => {
         localStorage.setItem("token", token);
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
         set({ user, token });
       },
       logout: () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("refresh_token");
         set({ user: null, token: null });
       },
     }),

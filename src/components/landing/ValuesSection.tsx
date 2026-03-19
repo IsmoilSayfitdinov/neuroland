@@ -6,7 +6,7 @@ export const ValuesSection = () => {
   const { t } = useTranslation();
   return (
     <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="values">
-      <div className="max-w-7xl 2xl:max-w-7xl 3xl:max-w-[1920px] mx-auto px-4 md:px-8">
+      <div className="mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-center">
           
           <div className="space-y-6 flex flex-col justify-center order-2 lg:order-1">
@@ -17,13 +17,13 @@ export const ValuesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              className="bg-[#F6F8FD] border border-[#FFFFFF4D] p-6 md:p-8 rounded-[32px] shadow-xl shadow-slate-200/50 transition-all"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-[#1F61F9] mb-6">
                 <Heart size={24} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{t("values.careTitle")}</h3>
-              <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+              <p className="text-[#65758B] text-[14px] md:text-[14px] font-normal leading-relaxed">
                 {t("values.careText")}
               </p>
             </motion.div>
@@ -35,7 +35,7 @@ export const ValuesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              className="bg-[#F6F8FD] border border-[#FFFFFF4D] p-6 md:p-8 rounded-[32px] shadow-xl shadow-slate-200/50 transition-all"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-[#1F61F9] mb-6">
                 <Target size={24} />
@@ -74,7 +74,7 @@ export const ValuesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              className="bg-[#F6F8FD] border border-[#FFFFFF4D] p-6 md:p-8 rounded-[32px] shadow-xl shadow-slate-200/50 transition-all"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-[#1F61F9] mb-6">
                 <Eye size={24} />
@@ -92,7 +92,7 @@ export const ValuesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 transition-all"
+              className="bg-[#F6F8FD] border border-[#FFFFFF4D] p-6 md:p-8 rounded-[32px] shadow-xl shadow-slate-200/50 transition-all"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-[#1F61F9] mb-6">
                 <Lightbulb size={24} />

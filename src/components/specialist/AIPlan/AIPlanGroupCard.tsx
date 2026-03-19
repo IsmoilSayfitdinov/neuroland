@@ -23,16 +23,16 @@ export default function AIPlanGroupCard({
   return (
     <Card className="overflow-hidden border-slate-100 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div>
+        <div className="flex items-start justify-between mb-6 gap-2">
+          <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-bold text-slate-800">{name}</h3>
-              <span className="text-[10px] text-slate-400 font-medium">({ageRange})</span>
+              <h3 className="font-bold text-slate-800 truncate">{name}</h3>
+              <span className="shrink-0 text-[10px] text-slate-400 font-medium tracking-tight">({ageRange})</span>
             </div>
-            <p className="text-xs text-slate-500">{specialist}</p>
+            <p className="text-xs text-slate-500 truncate">{specialist}</p>
           </div>
-          <span className="bg-emerald-50 text-[#2ECC71] text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71] inline-block mr-1.5 align-middle"></span>
+          <span className="shrink-0 bg-emerald-50 text-[#2ECC71] text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-wider">
+            <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#2ECC71] inline-block mr-1.5 align-middle"></span>
             Barqaror
           </span>
         </div>

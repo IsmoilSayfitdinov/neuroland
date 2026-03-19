@@ -1,108 +1,289 @@
-import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, useMemo } from "react";
+import { useParams, useNavigate } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { RefreshCw, ArrowLeft, Loader2, Sparkles, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { PlansAPI } from "@/api/plans.api";
+import { GroupsAPI } from "@/api/groups.api";
 import MonthlyPlanCard from "@/components/specialist/AIPlan/MonthlyPlanCard";
 import CategoryPlanCard from "@/components/specialist/AIPlan/CategoryPlanCard";
+import { toast } from "sonner";
 
-type MonthlyPlan = {
-  month: string;
-  status: 'good' | 'average' | 'poor';
-  category: string;
-  progress: number;
-  tasks: string[];
-  isActive?: boolean;
-};
-
-const months: MonthlyPlan[] = [
-  { month: "Yanvar", status: 'good', category: "Diqqat", progress: 75, tasks: ["Diqqat mashqlari - 15 daqiqa", "Rang ajratish o'yinlari", "Xotira takomillash"], isActive: true },
-  { month: "Fevral", status: 'average', category: "Nutq", progress: 45, tasks: ["Artikulyatsiya mashqlari", "So'z boyligini oshirish", "Hikoya tuzish"] },
-  { month: "Mart", status: 'poor', category: "Emotsional", progress: 30, tasks: ["His-tuyg'ularni ifodalash", "Ijtimoiy ssenariylar", "Empati rivojlantirish"] },
-  { month: "Aprel", status: 'good', category: "Sensor", progress: 70, tasks: ["Sensory bin faoliyatlari", "Tekstura tadqiqoti", "Tovush sezgirligini kamaytirish"] },
-  { month: "May", status: 'average', category: "Motor", progress: 50, tasks: ["Yirik motor harakatlari", "Muvozanat mashqlari", "Koordinatsiya o'yinlari"] },
-  { month: "Iyun", status: 'good', category: "Diqqat", progress: 68, tasks: ["Fokus takomillash", "Impuls nazorati", "Vazifalarni yakunlash"] },
-  { month: "Iyul", status: 'average', category: "Nutq", progress: 85, tasks: ["Nutq ritmi", "Fonomatik eshitish", "Qofiya ko'nikmasi"] },
-  { month: "Avgust", status: 'good', category: "Kognitiv", progress: 72, tasks: ["Mantiqiy fikrlash", "Masala yechish", "Xotira kengaytirish"] },
-  { month: "Sentabr", status: 'poor', category: "Ijtimoiy", progress: 35, tasks: ["Do'stlik ko'nikmasi", "Guruhda ishlash", "Muloqot qilish"] },
-  { month: "Oktabr", status: 'average', category: "O-o'ziga", progress: 48, tasks: ["Mustaqil ovqatlanish", "Kiyinish ko'nikmasi", "Shaxsiy gigiyena"] },
-  { month: "Noyabr", status: 'good', category: "O'yin", progress: 60, tasks: ["Syujetli o'yinlar", "Qoidalar bilan o'yin", "Ijodiy faoliyat"] },
-  { month: "Dekabr", status: 'average', category: "Emotsional", progress: 52, tasks: ["Stressni boshqarish", "O'z-o'zini tartibga solish", "Hissiy barqarorlik"] },
+const MONTH_NAMES = [
+  "", "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
+  "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr",
 ];
 
-type CategoryPlan = {
-  category: "Diqqat" | "Nutq" | "Ijtimoiy" | "Emotsional" | "Kognitiv" | "Motorika" | "Sensor" | "O-o'ziga xizmat" | "O'yin";
-  progress: number;
-  recommendations: string[];
-};
+function calcProgress(items: { current_score: number; target_score: number }[]): number {
+  if (!items.length) return 0;
+  const sum = items.reduce(
+    (acc, it) => acc + (it.target_score > 0 ? (it.current_score / it.target_score) * 100 : 0),
+    0
+  );
+  return Math.round(sum / items.length);
+}
 
-const currentMonthPlans: CategoryPlan[] = [
-  { category: "Diqqat", progress: 75, recommendations: ["Ranglarni ajratish o'yini - 15 daqiqa", "Narsani topish mashqlari", "Diquat markazini ushlab turish"] },
-  { category: "Nutq", progress: 45, recommendations: ["Artikulyatsiya gimnastikasi", "So'z boyligini oshirish", "Hikoyalar tuzish"] },
-  { category: "Ijtimoiy", progress: 35, recommendations: ["Rollarni o'ynash", "Guruh o'yinlari", "Muloqot ko'nikmalari"] },
-  { category: "Emotsional", progress: 52, recommendations: ["His-tuyg'ularni ifodalash", "Empati mashqlari", "O'z-o'zini boshqarish"] },
-  { category: "Kognitiv", progress: 68, recommendations: ["Mantiqiy topshiriqlar", "Xotira o'yinlari", "Masala yechish"] },
-  { category: "Motorika", progress: 58, recommendations: ["Yirik motor harakatlar", "Tekislikda tadqiqot", "Muvozanat takomillash"] },
-  { category: "Sensor", progress: 70, recommendations: ["Sensory bin", "Tekstura tadqiqoti", "Tovush integratsiyasi"] },
-  { category: "O-o'ziga xizmat", progress: 48, recommendations: ["Mustaqil ovqatlanish", "Kiyinish ko'nikmasi", "Gigiyena ko'nikmalari"] },
-  { category: "O'yin", progress: 65, recommendations: ["Syujetli o'yinlar", "Ijodiy faoliyat", "Qoidalar bilan o'yin"] },
-];
+function statusFromProgress(p: number): "good" | "average" | "poor" {
+  if (p >= 70) return "good";
+  if (p >= 40) return "average";
+  return "poor";
+}
 
 export default function AIPlanDetail() {
+  const { groupId } = useParams({ strict: false });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const gId = Number(groupId);
+
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
+  const { data: group } = useQuery({
+    queryKey: ["group", gId],
+    queryFn: () => GroupsAPI.getGroupById(gId),
+    enabled: !!gId,
+  });
+
+  const { data: plans, isLoading: plansLoading } = useQuery({
+    queryKey: ["yearly-plans"],
+    queryFn: () => PlansAPI.listYearlyPlans(),
+  });
+
+  const plan = plans?.find((p) => p.group === gId);
+
+  const { data: yearlyPlan, isLoading: detailLoading } = useQuery({
+    queryKey: ["yearly-plan", plan?.id],
+    queryFn: () => PlansAPI.getYearlyPlan(plan!.id),
+    enabled: !!plan?.id,
+  });
+
+  const { mutate: generatePlan, isPending: generating } = useMutation({
+    mutationFn: () => {
+      const startDate = new Date().toISOString().slice(0, 10);
+      if (plan?.id) return PlansAPI.generateAiPlan(plan.id, { group: gId, start_date: startDate });
+      return PlansAPI.createYearlyPlan({ group: gId, start_date: startDate })
+        .then((p) => PlansAPI.generateAiPlan(p.id, { group: gId, start_date: startDate }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["yearly-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["yearly-plan"] });
+      toast.success("AI reja muvaffaqiyatli yaratildi!");
+    },
+    onError: () => toast.error("Xatolik yuz berdi"),
+  });
+
+  const isLoading = plansLoading || detailLoading;
+  const currentMonthNum = new Date().getMonth() + 1;
+
+  // Selected month goal
+  const selectedGoal = yearlyPlan?.monthly_goals?.find((g) => g.month_number === selectedMonth);
+
+  // Group items by section
+  const sectionMap = useMemo(() => {
+    const map = new Map<string, { id: number; exercise_name: string; current_score: number; target_score: number; is_mastered?: boolean }[]>();
+    if (selectedGoal) {
+      for (const item of selectedGoal.items) {
+        if (!map.has(item.section_name)) map.set(item.section_name, []);
+        map.get(item.section_name)!.push(item);
+      }
+    }
+    return map;
+  }, [selectedGoal]);
+
+  // Overall plan progress
+  const overallProgress = useMemo(() => {
+    if (!yearlyPlan?.monthly_goals?.length) return 0;
+    const allItems = yearlyPlan.monthly_goals.flatMap((g) => g.items);
+    if (!allItems.length) return 0;
+    const mastered = allItems.filter((i) => i.is_mastered).length;
+    return Math.round((mastered / allItems.length) * 100);
+  }, [yearlyPlan]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-8 pb-12">
+    <div className="flex flex-col gap-6 pb-10">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-1">AI Rejalashtiruvchi – Guruh uchun 12 oylik rivojlanish dasturi</h1>
-          <p className="text-xs text-slate-400">Diagnostika natijalari asosida sun'iy intelekt tomonidan shakllantirilgan</p>
-        </div>
-        <Button className="w-full sm:w-auto bg-blue-50 text-blue-600 hover:bg-blue-100 h-10 px-4 rounded-xl flex items-center justify-center sm:justify-start gap-2 text-xs font-bold border-none">
-          <RefreshCw className="w-3 h-3" />
-          Rejani qayta generatsiya qilish
-        </Button>
-      </div>
-
-      <div className="bg-white rounded-[40px] p-1.5 border border-slate-50 w-full">
-        <div className="flex items-center gap-10 p-4">
-          <div className="bg-[#F1F5F9]/50 p-2 rounded-[24px] flex items-center gap-4 border border-slate-100 pr-12">
-            <div className="w-12 h-12 rounded-full bg-slate-600 flex items-center justify-center text-white font-bold text-sm uppercase">
-              AK
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-800">Guruh A</span>
-                <RefreshCw className="w-3 h-3 text-slate-300" />
-              </div>
-              <p className="text-xs text-slate-400 font-medium tracking-tight">3-4 yosh</p>
-            </div>
-          </div>
-          <p className="text-sm text-slate-400 font-medium">
-            Al reja har bir bola uchun individual shakllantiriladi
+          <button
+            onClick={() => navigate({ to: "/specialist/ai-plan" })}
+            className="flex items-center gap-1.5 text-[#9EB1D4] hover:text-[#2D3142] transition-colors text-[13px] font-medium mb-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Orqaga
+          </button>
+          <h1 className="text-[20px] font-bold text-[#2D3142] leading-snug">
+            AI Rejalashtiruvchi — 12 oylik rivojlanish dasturi
+          </h1>
+          <p className="text-[12px] text-[#9EB1D4] mt-1">
+            Diagnostika natijalari asosida sun'iy intelekt tomonidan shakllantirilgan
           </p>
         </div>
+        <button
+          onClick={() => generatePlan()}
+          disabled={generating}
+          className="shrink-0 flex items-center gap-2 h-10 px-4 bg-blue-50 hover:bg-blue-100 text-blue-600 text-[12px] font-bold rounded-xl transition-colors disabled:opacity-60"
+        >
+          {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+          {generating ? "Generatsiya..." : "Rejani qayta generatsiya"}
+        </button>
       </div>
+
+      {/* Group info + AI summary */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-100">
+            <div className="w-9 h-9 rounded-full bg-slate-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              {group?.name?.slice(0, 2).toUpperCase() ?? "G"}
+            </div>
+            <div>
+              <span className="text-[13px] font-bold text-[#2D3142]">{group?.name ?? "Guruh"}</span>
+              <p className="text-[11px] text-[#9EB1D4]">{group?.age_group_name}</p>
+            </div>
+          </div>
+          {yearlyPlan && (
+            <div className="flex items-center gap-4 text-[12px] text-[#9EB1D4]">
+              <span>Boshlanish: <span className="font-bold text-[#2D3142]">{yearlyPlan.start_date}</span></span>
+              <span>Umumiy progress: <span className="font-bold text-[#2D3142]">{overallProgress}%</span></span>
+            </div>
+          )}
+        </div>
+        {yearlyPlan?.ai_summary && (
+          <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+            <p className="text-[11px] font-bold text-blue-600 mb-1">AI Xulosa</p>
+            <p className="text-[13px] text-[#2D3142] leading-relaxed">{yearlyPlan.ai_summary}</p>
+          </div>
+        )}
+      </div>
+
+      {/* No plan */}
+      {!yearlyPlan && !generating && (
+        <div className="py-16 text-center bg-white rounded-2xl border border-dashed border-gray-200 flex flex-col items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center">
+            <Sparkles className="w-7 h-7 text-blue-500" />
+          </div>
+          <div>
+            <p className="font-bold text-[#2D3142] text-[15px]">AI reja hali yaratilmagan</p>
+            <p className="text-[13px] text-[#9EB1D4] mt-1">Guruh uchun 12 oylik rivojlanish rejasini generatsiya qiling</p>
+          </div>
+          <button
+            onClick={() => generatePlan()}
+            className="flex items-center gap-2 h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold rounded-xl transition-colors"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI reja yaratish
+          </button>
+        </div>
+      )}
 
       {/* 12-Month Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-4">
-        {months.map((item, idx) => (
-          <MonthlyPlanCard key={idx} {...item} />
-        ))}
-      </div>
+      {yearlyPlan && yearlyPlan.monthly_goals?.length > 0 && (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {yearlyPlan.monthly_goals.map((goal) => {
+              const progress = calcProgress(goal.items);
+              const primarySection = goal.items[0]?.section_name ?? "—";
+              return (
+                <MonthlyPlanCard
+                  key={goal.id}
+                  month={MONTH_NAMES[goal.month_number] ?? `Oy ${goal.month_number}`}
+                  status={statusFromProgress(progress)}
+                  category={primarySection}
+                  progress={progress}
+                  tasks={goal.items.slice(0, 3).map((i) => i.exercise_name)}
+                  isActive={goal.month_number === selectedMonth}
+                  onClick={() => setSelectedMonth(goal.month_number)}
+                />
+              );
+            })}
+          </div>
 
-      {/* Current Month Detail Section */}
-      <div className="mt-12 bg-white rounded-[40px] p-10 border border-slate-50">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-2 gap-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Joriy oy rejasi — Yanvar</h2>
-          <Button variant="ghost" className="w-full sm:w-auto bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 h-10 px-6 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border-none">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Faol oy
-          </Button>
-        </div>
-        <p className="text-sm text-slate-400 mb-10">9 ta asosiy rivojlanish yo'nalishi bo'yicha batafsil reja</p>
+          {/* Selected month detail */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-1">
+              <h2 className="text-[18px] font-bold text-[#2D3142]">
+                {MONTH_NAMES[selectedMonth]} oylik reja
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedMonth((m) => Math.max(1, m - 1))}
+                  disabled={selectedMonth <= 1}
+                  className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center disabled:opacity-30 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 text-[#2D3142]" />
+                </button>
+                <span className="text-[13px] font-bold text-[#2D3142] min-w-[60px] text-center">
+                  {selectedMonth} / 12
+                </span>
+                <button
+                  onClick={() => setSelectedMonth((m) => Math.min(12, m + 1))}
+                  disabled={selectedMonth >= 12}
+                  className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center disabled:opacity-30 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4 text-[#2D3142]" />
+                </button>
+                {selectedMonth !== currentMonthNum && (
+                  <button
+                    onClick={() => setSelectedMonth(currentMonthNum)}
+                    className="text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    Joriy oy
+                  </button>
+                )}
+              </div>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {currentMonthPlans.map((plan, idx) => (
-            <CategoryPlanCard key={idx} {...plan} />
-          ))}
-        </div>
-      </div>
+            {selectedGoal?.notes && (
+              <p className="text-[12px] text-[#9EB1D4] mb-4 italic">{selectedGoal.notes}</p>
+            )}
+
+            {sectionMap.size === 0 ? (
+              <p className="text-[#9EB1D4] text-[13px] text-center py-8">
+                Bu oy uchun reja mavjud emas
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+                {Array.from(sectionMap.entries()).map(([section, items]) => (
+                  <CategoryPlanCard
+                    key={section}
+                    category={section}
+                    progress={calcProgress(items)}
+                    recommendations={items.map((i) => i.exercise_name)}
+                    items={items}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Child Recommendations */}
+          {yearlyPlan.child_recommendations?.length > 0 && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 className="text-[16px] font-bold text-[#2D3142] mb-4">
+                Individual tavsiyalar ({yearlyPlan.child_recommendations.length} ta bola)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {yearlyPlan.child_recommendations.map((rec) => (
+                  <div key={rec.id} className="bg-[#F8F9FB] rounded-[16px] p-4 flex gap-3">
+                    <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                      <User className="w-4 h-4 text-blue-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-bold text-[#2D3142] mb-1">{rec.child_name}</p>
+                      <p className="text-[12px] text-[#6B7A99] leading-relaxed">{rec.ai_notes}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

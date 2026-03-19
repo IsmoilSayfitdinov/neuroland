@@ -6,7 +6,7 @@ export const PlatformSection = () => {
   const { t } = useTranslation();
   return (
     <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="platform">
-      <div className="max-w-7xl 2xl:max-w-7xl 3xl:max-w-[1920px] mx-auto px-4 md:px-8">
+      <div className=" mx-auto px-4 md:px-8">
         {/* Header */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}

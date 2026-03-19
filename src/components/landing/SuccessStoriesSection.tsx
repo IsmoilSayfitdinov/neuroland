@@ -23,7 +23,7 @@ export const SuccessStoriesSection = () => {
   }));
 
   return (
-    <section className="w-full py-[48px] md:py-[112px] mt-[48px] md:mt-[112px] bg-slate-50 relative overflow-hidden">
+    <section className="w-full py-[48px] md:py-[112px] mt-[48px] md:mt-[112px]relative overflow-hidden">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
         <motion.div 
             initial={{ opacity: 0, y: 20 }}

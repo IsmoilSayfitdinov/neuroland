@@ -4,7 +4,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ImageBannerPeople from "@/assets/images/bannerImagePeoples.png"
+import ImageBannerPeople from "@/assets/images/image 3 copy.png"
 import { Navbar } from "./Navbar";
 import {
   Dialog,
@@ -56,7 +56,7 @@ export const HeroSection = () => {
       }}
     >
       <Navbar/>
-      <div className="mt-8 md:mt-[80px] 2xl:mt-[40px] 3xl:mt-[80px] px-[32px]">
+      <div className="mt-8 md:mt-[80px] 2xl:mt-[40px] 3xl:mt-[80px]">
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-100/40 rounded-full blur-[100px] -z-10" />
         <div className="absolute bottom-0 left-0 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-green-100/30 rounded-full blur-[100px] -z-10" />
@@ -81,7 +81,7 @@ export const HeroSection = () => {
             </motion.div>
 
             {/* Headline */}
-            <h1 className="text-[32px] md:text-[45px] 2xl:text-[42px] 3xl:text-[60px] font-extrabold leading-[1.2] md:leading-[1.1] tracking-tight text-slate-900">
+            <h1 className="text-[32px] md:text-[45px] 2xl:text-[60px] 3xl:text-[60px] font-extrabold leading-[1.2] md:leading-[1.1] tracking-tight text-slate-900">
               <Trans
                 i18nKey="hero.title"
                 components={{ highlight: <span className="text-[#1F61F9]" /> }}
@@ -99,14 +99,14 @@ export const HeroSection = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setOpen(true)}
-                className="bg-[#1F61F9] hover:bg-[#1F61F9] text-white px-6 md:px-8 py-3 md:py-4 rounded-[24px] font-semibold text-base md:text-lg transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform cursor-pointer w-full md:w-auto"
+                className="bg-[#1F61F9] hover:bg-[#1F61F9] text-white px-6 md:px-0 py-3 md:py-0 rounded-[24px] font-semibold text-base md:text-[14px] md:h-[44px] transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform cursor-pointer w-full md:w-[207px]"
               >
                 {t("hero.cta")}
               </motion.button>
             </div>
 
             {/* Stats */}
-            <div className="flex gap-8 md:gap-12 2xl:gap-8 3xl:gap-12 pb-9 2xl:pb-6 3xl:pb-9 overflow-x-auto md:overflow-visible no-scrollbar" >
+            <div className="flex gap-8 md:gap-12 2xl:gap-8 3xl:gap-12 pb-9 2xl:pb-9 3xl:pb-9 overflow-x-auto md:overflow-visible no-scrollbar" >
               <div>
                 <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">500+</h3>
                 <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t("hero.activeUsers")}</p>
@@ -129,8 +129,8 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative lg:flex hidden lg:mt-[130px] mt-[30px] items-center justify-center lg:justify-end w-full"
           >
-            <div className="relative min-h-[300px] md:min-h-[420px] xl:min-h-[480px] 2xl:min-h-[450px] 3xl:min-h-[594px] w-full lg:min-w-[500px] xl:min-w-[560px] 3xl:min-w-[630px] aspect-square md:aspect-[4/3]">
-              <div className="absolute inset-0 bg-transparent rounded-[2rem] md:rounded-[3rem] overflow-hidden flex items-end justify-center">
+            <div className="relative min-h-[300px] md:min-h-[420px] xl:min-h-[480px] 2xl:min-h-[450px] 3xl:min-h-[594px] w-full lg:min-w-[646px] xl:min-w-[560px] 3xl:min-w-[630px]">
+              <div className="absolute inset-0 bg-transparent rounded-[2rem] md:rounded-[3rem] overflow-hidden">
                  <img
                    src={ImageBannerPeople}
                    alt="3D Doctor Illustration"

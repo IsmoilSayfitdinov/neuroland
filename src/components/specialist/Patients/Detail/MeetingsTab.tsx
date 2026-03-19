@@ -1,0 +1,246 @@
+import { useState, useEffect } from "react";
+import { Plus, X, CheckCircle2, Clock } from "lucide-react";
+import { cn, formatDate } from "@/lib/utils";
+import { useMeetings } from "@/hooks/specialist/useMeetings";
+import { useSpecialists } from "@/hooks/admin/useSpecialists";
+import type { MonthlyMeeting } from "@/types/meetings.types";
+
+interface MeetingsTabProps {
+  childId: number;
+  childName: string;
+  autoOpenModal?: boolean;
+  onModalClose?: () => void;
+}
+
+export default function MeetingsTab({ childId, childName, autoOpenModal, onModalClose }: MeetingsTabProps) {
+  const { useChildMeetings, useCreateMeeting } = useMeetings();
+  const { useSpecialistsList } = useSpecialists();
+  const { data: meetings, isLoading } = useChildMeetings(childId);
+  const { data: specialists } = useSpecialistsList();
+  const createMeeting = useCreateMeeting();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (autoOpenModal) {
+      setIsModalOpen(true);
+    }
+  }, [autoOpenModal]);
+  const [form, setForm] = useState({
+    scheduled_date: "",
+    specialists: [] as number[],
+    notes: "",
+  });
+
+  const handleCreate = async () => {
+    if (!form.scheduled_date) return;
+    await createMeeting.mutateAsync({
+      child: childId,
+      scheduled_date: form.scheduled_date,
+      specialists: form.specialists,
+      notes: form.notes || null,
+    });
+    setIsModalOpen(false);
+    onModalClose?.();
+    setForm({ scheduled_date: "", specialists: [], notes: "" });
+  };
+
+  const toggleSpecialist = (id: number) => {
+    setForm((prev) => ({
+      ...prev,
+      specialists: prev.specialists.includes(id)
+        ? prev.specialists.filter((s) => s !== id)
+        : [...prev.specialists, id],
+    }));
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <p className="text-[14px] text-[#9EB1D4]">
+          Ota-ona bilan oylik uchrashuv tarixi
+        </p>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold rounded-[12px] transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Yangi uchrashuv
+        </button>
+      </div>
+
+      {/* Meetings list */}
+      {!meetings || meetings.length === 0 ? (
+        <div className="py-16 text-center bg-white rounded-2xl border border-dashed border-gray-200">
+          <p className="text-[#9EB1D4] font-medium">Uchrashuvlar mavjud emas</p>
+        </div>
+      ) : (
+        meetings.map((meeting: MonthlyMeeting) => (
+          <div key={meeting.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Meeting header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-bold text-[13px]">
+                    {childName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-bold text-[#2D3142] text-[14px]">{childName}</p>
+                  <p className="text-[12px] text-[#9EB1D4]">
+                    Ota-ona: — · {formatDate(meeting.scheduled_date)}
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold",
+                meeting.is_completed
+                  ? "bg-[#E8FFF3] text-[#3DB87E]"
+                  : "bg-amber-50 text-amber-600"
+              )}>
+                {meeting.is_completed
+                  ? <><CheckCircle2 className="w-3.5 h-3.5" /> Yakunlangan</>
+                  : <><Clock className="w-3.5 h-3.5" /> Rejalashtirilgan</>
+                }
+              </span>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px]">
+                <thead className="bg-gray-50/50">
+                  <tr>
+                    {["Sana", "Kim bilan", "Mutaxassisligi", "F.I.", "Tavsiyasi", "Imzo"].map((h) => (
+                      <th key={h} className="px-4 py-2.5 text-left text-[11px] font-bold text-[#9EB1D4] uppercase tracking-wide">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  <tr className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-4 py-3 text-[13px] text-[#2D3142] font-medium">
+                      {formatDate(meeting.scheduled_date)}
+                    </td>
+                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
+                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
+                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
+                    <td className="px-4 py-3 text-[13px] text-[#9EB1D4]">
+                      {meeting.notes || "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {meeting.is_completed ? (
+                        <span className="text-[#3DB87E] text-[12px] font-bold">✓ Ha</span>
+                      ) : (
+                        <span className="text-[#9EB1D4] text-[12px]">—</span>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))
+      )}
+
+      {/* Create Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => { setIsModalOpen(false); onModalClose?.(); }} />
+          <div className="relative bg-white rounded-[24px] w-full max-w-[440px] p-7 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[18px] font-bold text-[#2D3142]">Yangi uchrashuv yaratish</h3>
+              <button
+                onClick={() => { setIsModalOpen(false); onModalClose?.(); }}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-4 h-4 text-[#9EB1D4]" />
+              </button>
+            </div>
+
+            <div className="space-y-5">
+              {/* Date */}
+              <div>
+                <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Sana</label>
+                <input
+                  type="date"
+                  value={form.scheduled_date}
+                  onChange={(e) => setForm((p) => ({ ...p, scheduled_date: e.target.value }))}
+                  className="w-full h-[46px] px-4 rounded-[12px] bg-[#F8F9FB] border border-transparent focus:bg-white focus:border-[#4D89FF] focus:outline-none text-[14px] transition-colors"
+                />
+              </div>
+
+              {/* Specialists */}
+              <div>
+                <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Mutaxassislar</label>
+                <div className="space-y-2 max-h-[160px] overflow-y-auto">
+                  {specialists?.map((spec) => (
+                    <label key={spec.id} className="flex items-center gap-3 cursor-pointer py-1">
+                      <div className={cn(
+                        "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
+                        form.specialists.includes(spec.id)
+                          ? "border-[#4D89FF] bg-[#4D89FF]"
+                          : "border-gray-300"
+                      )}>
+                        {form.specialists.includes(spec.id) && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        )}
+                      </div>
+                      <span className="text-[13px] text-[#2D3142]">
+                        {spec.fio}{" "}
+                        <span className="text-[#9EB1D4]">({spec.specialist_type_title})</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Tavsiyalar</label>
+                <textarea
+                  value={form.notes}
+                  onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+                  placeholder="Uchrashuv tavsiyalari..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-[12px] bg-[#F8F9FB] border border-transparent focus:bg-white focus:border-[#4D89FF] focus:outline-none text-[14px] transition-colors resize-none"
+                />
+              </div>
+
+              {/* Imzo */}
+              <div className="flex items-center gap-2 text-[12px] text-[#9EB1D4]">
+                <span>✏️</span>
+                <span>Raqamli tasdiqlash avtomatik qo'yiladi</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => { setIsModalOpen(false); onModalClose?.(); }}
+                className="flex-1 h-[46px] rounded-[12px] border border-gray-200 text-[#2D3142] text-[13px] font-bold hover:bg-gray-50 transition-colors"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={handleCreate}
+                disabled={!form.scheduled_date || createMeeting.isPending}
+                className="flex-1 h-[46px] rounded-[12px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold transition-colors disabled:opacity-50"
+              >
+                {createMeeting.isPending ? "Saqlanmoqda..." : "Saqlash"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
