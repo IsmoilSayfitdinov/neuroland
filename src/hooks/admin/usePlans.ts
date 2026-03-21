@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PlansAPI } from "@/api/plans.api";
-import type { YearlyPlanListRequest } from "@/types/plans.types";
+import type { YearlyPlanListRequest, PatchedMonthlyGoalItemRequest } from "@/types/plans.types";
 import { toast } from "sonner";
 
 export const usePlans = () => {
@@ -47,5 +47,34 @@ export const usePlans = () => {
       onError: () => toast.error("AI reja yaratishda xatolik"),
     });
 
-  return { useYearlyPlansList, useYearlyPlanDetail, useMonthlyGoals, useCreateYearlyPlan, useGenerateAiPlan };
+  const usePatchMonthlyGoalItem = () =>
+    useMutation({
+      mutationFn: ({ id, data }: { id: number; data: PatchedMonthlyGoalItemRequest }) =>
+        PlansAPI.patchMonthlyGoalItem(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["yearly-plans"] });
+        toast.success("Ko'nikma holati yangilandi");
+      },
+      onError: () => toast.error("Yangilashda xatolik"),
+    });
+
+  const useDeleteYearlyPlan = () =>
+    useMutation({
+      mutationFn: (id: number) => PlansAPI.deleteYearlyPlan(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["yearly-plans"] });
+        toast.success("Yillik reja o'chirildi");
+      },
+      onError: () => toast.error("O'chirishda xatolik"),
+    });
+
+  return {
+    useYearlyPlansList,
+    useYearlyPlanDetail,
+    useMonthlyGoals,
+    useCreateYearlyPlan,
+    useGenerateAiPlan,
+    usePatchMonthlyGoalItem,
+    useDeleteYearlyPlan,
+  };
 };

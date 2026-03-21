@@ -9,11 +9,25 @@ export interface Badge {
   name: string;
   icon: string;
   description: string;
-  required_xp?: number;
-  unlock_condition?: string | null;
-  is_active?: boolean;
+  condition_rules: string;
+  is_active: boolean;
 }
 
+export interface BadgeRequest {
+  name: string;
+  icon: string;
+  description: string;
+  condition_rules: string;
+  is_active: boolean;
+}
+
+export interface PatchedBadgeRequest {
+  name?: string;
+  icon?: string;
+  description?: string;
+  condition_rules?: string;
+  is_active?: boolean;
+}
 
 export interface ChildBadge {
   id: number;
@@ -30,6 +44,7 @@ export interface ChildXP {
 }
 
 export interface TotalXP {
+  child_id: number;
   total_xp: number;
 }
 

@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
 import { CustomSelect } from "@/components/ui/custom-select";
-import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 
 interface SelectOption {
   label: string;
   value: string;
 }
 
-interface TopicFormData {
+export interface TopicFormData {
   title: string;
-  start_date: string;
-  end_date: string;
   category: string;
+  group: string;
 }
 
 interface TopicModalProps {
@@ -20,20 +18,20 @@ interface TopicModalProps {
   onClose: () => void;
   onSave: (data: TopicFormData) => void;
   sectionOptions?: SelectOption[];
+  groupOptions?: SelectOption[];
   isLoading?: boolean;
 }
 
-export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], isLoading }: TopicModalProps) {
+export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], groupOptions = [], isLoading }: TopicModalProps) {
   const [formData, setFormData] = useState<TopicFormData>({
     title: "",
-    start_date: "",
-    end_date: "",
     category: "",
+    group: "",
   });
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ title: "", start_date: "", end_date: "", category: "" });
+      setFormData({ title: "", category: "", group: "" });
     }
   }, [isOpen]);
 
@@ -48,19 +46,16 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], isLoa
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-white rounded-[28px] w-full max-w-[480px] p-8 shadow-2xl">
+      <div className="relative bg-white rounded-[24px] w-full max-w-[440px] p-7 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-7">
-          <div>
-            <h3 className="text-[20px] font-bold text-[#2D3142]">Yangi mavzu qo'shish</h3>
-            <p className="text-[13px] text-[#9EB1D4] mt-0.5">Haftalik reja uchun mavzu belgilang</p>
-          </div>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-[18px] font-bold text-[#2D3142]">Yangi mavzu</h3>
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5 text-[#9EB1D4]" />
+            <X className="w-4 h-4 text-[#9EB1D4]" />
           </button>
         </div>
 
@@ -71,44 +66,33 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], isLoa
             <input
               type="text"
               required
-              placeholder="Masalan: Ranglarni farqlash"
+              placeholder="Mavzu nomini kiriting"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full h-[50px] px-4 rounded-[12px] bg-[#F8F9FB] border border-transparent focus:bg-white focus:border-[#4D89FF] focus:outline-none text-[14px] text-[#2D3142] transition-colors placeholder:text-[#9EB1D4]"
+              className="w-full h-[48px] px-4 rounded-[12px] bg-[#F8F9FB] border border-transparent focus:bg-white focus:border-[#4D89FF] focus:outline-none text-[14px] text-[#2D3142] transition-colors placeholder:text-[#9EB1D4]"
             />
           </div>
 
           {/* Bo'lim */}
-          {sectionOptions.length > 0 && (
-            <div>
-              <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Bo'lim (ixtiyoriy)</label>
-              <CustomSelect
-                options={sectionOptions}
-                value={formData.category}
-                onChange={(val) => setFormData({ ...formData, category: val.toString() })}
-                placeholder="Bo'lim tanlang"
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Bo'lim</label>
+            <CustomSelect
+              options={sectionOptions}
+              value={formData.category}
+              onChange={(val) => setFormData({ ...formData, category: val.toString() })}
+              placeholder="Bo'limni kiriting"
+            />
+          </div>
 
-          {/* Sanalar */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Boshlanish sanasi</label>
-              <CustomDatePicker
-                value={formData.start_date}
-                onChange={(val) => setFormData({ ...formData, start_date: val })}
-                placeholder="Sana tanlang"
-              />
-            </div>
-            <div>
-              <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Tugash sanasi</label>
-              <CustomDatePicker
-                value={formData.end_date}
-                onChange={(val) => setFormData({ ...formData, end_date: val })}
-                placeholder="Sana tanlang"
-              />
-            </div>
+          {/* Guruh */}
+          <div>
+            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Guruh</label>
+            <CustomSelect
+              options={groupOptions}
+              value={formData.group}
+              onChange={(val) => setFormData({ ...formData, group: val.toString() })}
+              placeholder="Guruhni kiriting"
+            />
           </div>
 
           {/* Buttons */}
@@ -122,7 +106,7 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], isLoa
             </button>
             <button
               type="submit"
-              disabled={isLoading || !formData.title || !formData.start_date || !formData.end_date}
+              disabled={isLoading || !formData.title}
               className="flex-1 h-[48px] rounded-[14px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[14px] font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MeetingsAPI } from "@/api/meetings.api";
-import type { MothersEventRequest } from "@/types/meetings.types";
+import type { MothersEventRequest, PatchedMothersEventRequest } from "@/types/meetings.types";
 import { toast } from "sonner";
 
 export const useMeetings = () => {
@@ -12,6 +12,13 @@ export const useMeetings = () => {
       queryFn: () => MeetingsAPI.listMothersEvents(),
     });
 
+  const useEventDetail = (id: number) =>
+    useQuery({
+      queryKey: ["mothers-events", id],
+      queryFn: () => MeetingsAPI.getMothersEvent(id),
+      enabled: !!id,
+    });
+
   const useCreateEvent = () =>
     useMutation({
       mutationFn: (data: MothersEventRequest) => MeetingsAPI.createMothersEvent(data),
@@ -20,6 +27,28 @@ export const useMeetings = () => {
         toast.success("Tadbir muvaffaqiyatli qo'shildi");
       },
       onError: () => toast.error("Tadbir qo'shishda xatolik"),
+    });
+
+  const useUpdateEvent = () =>
+    useMutation({
+      mutationFn: ({ id, data }: { id: number; data: MothersEventRequest }) =>
+        MeetingsAPI.updateMothersEvent(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["mothers-events"] });
+        toast.success("Tadbir yangilandi");
+      },
+      onError: () => toast.error("Yangilashda xatolik"),
+    });
+
+  const usePatchEvent = () =>
+    useMutation({
+      mutationFn: ({ id, data }: { id: number; data: PatchedMothersEventRequest }) =>
+        MeetingsAPI.patchMothersEvent(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["mothers-events"] });
+        toast.success("Tadbir yangilandi");
+      },
+      onError: () => toast.error("Yangilashda xatolik"),
     });
 
   const useDeleteEvent = () =>
@@ -39,7 +68,16 @@ export const useMeetings = () => {
         queryClient.invalidateQueries({ queryKey: ["mothers-events"] });
         toast.success("Tadbir tugallandi");
       },
+      onError: () => toast.error("Xatolik yuz berdi"),
     });
 
-  return { useEventsList, useCreateEvent, useDeleteEvent, useMarkComplete };
+  return {
+    useEventsList,
+    useEventDetail,
+    useCreateEvent,
+    useUpdateEvent,
+    usePatchEvent,
+    useDeleteEvent,
+    useMarkComplete,
+  };
 };

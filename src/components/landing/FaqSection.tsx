@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ArrowRight, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { FAQ } from "@/types/landing.types";
 
 const FaqItem = ({ faq, isOpen, toggle, index }: { faq: any, isOpen: boolean, toggle: () => void, index: number }) => {
   return (
@@ -52,15 +53,22 @@ const FaqItem = ({ faq, isOpen, toggle, index }: { faq: any, isOpen: boolean, to
   );
 };
 
-export const FaqSection = () => {
-  const { t } = useTranslation();
-  const [openId, setOpenId] = useState<number | null>(1); // Default open first item
+interface FaqSectionProps {
+  faqs?: FAQ[];
+}
 
-  const faqs = (t("faq.items", { returnObjects: true }) as any[]).map((item: any, idx: number) => ({
-    id: idx + 1,
+export const FaqSection = ({ faqs: apiFaqs }: FaqSectionProps) => {
+  const { t } = useTranslation();
+
+  if (!apiFaqs || apiFaqs.length === 0) return null;
+
+  const faqs = apiFaqs.map((item) => ({
+    id: item.id,
     question: item.question,
     answer: item.answer,
   }));
+
+  const [openId, setOpenId] = useState<number | null>(faqs[0]?.id ?? null);
 
   const toggle = (id: number) => {
     setOpenId(openId === id ? null : id);

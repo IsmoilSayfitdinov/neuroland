@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LandingAPI } from "@/api/landing.api";
+import type { HeroSection as HeroSectionType } from "@/types/landing.types";
 
 const consultationSchema = z.object({
   name: z.string().min(2),
@@ -25,7 +27,11 @@ const consultationSchema = z.object({
 
 type ConsultationForm = z.infer<typeof consultationSchema>;
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  hero?: HeroSectionType;
+}
+
+export const HeroSection = ({ hero }: HeroSectionProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -39,7 +45,18 @@ export const HeroSection = () => {
     resolver: zodResolver(consultationSchema),
   });
 
-  const onSubmit = (_data: ConsultationForm) => {
+  const onSubmit = async (data: ConsultationForm) => {
+    try {
+      await LandingAPI.createContactRequest({
+        name: data.name,
+        phone: data.phone,
+        email: "",
+        subject: data.childAge ? `Bola yoshi: ${data.childAge}` : "Konsultatsiya",
+        message: data.message || "",
+      });
+    } catch {
+      // still show success to user
+    }
     setSubmitted(true);
     setTimeout(() => {
       setOpen(false);
@@ -82,15 +99,19 @@ export const HeroSection = () => {
 
             {/* Headline */}
             <h1 className="text-[32px] md:text-[45px] 2xl:text-[60px] 3xl:text-[60px] font-extrabold leading-[1.2] md:leading-[1.1] tracking-tight text-slate-900">
-              <Trans
-                i18nKey="hero.title"
-                components={{ highlight: <span className="text-[#1F61F9]" /> }}
-              />
+              {hero?.title ? (
+                <span dangerouslySetInnerHTML={{ __html: hero.title }} />
+              ) : (
+                <Trans
+                  i18nKey="hero.title"
+                  components={{ highlight: <span className="text-[#1F61F9]" /> }}
+                />
+              )}
             </h1>
 
             {/* Description */}
             <p className="text-base md:text-[18px] text-[#65758B] max-w-lg leading-relaxed font-medium">
-              {t("hero.description")}
+              {hero?.subtitle || t("hero.description")}
             </p>
 
             {/* Buttons */}
@@ -101,7 +122,7 @@ export const HeroSection = () => {
                 onClick={() => setOpen(true)}
                 className="bg-[#1F61F9] hover:bg-[#1F61F9] text-white px-6 md:px-0 py-3 md:py-0 rounded-[24px] font-semibold text-base md:text-[14px] md:h-[44px] transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform cursor-pointer w-full md:w-[207px]"
               >
-                {t("hero.cta")}
+                {hero?.cta_text || t("hero.cta")}
               </motion.button>
             </div>
 
@@ -132,7 +153,7 @@ export const HeroSection = () => {
             <div className="relative min-h-[300px] md:min-h-[420px] xl:min-h-[480px] 2xl:min-h-[450px] 3xl:min-h-[594px] w-full lg:min-w-[646px] xl:min-w-[560px] 3xl:min-w-[630px]">
               <div className="absolute inset-0 bg-transparent rounded-[2rem] md:rounded-[3rem] overflow-hidden">
                  <img
-                   src={ImageBannerPeople}
+                   src={hero?.hero_image_url || ImageBannerPeople}
                    alt="3D Doctor Illustration"
                    className="w-full h-full object-contain"
                  />

@@ -33,6 +33,7 @@ import AIPlanDetailAdmin from "@/pages/admin/AIPlan/AIPlanDetailAdmin";
 import TopicsAdmin from "@/pages/admin/Topics/TopicsAdmin";
 import TopicDetailAdmin from "@/pages/admin/Topics/TopicDetailAdmin";
 import NotificationsPage from "@/pages/shared/NotificationsPage";
+import LandingAdmin from "@/pages/admin/Landing/LandingAdmin";
 
 export const adminRoutes = adminLayoutRoute.addChildren([
   createRoute({
@@ -201,5 +202,10 @@ export const adminRoutes = adminLayoutRoute.addChildren([
     getParentRoute: () => adminLayoutRoute,
     path: "/admin/ai-plan/$groupId",
     component: AIPlanDetailAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/landing",
+    component: LandingAdmin,
   }),
 ]);

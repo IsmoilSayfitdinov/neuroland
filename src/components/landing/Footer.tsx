@@ -2,7 +2,13 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import Logo from "@/assets/images/logo.png"
-export const Footer = () => {
+import type { ContactInfo } from "@/types/landing.types";
+
+interface FooterProps {
+  contactInfo?: ContactInfo;
+}
+
+export const Footer = ({ contactInfo }: FooterProps) => {
   const { t } = useTranslation();
   return (
       <footer className="w-full px-[32px] bg-white pt-16 md:pt-20 pb-10 border-t border-slate-100">
@@ -79,22 +85,28 @@ export const Footer = () => {
           >
             <h4 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8">{t("footer.contactTitle")}</h4>
             <ul className="space-y-3 md:space-y-4">
-              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
-                <Mail size={18} className="text-[#1F61F9]" />
-                <a href="mailto:info@neuroland.uz" className="hover:text-[#1F61F9] transition-colors">
-                  info@neuroland.uz
-                </a>
-              </li>
-              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
-                <Phone size={18} className="text-[#1F61F9]" />
-                <a href="tel:+998712000000" className="hover:text-[#1F61F9] transition-colors">
-                  +998 71 200 00 00
-                </a>
-              </li>
-              <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
-                <MapPin size={18} className="text-[#1F61F9]" />
-                <span>{t("footer.address")}</span>
-              </li>
+              {contactInfo?.email && (
+                <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                  <Mail size={18} className="text-[#1F61F9]" />
+                  <a href={`mailto:${contactInfo.email}`} className="hover:text-[#1F61F9] transition-colors">
+                    {contactInfo.email}
+                  </a>
+                </li>
+              )}
+              {contactInfo?.phone && (
+                <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                  <Phone size={18} className="text-[#1F61F9]" />
+                  <a href={`tel:${contactInfo.phone}`} className="hover:text-[#1F61F9] transition-colors">
+                    {contactInfo.phone}
+                  </a>
+                </li>
+              )}
+              {contactInfo?.address && (
+                <li className="flex items-center gap-3 text-slate-400 text-base md:text-lg">
+                  <MapPin size={18} className="text-[#1F61F9]" />
+                  <span>{contactInfo.address}</span>
+                </li>
+              )}
             </ul>
 
             <motion.a

@@ -1,6 +1,8 @@
 import api from "./api";
 import type {
   Badge,
+  BadgeRequest,
+  PatchedBadgeRequest,
   ChildBadge,
   ChildXP,
   TotalXP,
@@ -8,7 +10,7 @@ import type {
 } from "../types/gamification.types";
 
 export class GamificationAPI {
-  // --- Badges ---
+  // --- Badges CRUD ---
   static async listBadges(page?: number): Promise<Badge[]> {
     const response = await api.get<PaginatedBadgeList | Badge[]>(
       "/v1/gamification/badges/",
@@ -21,6 +23,25 @@ export class GamificationAPI {
   static async getBadge(id: number): Promise<Badge> {
     const response = await api.get<Badge>(`/v1/gamification/badges/${id}/`);
     return response.data;
+  }
+
+  static async createBadge(data: BadgeRequest): Promise<Badge> {
+    const response = await api.post<Badge>("/v1/gamification/badges/", data);
+    return response.data;
+  }
+
+  static async updateBadge(id: number, data: BadgeRequest): Promise<Badge> {
+    const response = await api.put<Badge>(`/v1/gamification/badges/${id}/`, data);
+    return response.data;
+  }
+
+  static async patchBadge(id: number, data: PatchedBadgeRequest): Promise<Badge> {
+    const response = await api.patch<Badge>(`/v1/gamification/badges/${id}/`, data);
+    return response.data;
+  }
+
+  static async deleteBadge(id: number): Promise<void> {
+    await api.delete(`/v1/gamification/badges/${id}/`);
   }
 
   // --- Child Badges ---

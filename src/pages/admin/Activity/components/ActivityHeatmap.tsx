@@ -1,20 +1,22 @@
 interface ActivityHeatmapProps {
   days: string[];
   times: string[];
-  data: number[][]; // 2D array of intensity
+  data: number[][]; // 2D array of intensity (days × hours)
 }
 
 export function ActivityHeatmap({ days, times, data }: ActivityHeatmapProps) {
   const getColor = (density: number) => {
-    switch(density) {
-      case 4: return "bg-[#3B82F6]"; // Blue 500
-      case 3: return "bg-[#60A5FA]"; // Blue 400
-      case 2: return "bg-[#93C5FD]"; // Blue 300
-      case 1: return "bg-[#BFDBFE]"; // Blue 200
-      case 0: return "bg-[#EFF6FF]"; // Blue 50
-      default: return "bg-[#EFF6FF]";
-    }
+    if (density >= 4) return "bg-[#3B82F6]";
+    if (density >= 3) return "bg-[#60A5FA]";
+    if (density >= 2) return "bg-[#93C5FD]";
+    if (density >= 1) return "bg-[#BFDBFE]";
+    return "bg-[#EFF6FF]";
   };
+
+  // Har 3-soatdan birini label sifatida ko'rsatamiz (6, 9, 12, 15, 18, 21)
+  const visibleTimeIndices = times.length > 10
+    ? times.map((_, i) => i).filter((i) => i % 3 === 0)
+    : times.map((_, i) => i);
 
   return (
     <div className="bg-white p-6 lg:p-8 rounded-[24px] border border-gray-100 shadow-sm">
@@ -22,26 +24,29 @@ export function ActivityHeatmap({ days, times, data }: ActivityHeatmapProps) {
       <div className="overflow-x-auto pb-4">
         <div className="min-w-[500px]">
           {/* Timeline Header */}
-          <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-2 mb-3">
-            <div /> {/* Empty intersection */}
+          <div className="flex gap-1 mb-3 pl-[36px]">
             {times.map((t, i) => (
-              <div key={i} className="text-center text-[11px] font-bold text-[#9EB1D4]">
-                {t}
+              <div
+                key={i}
+                className="flex-1 text-center text-[10px] font-bold text-[#9EB1D4]"
+              >
+                {visibleTimeIndices.includes(i) ? t : ""}
               </div>
             ))}
           </div>
 
           {/* Grid Body */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {days.map((day, rowIdx) => (
-              <div key={rowIdx} className="grid grid-cols-[30px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-2 items-center">
-                <div className="text-[13px] font-bold text-[#6B7A99]">
+              <div key={rowIdx} className="flex gap-1 items-center">
+                <div className="w-[32px] text-[13px] font-bold text-[#6B7A99] shrink-0">
                   {day}
                 </div>
-                {data[rowIdx].map((density, colIdx) => (
-                  <div 
-                    key={`${rowIdx}-${colIdx}`} 
-                    className={`h-11 rounded-[8px] transition-all hover:scale-95 ${getColor(density)}`}
+                {(data[rowIdx] || []).map((density, colIdx) => (
+                  <div
+                    key={`${rowIdx}-${colIdx}`}
+                    className={`flex-1 h-8 rounded-[6px] transition-all hover:scale-95 cursor-pointer ${getColor(density)}`}
+                    title={`${day} ${times[colIdx] || ""}: ${density}`}
                   />
                 ))}
               </div>

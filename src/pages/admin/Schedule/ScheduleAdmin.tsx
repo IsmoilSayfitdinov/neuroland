@@ -126,12 +126,11 @@ export default function ScheduleAdmin() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionOptions={sectionOptions}
+        groupOptions={groupOptions}
         isLoading={createTopic.isPending}
         onSave={(data) => {
           createTopic.mutate({
             title: data.title,
-            start_date: data.start_date,
-            end_date: data.end_date,
             category: data.category ? Number(data.category) : null,
           });
         }}

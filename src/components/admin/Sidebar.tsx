@@ -13,8 +13,8 @@ import {
   Megaphone,
   Trophy,
   ClipboardList,
-  Brain,
   FileText,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/assets/images/logo.png";
@@ -34,7 +34,7 @@ const sidebarItems = [
   { title: "Yutuqlar",       icon: Trophy,       href: "/admin/achievements" },
   { title: "Mavzular",       icon: FileText,     href: "/admin/topics" },
   { title: "Guruh reja",     icon: ClipboardList,href: "/admin/schedule" },
-  { title: "AI reja",        icon: Brain,        href: "/admin/ai-plan" },
+  { title: "Landing sahifa", icon: Globe,        href: "/admin/landing" },
 ];
 
 interface SidebarProps {

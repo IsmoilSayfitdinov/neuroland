@@ -43,8 +43,11 @@ export const useScheduleAdminPage = () => {
 
   const createTopic = useMutation({
     mutationFn: (data: TopicListRequest) => TopicsAPI.createTopic(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["topics"] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["topics"] }),
+        queryClient.refetchQueries({ queryKey: ["admin-topics"] }),
+      ]);
       toast.success("Mavzu muvaffaqiyatli yaratildi");
       setIsModalOpen(false);
     },

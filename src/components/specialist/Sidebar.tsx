@@ -36,11 +36,6 @@ const sidebarItems = [
     href: "/specialist/ai-plan",
   },
   {
-    title: "Kunlik reja",
-    icon: Calendar,
-    href: "/specialist/daily-plan",
-  },
-  {
     title: "Bilim markazi",
     icon: BookOpen,
     href: "/specialist/knowledge",

@@ -1,40 +1,46 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import familyImg from "@/assets/images/family_review.png";
+import type { Testimonial } from "@/types/landing.types";
 
-export const ReviewsSection = () => {
-  const { t } = useTranslation();
+interface ReviewsSectionProps {
+  testimonials?: Testimonial[];
+}
 
-  const reviews = (t("reviews.reviewers", { returnObjects: true }) as any[]).map((r: any, idx: number) => ({
-    id: idx + 1,
-    name: r.name,
-    role: r.role,
-    text: r.text,
+export const ReviewsSection = ({ testimonials }: ReviewsSectionProps) => {
+  if (!testimonials || testimonials.length === 0) return null;
+
+  const reviews = testimonials.map((item) => ({
+    id: item.id,
+    name: item.client_name,
+    role: item.client_role,
+    text: item.testimonial_text,
+    image: item.image_url,
   }));
+
   return (
     <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-background" id="reviews">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12 md:mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
-            {t("reviews.title")}
+            Ota-onalar fikrlari
           </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {/* Column 1 */}
           <div className="space-y-6">
-            <ReviewCard review={reviews[0]} index={0} />
-            <ReviewCard review={reviews[3]} index={1} />
+            {reviews[0] && <ReviewCard review={reviews[0]} index={0} />}
+            {reviews[3] && <ReviewCard review={reviews[3]} index={1} />}
           </div>
 
           {/* Column 2 */}
           <div className="space-y-6">
-            <ReviewCard review={reviews[1]} index={2} />
+            {reviews[1] && <ReviewCard review={reviews[1]} index={2} />}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -48,8 +54,8 @@ export const ReviewsSection = () => {
 
           {/* Column 3 */}
           <div className="space-y-6">
-            <ReviewCard review={reviews[2]} index={3} />
-            <ReviewCard review={reviews[4]} index={4} />
+            {reviews[2] && <ReviewCard review={reviews[2]} index={3} />}
+            {reviews[4] && <ReviewCard review={reviews[4]} index={4} />}
           </div>
         </div>
       </div>

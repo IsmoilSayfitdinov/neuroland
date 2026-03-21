@@ -2,8 +2,17 @@ import { motion } from "framer-motion";
 import { Target, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Image from "@/assets/images/image 2.png"
-export const AboutSection = () => {
+import type { AboutSection as AboutSectionType } from "@/types/landing.types";
+
+interface AboutSectionProps {
+  about?: AboutSectionType;
+}
+
+export const AboutSection = ({ about }: AboutSectionProps) => {
   const { t } = useTranslation();
+
+  if (!about) return null;
+
   return (
     <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="about">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8">
@@ -18,8 +27,8 @@ export const AboutSection = () => {
           >
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
               <div className="aspect-4/3 xl:aspect-541/436 relative w-full">
-                 <img 
-                   src={Image} 
+                 <img
+                   src={about.image_url || Image}
                    alt="Medical Team"
                    className="w-full h-full object-cover"
                  />
@@ -43,10 +52,10 @@ export const AboutSection = () => {
 
             <div className="space-y-4">
               <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
-                {t("about.title")}
+                {about.title}
               </h2>
               <p className="text-slate-500 text-base md:text-lg leading-relaxed max-w-2xl">
-                {t("about.description")}
+                {about.description}
               </p>
             </div>
 
@@ -62,7 +71,7 @@ export const AboutSection = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.missionTitle")}</h3>
                 <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
-                  {t("about.missionText")}
+                  {about.mission}
                 </p>
               </motion.div>
 
@@ -76,7 +85,7 @@ export const AboutSection = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.goalTitle")}</h3>
                 <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
-                   {t("about.goalText")}
+                   {about.vision}
                 </p>
               </motion.div>
             </div>

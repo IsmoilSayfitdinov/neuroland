@@ -73,6 +73,14 @@ export class ExamsAPI {
     return response.data;
   }
 
+  static async getQuestions(params: {
+    child_id: number;
+    exam_type: "monthly" | "quarterly";
+  }): Promise<any> {
+    const response = await api.get("/v1/exams/results/questions/", { params });
+    return response.data;
+  }
+
   // --- Schedule ---
 
   static async listSchedules(page?: number): Promise<ExamSchedule[]> {

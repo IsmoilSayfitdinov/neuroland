@@ -13,15 +13,28 @@ import { ProblemSolutionSection } from "@/components/landing/ProblemSolutionSect
 import { GallerySection } from "@/components/landing/GallerySection";
 import { ReviewsSection } from "@/components/landing/ReviewsSection";
 import { FaqSection } from "@/components/landing/FaqSection";
+import { LandingAPI } from "@/api/landing.api";
+import type { LandingAll } from "@/types/landing.types";
 
 function MainLanding() {
   const [isLoading, setIsLoading] = useState(true);
+  const [landingData, setLandingData] = useState<LandingAll | null>(null);
 
   useEffect(() => {
-    // Simulate loading time or wait for actual load
+    const fetchData = async () => {
+      try {
+        const data = await LandingAPI.getAll();
+        setLandingData(data);
+      } catch (err) {
+        console.error("Failed to fetch landing data:", err);
+      }
+    };
+
+    fetchData();
+
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2500); // 2.5 seconds for the "N" animation to show off
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -34,24 +47,24 @@ function MainLanding() {
       <div className="min-h-screen mx-auto pt-0 lg:pt-[32px] w-full bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
         <main className="flex flex-col ">
           <div className="mx-auto lg:px-[32px] max-w-[1920px]">
-            <HeroSection />
-            <AboutSection />
-            <ValuesSection />
+            <HeroSection hero={landingData?.hero} />
+            <AboutSection about={landingData?.about} />
+            <ValuesSection values={landingData?.values} />
           </div>
-          
-          <TeamSection />
-          <PlatformSection />
+
+          <TeamSection team={landingData?.team} />
+          <PlatformSection platform={landingData?.platform} />
           <HowItWorksSection />
-          <SuccessStoriesSection />
+          <SuccessStoriesSection stories={landingData?.stories} />
           <ProblemSolutionSection />
-          
+
           <div className="mx-auto max-w-7xl 2xl:max-w-7xl 3xl:max-w-[1920px]">
-              <GallerySection />
-              <ReviewsSection />
-              <FaqSection />
+              <GallerySection gallery={landingData?.gallery} contactInfo={landingData?.contact_info} />
+              <ReviewsSection testimonials={landingData?.testimonials} />
+              <FaqSection faqs={landingData?.faqs} />
           </div>
         </main>
-        <Footer />
+        <Footer contactInfo={landingData?.contact_info} />
       </div>
     </>
   );

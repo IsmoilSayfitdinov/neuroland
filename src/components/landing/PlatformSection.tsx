@@ -2,8 +2,17 @@ import { motion } from "framer-motion";
 import { Stethoscope, Users, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import PhonePng from "@/assets/images/Free Transparent iPhone Air Mockup (Mockuuups Studio).png";
-export const PlatformSection = () => {
+import type { PlatformSection as PlatformSectionType } from "@/types/landing.types";
+
+interface PlatformSectionProps {
+  platform?: PlatformSectionType;
+}
+
+export const PlatformSection = ({ platform }: PlatformSectionProps) => {
   const { t } = useTranslation();
+
+  if (!platform) return null;
+
   return (
     <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-white" id="platform">
       <div className=" mx-auto px-4 md:px-8">
@@ -15,10 +24,10 @@ export const PlatformSection = () => {
             className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-4"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
-            {t("platform.title")}
+            {platform.title}
           </h2>
           <p className="text-slate-500 text-base md:text-lg">
-            {t("platform.description")}
+            {platform.description}
           </p>
         </motion.div>
 
@@ -33,7 +42,7 @@ export const PlatformSection = () => {
             transition={{ duration: 0.8 }}
             className="lg:col-span-1 bg-[#F8FAFC] rounded-[40px] p-8 md:p-12 flex items-end justify-center relative overflow-hidden h-full min-h-[500px]"
           >
-            <img src={PhonePng} alt="Mobile App Mockup" className="w-auto max-h-[450px] bottom-0 absolute z-50 object-contain " />
+            <img src={platform.image_url || PhonePng} alt="Mobile App Mockup" className="w-auto max-h-[450px] bottom-0 absolute z-50 object-contain " />
             {/* Background Circle */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl -z-0" />
           </motion.div>

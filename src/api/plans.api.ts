@@ -50,10 +50,10 @@ export class PlansAPI {
   }
 
   // --- Yearly Plans ---
-  static async listYearlyPlans(page?: number): Promise<YearlyPlanList[]> {
+  static async listYearlyPlans(params?: { group_id?: number; page?: number }): Promise<YearlyPlanList[]> {
     const response = await api.get<PaginatedYearlyPlanList | YearlyPlanList[]>(
       "/v1/plans/yearly/",
-      { params: { page } }
+      { params }
     );
     const data = response.data;
     return Array.isArray(data) ? data : data.results ?? [];

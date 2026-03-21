@@ -1,6 +1,7 @@
 import api from "./api";
 import type {
   Notification,
+  NotificationRequest,
   PatchedNotificationRequest,
   UnreadCount,
   PaginatedNotificationList,
@@ -37,6 +38,25 @@ export class NotificationsAPI {
 
   static async getUnreadCount(): Promise<UnreadCount> {
     const response = await api.get<UnreadCount>("/v1/notifications/unread-count/");
+    return response.data;
+  }
+
+  static async createNotification(data: NotificationRequest): Promise<Notification> {
+    const response = await api.post<Notification>("/v1/notifications/", data);
+    return response.data;
+  }
+
+  static async updateNotification(id: number, data: NotificationRequest): Promise<Notification> {
+    const response = await api.put<Notification>(`/v1/notifications/${id}/`, data);
+    return response.data;
+  }
+
+  static async deleteNotification(id: number): Promise<void> {
+    await api.delete(`/v1/notifications/${id}/`);
+  }
+
+  static async markAsReadPost(id: number): Promise<Notification> {
+    const response = await api.post<Notification>(`/v1/notifications/${id}/mark-read/`);
     return response.data;
   }
 }

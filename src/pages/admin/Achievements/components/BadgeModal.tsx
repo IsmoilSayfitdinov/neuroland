@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CustomSelect } from "@/components/ui/custom-select";
 import {
   Dialog,
   DialogContent,
@@ -8,37 +7,43 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import type { Badge } from "@/types/gamification.types";
 
 const ICONS = ["🥇", "🔥", "⭐", "👤", "📚", "📝", "🎯", "💎", "🏆", "🎖️", "🌟", "🚀", "🥉", "🏅", "👾"];
 
 interface BadgeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
-  initialData?: any;
+  onSave: (data: { name: string; icon: string; description: string; condition_rules: string; is_active: boolean }) => void;
+  initialData?: Badge | null;
+  isPending?: boolean;
 }
 
-export function BadgeModal({ isOpen, onClose, onSave, initialData }: BadgeModalProps) {
+export function BadgeModal({ isOpen, onClose, onSave, initialData, isPending }: BadgeModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     icon: ICONS[0],
-    rewardType: "Badge",
-    rewardValue: 50,
-    requirement: "7 kun ketma-ket kirish",
+    condition_rules: "",
+    is_active: true,
   });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        name: initialData.name,
+        description: initialData.description,
+        icon: initialData.icon || ICONS[0],
+        condition_rules: initialData.condition_rules || "",
+        is_active: initialData.is_active,
+      });
     } else {
       setFormData({
         name: "",
         description: "",
         icon: ICONS[0],
-        rewardType: "Badge",
-        rewardValue: 50,
-        requirement: "7 kun ketma-ket kirish",
+        condition_rules: "",
+        is_active: true,
       });
     }
   }, [initialData, isOpen]);
@@ -55,7 +60,7 @@ export function BadgeModal({ isOpen, onClose, onSave, initialData }: BadgeModalP
         <form onSubmit={(e) => { e.preventDefault(); onSave(formData); }} className="space-y-6">
           <div className="space-y-2">
             <label className="text-[13px] font-bold text-[#6B7A99]">Badge nomi</label>
-            <input 
+            <input
               type="text"
               placeholder="Masalan: Birinchi qadam"
               value={formData.name}
@@ -66,7 +71,7 @@ export function BadgeModal({ isOpen, onClose, onSave, initialData }: BadgeModalP
 
           <div className="space-y-2">
             <label className="text-[13px] font-bold text-[#6B7A99]">Tavsif</label>
-            <textarea 
+            <textarea
               placeholder="Badge haqida qisqacha ma'lumot..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -84,8 +89,8 @@ export function BadgeModal({ isOpen, onClose, onSave, initialData }: BadgeModalP
                   onClick={() => setFormData({ ...formData, icon })}
                   className={cn(
                     "w-[52px] h-[52px] flex items-center justify-center text-2xl rounded-full transition-all border-2",
-                    formData.icon === icon 
-                      ? "bg-[#EEF4FF] border-[#4D89FF]" 
+                    formData.icon === icon
+                      ? "bg-[#EEF4FF] border-[#4D89FF]"
                       : "bg-[#F8F9FB] border-transparent hover:border-[#E1E5EE]"
                   )}
                 >
@@ -95,61 +100,49 @@ export function BadgeModal({ isOpen, onClose, onSave, initialData }: BadgeModalP
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[13px] font-bold text-[#6B7A99]">Mukofot turi</label>
-              <CustomSelect
-                options={[
-                  { label: "Badge", value: "Badge" },
-                  { label: "Bonus XP", value: "Bonus XP" },
-                  { label: "Sovg'a", value: "Sovg'a" },
-                ]}
-                value={formData.rewardType}
-                onChange={(val) => setFormData({ ...formData, rewardType: val.toString() })}
-                className="bg-[#F8F9FB] border-none h-[52px] rounded-[10px]"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[13px] font-bold text-[#6B7A99]">XP ball</label>
-              <input 
-                type="number"
-                value={formData.rewardValue}
-                onChange={(e) => setFormData({ ...formData, rewardValue: parseInt(e.target.value) })}
-                className="w-full h-[52px] px-5 bg-[#F8F9FB] border-none rounded-[10px] text-[14px] outline-none focus:ring-2 focus:ring-[#4D89FF]/10 transition-all"
-              />
-            </div>
-          </div>
-
           <div className="space-y-2">
-            <label className="text-[13px] font-bold text-[#6B7A99]">Ochilish sharti</label>
-            <CustomSelect
-              options={[
-                { label: "7 kun ketma-ket kirish", value: "7 kun ketma-ket kirish" },
-                { label: "1-haftalik reja bajarildi", value: "1-haftalik reja bajarildi" },
-                { label: "Nutq bo'limida 80% ga yetish", value: "Nutq bo'limida 80% ga yetish" },
-                { label: "5 ta video ko'rildi", value: "5 ta video ko'rildi" },
-                { label: "10 ta mashg'ulot bajarildi", value: "10 ta mashg'ulot bajarildi" },
-              ]}
-              value={formData.requirement}
-              onChange={(val) => setFormData({ ...formData, requirement: val.toString() })}
-              className="bg-[#F8F9FB] border-none h-[52px] rounded-[10px]"
+            <label className="text-[13px] font-bold text-[#6B7A99]">Ochilish sharti (condition_rules)</label>
+            <input
+              type="text"
+              placeholder="Masalan: 7 kun ketma-ket kirish"
+              value={formData.condition_rules}
+              onChange={(e) => setFormData({ ...formData, condition_rules: e.target.value })}
+              className="w-full h-[52px] px-5 bg-[#F8F9FB] border-none rounded-[10px] text-[14px] outline-none focus:ring-2 focus:ring-[#4D89FF]/10 transition-all placeholder:text-[#9EB1D4]"
             />
           </div>
 
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+              className="w-[44px] h-[22px] rounded-full relative transition-all duration-200 focus:outline-none cursor-pointer"
+              style={{ backgroundColor: formData.is_active ? "#2563EB" : "#E1E5EE" }}
+            >
+              <div className={cn(
+                "absolute top-[2px] w-[18px] h-[18px] bg-white rounded-full transition-transform duration-200 shadow-sm",
+                formData.is_active ? "translate-x-[24px]" : "translate-x-[2px]"
+              )} />
+            </button>
+            <span className="text-[13px] font-medium text-[#6B7A99]">
+              {formData.is_active ? "Faol" : "Nofaol"}
+            </span>
+          </div>
+
           <div className="flex justify-end gap-3 pt-4">
-            <Button 
-              type="button" 
-              variant="ghost" 
+            <Button
+              type="button"
+              variant="ghost"
               onClick={onClose}
               className="h-[48px] px-8 rounded-[10px] text-[#6B7A99] font-bold"
             >
               Bekor qilish
             </Button>
-            <Button 
+            <Button
               type="submit"
-              className="h-[48px] px-10 rounded-[10px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold transition-all shadow-lg shadow-[#2563EB]/20"
+              disabled={isPending}
+              className="h-[48px] px-10 rounded-[10px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold transition-all shadow-lg shadow-[#2563EB]/20 disabled:opacity-70"
             >
-              Saqlash
+              {isPending ? "Saqlanmoqda..." : "Saqlash"}
             </Button>
           </div>
         </form>
