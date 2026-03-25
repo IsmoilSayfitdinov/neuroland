@@ -34,7 +34,7 @@ export default function GroupAnalyticsSidebar({ group }: GroupAnalyticsSidebarPr
   }
 
   // Compute skill averages from latest diagnostic per child
-  const latestPerChild = new Map<number, typeof allResults>();
+  const latestPerChild = new Map<number, any>();
   allResults?.forEach((r) => {
     const existing = latestPerChild.get(r.child);
     if (!existing || new Date(r.date) > new Date((existing as any).date)) {

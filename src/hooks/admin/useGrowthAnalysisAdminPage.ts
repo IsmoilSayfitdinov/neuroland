@@ -9,7 +9,7 @@ export const useGrowthAnalysisAdminPage = () => {
   const { data: children, isLoading: isLoadingChildren } = useChildrenList();
 
   const { useAdminChildGrowth } = useAnalytics();
-  const { data: growth, isLoading: isLoadingGrowth } = useAdminChildGrowth(selectedChildId);
+  const { data: growth, isLoading: isLoadingGrowth } = useAdminChildGrowth(selectedChildId) as { data: any; isLoading: boolean };
 
   const childOptions = useMemo(() => {
     if (!children) return [];
@@ -19,26 +19,52 @@ export const useGrowthAnalysisAdminPage = () => {
     }));
   }, [children]);
 
+  // radar.current -> radar diagramma uchun
   const radarData = useMemo(() => {
-    if (!growth?.radar_metrics) return [];
-    return (growth.radar_metrics as any[]).map((m: any) => ({
+    const items = growth?.radar?.current ?? growth?.radar_metrics;
+    if (!items || !Array.isArray(items)) return [];
+    return items.map((m: any) => ({
       subject: m.section_name || m.subject || m.name || "",
-      value: Math.round(m.score ?? m.value ?? 0),
+      value: Math.round(m.percentage ?? m.score ?? m.value ?? 0),
     }));
   }, [growth]);
 
+  // section_growth -> ustunli diagramma uchun
   const barData = useMemo(() => {
-    if (!growth?.diagnostics) return [];
-    return (growth.diagnostics as any[]).slice(0, 6).map((d: any, i: number) => ({
-      title: d.date || d.title || `Natija ${i + 1}`,
-      value: Math.round(d.score ?? d.average ?? 0),
+    const items = growth?.section_growth ?? growth?.diagnostics;
+    if (!items || !Array.isArray(items)) return [];
+    return items.slice(0, 6).map((d: any, i: number) => ({
+      title: d.section_name || d.date || d.title || `Natija ${i + 1}`,
+      value: Math.round(d.current ?? d.score ?? d.average ?? 0),
+      change: d.change ?? 0,
     }));
   }, [growth]);
 
+  // test_monitoring -> monitoring kartalar
   const monitoring = useMemo(() => {
-    if (!growth?.monitoring) return [];
-    return (growth.monitoring as any[]).slice(0, 4);
+    const items = growth?.test_monitoring ?? growth?.monitoring;
+    if (!items || !Array.isArray(items)) return [];
+    return items.slice(0, 4).map((m: any) => ({
+      label: m.section_name || m.label || m.name || "",
+      success: m.success_percent ?? 0,
+      partial: m.partial_percent ?? 0,
+      fail: m.fail_percent ?? 0,
+    }));
   }, [growth]);
+
+  // scores -> umumiy ko'rsatkichlar
+  const scores = useMemo(() => {
+    return growth?.scores ?? null;
+  }, [growth]);
+
+  // radar.details -> batafsil taqqoslash
+  const radarDetails = useMemo(() => {
+    const items = growth?.radar?.details;
+    if (!items || !Array.isArray(items)) return [];
+    return items;
+  }, [growth]);
+
+  const hasData = radarData.length > 0 || barData.length > 0 || monitoring.length > 0;
 
   return {
     selectedChildId,
@@ -49,6 +75,8 @@ export const useGrowthAnalysisAdminPage = () => {
     radarData,
     barData,
     monitoring,
-    hasData: radarData.length > 0 || barData.length > 0,
+    scores,
+    radarDetails,
+    hasData,
   };
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SessionsAPI } from "@/api/sessions.api";
@@ -23,47 +23,87 @@ const SESSION_TYPES = [
 
 const inputCls = "w-full h-[48px] bg-[#F8F9FB] rounded-[12px] px-4 text-[14px] text-[#2D3142] outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-[#9EB1D4]";
 
+export interface EditSlotData {
+  slotId: number;
+  specialist: number;
+  weekday: number;
+  start_time: string;
+  duration_min: number;
+  session_type: string;
+}
+
 interface SlotModalProps {
   isOpen: boolean;
   onClose: () => void;
   groupId: number | null;
   specialistOptions: { label: string; value: string }[];
+  editSlot?: EditSlotData | null;
 }
 
-export function SlotModal({ isOpen, onClose, groupId, specialistOptions }: SlotModalProps) {
-  const queryClient = useQueryClient();
-  const [form, setForm] = useState({
-    specialist: "",
-    weekday: "",
-    start_time: "09:00",
-    duration_min: "45",
-    session_type: "group",
-  });
+const EMPTY_FORM = { specialist: "", weekday: "", start_time: "09:00", duration_min: "45", session_type: "group" };
 
-  const { mutate, isPending } = useMutation({
+export function SlotModal({ isOpen, onClose, groupId, specialistOptions, editSlot }: SlotModalProps) {
+  const queryClient = useQueryClient();
+  const isEdit = !!editSlot;
+
+  const [form, setForm] = useState(EMPTY_FORM);
+
+  useEffect(() => {
+    if (editSlot) {
+      setForm({
+        specialist: String(editSlot.specialist),
+        weekday: String(editSlot.weekday),
+        start_time: editSlot.start_time,
+        duration_min: String(editSlot.duration_min),
+        session_type: editSlot.session_type,
+      });
+    } else {
+      setForm(EMPTY_FORM);
+    }
+  }, [editSlot, isOpen]);
+
+  const { mutate: createSlot, isPending: creating } = useMutation({
     mutationFn: (data: ScheduleSlotRequest) => SessionsAPI.createSlot(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedule-slots"] });
       toast.success("Jadval uyasi yaratildi");
       onClose();
-      setForm({ specialist: "", weekday: "", start_time: "09:00", duration_min: "45", session_type: "group" });
     },
     onError: () => toast.error("Xatolik yuz berdi"),
   });
 
+  const { mutate: patchSlot, isPending: patching } = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<ScheduleSlotRequest> }) =>
+      SessionsAPI.patchSlot(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedule-slots"] });
+      toast.success("Jadval uyasi yangilandi");
+      onClose();
+    },
+    onError: () => toast.error("Xatolik yuz berdi"),
+  });
+
+  const isPending = creating || patching;
+
   if (!isOpen) return null;
 
   const handleSubmit = () => {
-    if (!form.specialist || !form.weekday || !groupId) return;
-    mutate({
+    if (!form.specialist || !form.weekday) return;
+    const payload = {
       specialist: Number(form.specialist),
-      group: groupId,
+      group: groupId ?? undefined,
       session_type: form.session_type as "group" | "individual",
       weekday: Number(form.weekday) as any,
       start_time: form.start_time,
       duration_min: Number(form.duration_min) || 45,
       is_active: true,
-    });
+    };
+    if (isEdit && editSlot) {
+      patchSlot({ id: editSlot.slotId, data: payload });
+    } else {
+      if (!groupId) return;
+      createSlot({ ...payload, group: groupId });
+    }
   };
 
   const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
@@ -74,7 +114,9 @@ export function SlotModal({ isOpen, onClose, groupId, specialistOptions }: SlotM
       <div className="relative bg-white rounded-[24px] w-full max-w-[460px] p-7 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-[18px] font-bold text-[#2D3142]">Jadval uyasi yaratish</h3>
+            <h3 className="text-[18px] font-bold text-[#2D3142]">
+              {isEdit ? "Jadval uyasini tahrirlash" : "Jadval uyasi yaratish"}
+            </h3>
             <p className="text-[12px] text-[#9EB1D4] mt-0.5">Doimiy haftalik jadval</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
@@ -129,7 +171,7 @@ export function SlotModal({ isOpen, onClose, groupId, specialistOptions }: SlotM
           </button>
           <button onClick={handleSubmit} disabled={!form.specialist || !form.weekday || isPending}
             className="flex-1 h-[46px] rounded-[12px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold disabled:opacity-50 flex items-center justify-center gap-2">
-            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Yaratish"}
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : isEdit ? "Saqlash" : "Yaratish"}
           </button>
         </div>
       </div>

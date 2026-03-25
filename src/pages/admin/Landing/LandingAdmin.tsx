@@ -12,9 +12,11 @@ import {
   HelpCircle,
   Phone,
   Mail,
+  Layers,
 } from "lucide-react";
 import { HeroTab } from "./tabs/HeroTab";
 import { AboutTab } from "./tabs/AboutTab";
+import { PlatformTab } from "./tabs/PlatformTab";
 import { ValuesTab } from "./tabs/ValuesTab";
 import { TeamTab } from "./tabs/TeamTab";
 import { GalleryTab } from "./tabs/GalleryTab";
@@ -27,6 +29,7 @@ import { ContactRequestsTab } from "./tabs/ContactRequestsTab";
 const tabs = [
   { id: "hero", label: "Hero", icon: Monitor },
   { id: "about", label: "Biz haqimizda", icon: Info },
+  { id: "platform", label: "Platforma", icon: Layers },
   { id: "values", label: "Qadriyatlar", icon: Heart },
   { id: "team", label: "Jamoa", icon: Users },
   { id: "gallery", label: "Galereya", icon: Image },
@@ -39,12 +42,28 @@ const tabs = [
 
 type TabId = (typeof tabs)[number]["id"];
 
+const landingInfo = (
+  <>
+    <p>Bu bo'limda saytning landing sahifasi kontentini boshqarish mumkin. Barcha o'zgarishlar saytda darhol aks etadi.</p>
+    <p><strong>Bo'limlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li><strong>Hero</strong> — bosh sahifadagi asosiy banner</li>
+      <li><strong>Biz haqimizda</strong> — markaz haqida ma'lumot</li>
+      <li><strong>Jamoa</strong> — xodimlar ro'yxati</li>
+      <li><strong>Galereya</strong> — rasmlar va video</li>
+      <li><strong>Sharhlar</strong> — ota-onalar fikrlari</li>
+      <li><strong>FAQ</strong> — ko'p beriladigan savollar</li>
+      <li><strong>Kontakt</strong> — aloqa ma'lumotlari va so'rovlar</li>
+    </ul>
+  </>
+);
+
 export default function LandingAdmin() {
   const [activeTab, setActiveTab] = useState<TabId>("hero");
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Landing sahifa" />
+      <PageHeader title="Landing sahifa" infoTitle="Landing sahifa boshqaruvi" infoContent={landingInfo} />
 
       {/* Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
@@ -69,6 +88,7 @@ export default function LandingAdmin() {
       <div className="bg-white rounded-[24px] border border-gray-100 p-6">
         {activeTab === "hero" && <HeroTab />}
         {activeTab === "about" && <AboutTab />}
+        {activeTab === "platform" && <PlatformTab />}
         {activeTab === "values" && <ValuesTab />}
         {activeTab === "team" && <TeamTab />}
         {activeTab === "gallery" && <GalleryTab />}

@@ -195,7 +195,7 @@ export default function ParentChildInfo() {
             <div className="px-8 pb-8 pt-6 flex flex-col md:flex-row gap-6">
               {child.photo ? (
                 <img
-                  src={child.photo}
+                  src={import.meta.env.VITE_API_MEDIA_URL + child.photo}
                   alt={child.fio}
                   className="w-20 h-20 rounded-2xl object-cover border border-blue-50 shadow-inner"
                 />

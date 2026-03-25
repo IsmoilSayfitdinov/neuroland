@@ -1,6 +1,6 @@
 /* ── Enums ── */
 export type PaymentStatus = "paid" | "pending" | "failed";
-export type PaymentMethod = "cash" | "card" | "transfer";
+export type PaymentMethod = "payme" | "click" | "cash" | "card";
 
 /* ── Payment ── */
 export interface Payment {
@@ -20,8 +20,7 @@ export interface PaymentRequest {
   amount: string;
   plan?: number | null;
   method?: PaymentMethod;
-  payment_date?: string;
-  note?: string | null;
+  status?: PaymentStatus;
 }
 
 export interface PatchedPaymentRequest {
@@ -29,8 +28,6 @@ export interface PatchedPaymentRequest {
   amount?: string;
   plan?: number | null;
   method?: PaymentMethod;
-  payment_date?: string;
-  note?: string | null;
   status?: PaymentStatus;
 }
 

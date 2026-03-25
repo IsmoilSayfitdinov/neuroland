@@ -45,7 +45,6 @@ export const childSchema = z.object({
   kindergarten_age: z.preprocess((val) => (val === "" || val === null ? undefined : Number(val)), z.number().min(0).max(200, "200 dan oshmasligi kerak").optional()),
   first_word_age: z.preprocess((val) => (val === "" || val === null ? undefined : Number(val)), z.number().min(0).max(200, "200 dan oshmasligi kerak").optional()),
   
-  sleep_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, "Vaqt formati noto'g'ri (Masalan: 21:00)").optional().or(z.literal("")),
   sleep_with_who: z.string().max(100).optional(),
   sleep_habits: z.string().optional(),
   eating_habits: z.string().optional(),
@@ -59,15 +58,16 @@ export const childSchema = z.object({
   vaccination: z.string().optional(),
   
   // Step 8: Neurocorrection/Anamnesis Treatment plan (Mapped to Consultation)
-  complex_name: z.string().optional().or(z.literal("")).nullable(),
-  duration: z.string().max(50, "50 belgi oralig'ida bo'lishi kerak").optional().or(z.literal("")).nullable(),
+  neuro_complex: z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(v)), z.number().nullable().optional()),
+  working_period: z.string().max(50, "50 belgi oralig'ida bo'lishi kerak").optional().or(z.literal("")).nullable(),
   recommendations: z.string().optional().or(z.literal("")).nullable(),
 
   // Center info
   consultant_id: z.string().optional().or(z.literal("")).nullable(),
   group_id: z.string().optional().or(z.literal("")).nullable(),
-  group_admission_date: z.string().optional().or(z.literal("")).nullable(),
+  group_acceptance_date: z.string().optional().or(z.literal("")).nullable(),
   photo: z.any().optional().nullable(),
+  treatment_complex_id: z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(v)), z.number().nullable().optional()),
 
   // Specialist Assignments: { "Logoped": 5, "Neyropsixolog": 3 }
   specialist_assignments: z.record(z.string(), z.number().nullable()).optional().default({}),

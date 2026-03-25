@@ -1,4 +1,4 @@
-import { TrendingUp, Users, AlertTriangle, CalendarDays, ChevronLeft, Edit2 } from "lucide-react";
+import { TrendingUp, Users, AlertTriangle, CalendarDays, ChevronLeft, Edit2, BookOpen } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { StatCard } from "@/components/admin/ui/StatCard";
 import { GroupInfoCard } from "./components/GroupInfoCard";
@@ -7,7 +7,6 @@ import { MonthlyPlanList } from "./components/MonthlyPlanList";
 import { useGroupDetailAdminPage } from "@/hooks/admin/useGroupDetailAdminPage";
 import { useAnalytics } from "@/hooks/admin/useAnalytics";
 import { useTopics } from "@/hooks/admin/useTopics";
-import { useMemo } from "react";
 
 export default function GroupDetailAdmin() {
   const { group, isLoading, id, goBack } = useGroupDetailAdminPage();
@@ -15,14 +14,6 @@ export default function GroupDetailAdmin() {
   const { data: analytics, isLoading: isLoadingAnalytics } = useAdminGroupAnalytics(Number(id));
   const { useTopicsList } = useTopics();
   const { data: topics } = useTopicsList(Number(id));
-
-  const monthlyPlan = useMemo(() => {
-    if (!topics || topics.length === 0) return [];
-    return topics.slice(0, 4).map((t, i) => ({
-      week: `Hafta ${i + 1}`,
-      topic: t.title,
-    }));
-  }, [topics]);
 
   if (isLoading || isLoadingAnalytics) {
     return (
@@ -59,14 +50,24 @@ export default function GroupDetailAdmin() {
           <h1 className="text-[20px] sm:text-[24px] font-bold text-[#2D3142]">{group.name} ma'lumotlari</h1>
         </div>
 
-        <Link
-          to="/admin/groups/$id/edit"
-          params={{ id: String(id) }}
-          className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors text-[#2D3142] px-5 py-2.5 rounded-[12px] text-[14px] font-medium shadow-sm"
-        >
-          <Edit2 className="w-[18px] h-[18px]" />
-          Tahrirlash
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/groups/$id/homework"
+            params={{ id: String(id) }}
+            className="flex items-center gap-2 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors text-amber-700 px-5 py-2.5 rounded-[12px] text-[14px] font-medium shadow-sm"
+          >
+            <BookOpen className="w-[18px] h-[18px]" />
+            Uy vazifa berish
+          </Link>
+          <Link
+            to="/admin/groups/$id/edit"
+            params={{ id: String(id) }}
+            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors text-[#2D3142] px-5 py-2.5 rounded-[12px] text-[14px] font-medium shadow-sm"
+          >
+            <Edit2 className="w-[18px] h-[18px]" />
+            Tahrirlash
+          </Link>
+        </div>
       </div>
 
       <GroupInfoCard group={group} />
@@ -106,8 +107,8 @@ export default function GroupDetailAdmin() {
 
       <ChildrenTable childrenList={analytics?.children?.length ? analytics.children : (group.children || [])} />
 
-      {monthlyPlan.length > 0 ? (
-        <MonthlyPlanList plan={monthlyPlan} />
+      {(topics?.length ?? 0) > 0 ? (
+        <MonthlyPlanList plan={topics} />
       ) : (
         <div className="bg-white p-6 lg:p-8 rounded-[24px] border border-dashed border-gray-200 text-center">
           <p className="text-[#9EB1D4] font-medium">Bu guruh uchun hali mavzu biriktirilmagan</p>

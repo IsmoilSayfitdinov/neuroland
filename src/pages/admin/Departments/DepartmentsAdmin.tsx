@@ -10,6 +10,19 @@ import type { AgeGroupOut, AgeGroupCreateRequest, SectionOut } from "@/types/ski
 import { CardSkeleton } from "@/components/admin/ui/CardSkeleton";
 import { EmptyState } from "@/components/admin/ui/EmptyState";
 
+const departmentsInfo = (
+  <>
+    <p>Bu bo'limda yosh toifalari va bo'limlarni boshqarish mumkin. Har bir bo'lim yosh toifasiga biriktiriladi.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Yosh toifalarini yaratish va o'chirish</li>
+      <li>Bo'limlar yaratish va tahrirlash</li>
+      <li>Yosh toifasi bo'yicha bo'limlarni filtrlash</li>
+      <li>Bo'lim tafsilotlarini ko'rish</li>
+    </ul>
+  </>
+);
+
 export default function DepartmentsAdmin() {
   const navigate = useNavigate();
   const { 
@@ -72,7 +85,7 @@ export default function DepartmentsAdmin() {
   if (isLoadingAgeGroups || isLoadingSections) {
     return (
       <div className="space-y-8">
-        <PageHeader title="Bo'limlar" />
+        <PageHeader title="Bo'limlar" infoTitle="Bo'limlar" infoContent={departmentsInfo} />
         <CardSkeleton count={6} />
       </div>
     );

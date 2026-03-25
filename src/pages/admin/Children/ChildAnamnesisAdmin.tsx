@@ -46,7 +46,7 @@ export default function ChildAnamnesisAdmin() {
 
       <AnamnesisForm
         child={child}
-        onSave={(data) => updateChild({ id: childId, data })}
+        onSave={async (data) => { await updateChild({ id: childId, data }); }}
         isPending={isPending}
         onBack={() => navigate({ to: `/admin/child/${id}` })}
         onComplete={() => navigate({ to: `/admin/child/${id}` })}

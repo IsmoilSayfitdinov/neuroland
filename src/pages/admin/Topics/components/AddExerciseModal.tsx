@@ -17,7 +17,10 @@ export function AddExerciseModal({ onClose, onSave, isPending }: AddExerciseModa
   const [sectionId, setSectionId] = useState("");
   const [form, setForm] = useState({ exercise: "", video: "", order: "1", instruction: "" });
 
-  const { data: sections } = useQuery({ queryKey: ["sections"], queryFn: () => SkillsAPI.listSections() });
+  const { data: ageGroups } = useQuery({ queryKey: ["age-groups"], queryFn: () => SkillsAPI.listAgeGroups() });
+  const sectionOptions = ageGroups?.flatMap((ag) =>
+    ag.sections.map((s) => ({ label: `${s.name} (${ag.name})`, value: s.id.toString() }))
+  ) ?? [];
   const { data: exercises } = useQuery({
     queryKey: ["exercises-by-section", sectionId],
     queryFn: () => SkillsAPI.listExercisesBySection(Number(sectionId)),
@@ -48,7 +51,7 @@ export function AddExerciseModal({ onClose, onSave, isPending }: AddExerciseModa
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><X className="w-4 h-4 text-[#9EB1D4]" /></button>
         </div>
         <div className="space-y-4">
-          <CustomSelect label="Bo'lim" options={sections?.map((s) => ({ label: s.name, value: s.id.toString() })) ?? []}
+          <CustomSelect label="Bo'lim" options={sectionOptions}
             value={sectionId} onChange={(val) => { setSectionId(val.toString()); set("exercise", ""); }}
             placeholder="Bo'limni tanlang..." bgBtnColor="bg-[#F8F9FB]" />
           <CustomSelect label="Mashq" options={exercises?.map((ex) => ({ label: ex.name, value: ex.id.toString() })) ?? []}

@@ -6,6 +6,7 @@ export interface Task {
   subtitle: string;
   status: "confirmed" | "review" | "pending";
   hasWarning?: boolean;
+  videoUrl?: string | null;
 }
 
 export type TaskStatus = Task["status"];

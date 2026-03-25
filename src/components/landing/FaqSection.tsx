@@ -59,16 +59,21 @@ interface FaqSectionProps {
 
 export const FaqSection = ({ faqs: apiFaqs }: FaqSectionProps) => {
   const { t } = useTranslation();
+  const [openId, setOpenId] = useState<number | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  if (!apiFaqs || apiFaqs.length === 0) return null;
-
-  const faqs = apiFaqs.map((item) => ({
+  const faqs = (apiFaqs || []).map((item) => ({
     id: item.id,
     question: item.question,
     answer: item.answer,
   }));
 
-  const [openId, setOpenId] = useState<number | null>(faqs[0]?.id ?? null);
+  if (!initialized && faqs.length > 0) {
+    setOpenId(faqs[0].id);
+    setInitialized(true);
+  }
+
+  if (!apiFaqs || apiFaqs.length === 0) return null;
 
   const toggle = (id: number) => {
     setOpenId(openId === id ? null : id);

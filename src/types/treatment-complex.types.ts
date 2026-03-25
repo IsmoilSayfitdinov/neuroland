@@ -7,6 +7,7 @@ export interface TreatmentComplex {
   age_min_year: number;
   age_max_year: number;
   description?: string | null;
+  age_groups?: number[];
 }
 
 export interface TreatmentComplexRequest {
@@ -15,6 +16,7 @@ export interface TreatmentComplexRequest {
   age_min_year: number;
   age_max_year: number;
   description?: string | null;
+  age_groups?: number[];
 }
 
 export interface PatchedTreatmentComplexRequest {
@@ -23,6 +25,7 @@ export interface PatchedTreatmentComplexRequest {
   age_min_year?: number;
   age_max_year?: number;
   description?: string | null;
+  age_groups?: number[];
 }
 
 export interface PaginatedTreatmentComplexList {

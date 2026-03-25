@@ -97,7 +97,7 @@ export default function CreateGroupAdmin() {
     createGroup(
       {
         name: data.name,
-        shift: data.shift,
+        shift: data.shift as import("@/types/groups.types").GroupShift,
         age_group_id: Number(data.age_group_id),
         max_children: Number(data.max_children) || DEFAULT_MAX_CHILDREN,
         start_date: startDate || undefined,
@@ -135,7 +135,6 @@ export default function CreateGroupAdmin() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit, (errs) => {
-        console.error("Form validation errors:", errs);
         const firstErr = Object.values(errs)[0];
         if (firstErr?.message) toast.error(String(firstErr.message));
       })}>

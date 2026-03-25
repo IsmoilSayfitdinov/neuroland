@@ -16,7 +16,6 @@ export default function CreateSpecialistAdmin() {
     }, {
       onSuccess: () => navigate({ to: "/admin/specialists" }),
       onError: (error: any) => {
-        console.error("Create error details:", error?.response?.data);
         const errorMessage =
           typeof error?.response?.data === 'object' ? JSON.stringify(error?.response?.data) :
           error?.response?.data?.detail?.[0]?.msg ||

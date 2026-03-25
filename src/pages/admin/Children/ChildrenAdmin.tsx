@@ -11,6 +11,19 @@ import { useChildrenPage } from "@/hooks/admin/useChildrenPage";
 import { CHILD_STATUS_LABELS, AGE_RANGE_OPTIONS } from "@/constants/children";
 import type { ChildOut } from "@/types/children.types";
 
+const childrenInfo = (
+  <>
+    <p>Bu bo'limda markazga ro'yxatdan o'tgan barcha bolalar ro'yxatini ko'rishingiz mumkin.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Yangi bola qo'shish va mavjudlarini tahrirlash</li>
+      <li>Guruh, yosh va holat bo'yicha filtrlash</li>
+      <li>Bolaning shaxsiy sahifasiga o'tish va anamnez ma'lumotlarini ko'rish</li>
+      <li>Diagnostika natijalarini kuzatish</li>
+    </ul>
+  </>
+);
+
 export default function ChildrenAdmin() {
   const {
     isLoading,
@@ -36,7 +49,7 @@ export default function ChildrenAdmin() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Bolalar" />
+        <PageHeader title="Bolalar" infoTitle="Bolalar bo'limi" infoContent={childrenInfo} />
         <TableSkeleton rows={8} columns={6} />
       </div>
     );
@@ -46,6 +59,8 @@ export default function ChildrenAdmin() {
     <div className="space-y-6">
       <PageHeader
         title="Bolalar"
+        infoTitle="Bolalar bo'limi"
+        infoContent={childrenInfo}
         action={
           <Button
             onClick={() => navigate({ to: "/admin/child/create" })}
@@ -76,6 +91,7 @@ export default function ChildrenAdmin() {
             value={selectedGroup}
             onChange={(val) => setSelectedGroup(val.toString())}
             placeholder="Guruh"
+            bgBtnColor="bg-white"
           />
         </div>
 
@@ -85,6 +101,7 @@ export default function ChildrenAdmin() {
             value={selectedAge}
             onChange={(val) => setSelectedAge(val.toString())}
             placeholder="Yosh"
+            bgBtnColor="bg-white"
           />
         </div>
 
@@ -97,6 +114,7 @@ export default function ChildrenAdmin() {
             value={selectedStatus}
             onChange={(val) => setSelectedStatus(val.toString())}
             placeholder="Holat"
+            bgBtnColor="bg-white"
           />
         </div>
       </div>

@@ -67,7 +67,7 @@ export default function ChildDetailAdmin() {
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
             {child.photo ? (
-              <img src={child.photo} alt={child.fio} className="w-full h-full object-cover rounded-2xl" />
+              <img src={import.meta.env.VITE_API_MEDIA_URL + child.photo} alt={child.fio} className="w-full h-full object-cover rounded-2xl" />
             ) : (
               <User className="w-8 h-8 text-blue-400" />
             )}

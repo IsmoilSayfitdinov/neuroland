@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MeetingsAPI } from "@/api/meetings.api";
-import type { MonthlyMeetingRequest } from "@/types/meetings.types";
+import type { MonthlyMeetingRequest, PatchedMonthlyMeetingRequest } from "@/types/meetings.types";
 import { toast } from "sonner";
 
 export const useMeetings = () => {
@@ -22,6 +22,13 @@ export const useMeetings = () => {
       enabled: !!childId,
     });
 
+  const useMeetingDetail = (id: number) =>
+    useQuery({
+      queryKey: ["meetings", id],
+      queryFn: () => MeetingsAPI.getMonthlyMeeting(id),
+      enabled: !!id,
+    });
+
   const useCreateMeeting = () =>
     useMutation({
       mutationFn: (data: MonthlyMeetingRequest) => MeetingsAPI.createMonthlyMeeting(data),
@@ -29,18 +36,60 @@ export const useMeetings = () => {
         queryClient.invalidateQueries({ queryKey: ["meetings"] });
         toast.success("Uchrashuv muvaffaqiyatli yaratildi");
       },
-      onError: () => toast.error("Uchrashuv yaratishda xatolik"),
+      onError: (err: any) => toast.error(err?.response?.data?.detail || "Uchrashuv yaratishda xatolik"),
+    });
+
+  const useUpdateMeeting = () =>
+    useMutation({
+      mutationFn: ({ id, data }: { id: number; data: PatchedMonthlyMeetingRequest }) =>
+        MeetingsAPI.patchMonthlyMeeting(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["meetings"] });
+        toast.success("Uchrashuv yangilandi");
+      },
+      onError: (err: any) => toast.error(err?.response?.data?.detail || "Yangilashda xatolik"),
     });
 
   const useCompleteMeeting = () =>
     useMutation({
-      mutationFn: ({ id, data }: { id: number; data: MonthlyMeetingRequest }) =>
-        MeetingsAPI.updateMonthlyMeeting(id, { ...data, is_completed: true }),
+      mutationFn: ({ id }: { id: number }) =>
+        MeetingsAPI.patchMonthlyMeeting(id, { is_completed: true }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["meetings"] });
         toast.success("Uchrashuv yakunlandi");
       },
+      onError: (err: any) => toast.error(err?.response?.data?.detail || "Yakunlashda xatolik"),
     });
 
-  return { useMeetingsList, useChildMeetings, useCreateMeeting, useCompleteMeeting };
+  const useDeleteMeeting = () =>
+    useMutation({
+      mutationFn: (id: number) => MeetingsAPI.deleteMonthlyMeeting(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["meetings"] });
+        toast.success("Uchrashuv o'chirildi");
+      },
+      onError: (err: any) => toast.error(err?.response?.data?.detail || "O'chirishda xatolik"),
+    });
+
+  const useAddGoalReviews = () =>
+    useMutation({
+      mutationFn: ({ meetingId, reviews }: { meetingId: number; reviews: { monthly_goal_item: number; comment: string }[] }) =>
+        MeetingsAPI.addGoalReviews(meetingId, reviews),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["meetings"] });
+        toast.success("Maqsad sharhlari saqlandi");
+      },
+      onError: (err: any) => toast.error(err?.response?.data?.detail || "Xatolik yuz berdi"),
+    });
+
+  return {
+    useMeetingsList,
+    useChildMeetings,
+    useMeetingDetail,
+    useCreateMeeting,
+    useUpdateMeeting,
+    useCompleteMeeting,
+    useDeleteMeeting,
+    useAddGoalReviews,
+  };
 };

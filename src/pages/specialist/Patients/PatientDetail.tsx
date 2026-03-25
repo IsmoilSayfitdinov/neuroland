@@ -7,12 +7,10 @@ import { useChildren } from "@/hooks/specialist/useChildren";
 // Shared admin tab components (same ChildDetailOut type)
 import { BasicInfoTab }          from "@/pages/admin/Children/components/BasicInfoTab";
 import { AnamnesisTab }          from "@/pages/admin/Children/components/AnamnesisTab";
-import { DiagnostikaTab }        from "@/pages/admin/Children/components/DiagnostikaTab";
 import { DiagnostikaNatijalaTab} from "@/pages/admin/Children/components/DiagnostikaNatijalaTab";
 
 // Specialist-specific tabs
 import MeetingsTab        from "@/components/specialist/Patients/Detail/MeetingsTab";
-import ConsultationTab    from "@/components/specialist/Patients/Detail/ConsultationTab";
 import PaymentsHistoryTab from "@/components/specialist/Patients/Detail/PaymentsHistoryTab";
 
 type Tab = "basic" | "anamnesis" | "consultation" | "diagnostika" | "natijalar" | "uchrashuvlar" | "payments";
@@ -20,7 +18,6 @@ type Tab = "basic" | "anamnesis" | "consultation" | "diagnostika" | "natijalar" 
 const TABS: { id: Tab; label: string }[] = [
   { id: "basic",        label: "Asosiy ma'lumotlar"    },
   { id: "anamnesis",    label: "Rivojlanish tarixi"     },
-  { id: "diagnostika",  label: "Diagnostika"            },
   { id: "natijalar",    label: "Diagnostika natijalari" },
   { id: "uchrashuvlar", label: "Uchrashuvlar"           },
   { id: "payments",     label: "To'lov tarixi"          },
@@ -98,7 +95,7 @@ export default function PatientDetail() {
             </div>
           </div>
           <button
-            onClick={() => navigate({ to: "/specialist/diagnostics" })}
+            onClick={() => navigate({ to: `/specialist/diagnostics/${patientId}` })}
             className="flex items-center px-[21px] py-[14px] bg-[#1F61F9] hover:bg-blue-700 text-white rounded-[14px] text-[12px] font-bold transition-colors"
           >
             Diagnostikani boshlash
@@ -112,7 +109,7 @@ export default function PatientDetail() {
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
             {child.photo ? (
-              <img src={child.photo} alt={child.fio} className="w-full h-full object-cover rounded-2xl" />
+              <img src={import.meta.env.VITE_API_MEDIA_URL + child.photo} alt={child.fio} className="w-full h-full object-cover rounded-2xl" />
             ) : (
               <User className="w-8 h-8 text-blue-400" />
             )}
@@ -168,7 +165,6 @@ export default function PatientDetail() {
       <div>
         {activeTab === "basic"        && <BasicInfoTab child={child} />}
         {activeTab === "anamnesis"    && <AnamnesisTab child={child} />}
-        {activeTab === "diagnostika"  && <DiagnostikaTab child={child} />}
         {activeTab === "natijalar"    && <DiagnostikaNatijalaTab child={child} />}
         {activeTab === "uchrashuvlar" && (
           <MeetingsTab

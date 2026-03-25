@@ -164,7 +164,7 @@ export default function EditGroupAdmin() {
         id: groupId,
         data: {
           name: data.name,
-          shift: data.shift,
+          shift: data.shift as import("@/types/groups.types").GroupShift,
           age_group_id: Number(data.age_group_id),
           max_children: Number(data.max_children) || DEFAULT_MAX_CHILDREN,
           start_date: startDate || undefined,

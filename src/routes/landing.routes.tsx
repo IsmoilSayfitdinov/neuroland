@@ -1,8 +1,6 @@
-import { createRoute, redirect } from "@tanstack/react-router";
+import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "./layouts/__root";
 import MainLanding from "../pages/landing/MainLanding";
-import { useAuthStore } from "@/store/useAuthStore";
-import Role from "@/types/auth";
 
 export const landingRoute = createRoute({
   getParentRoute: () => rootRoute,

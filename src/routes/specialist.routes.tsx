@@ -17,6 +17,8 @@ import KnowledgeCenter from "@/pages/specialist/Knowledge/KnowledgeCenter";
 import GroupsList from "@/pages/specialist/Groups/GroupsList";
 import GroupDetail from "@/pages/specialist/Groups/GroupDetail";
 import ExamConduct from "@/pages/specialist/Exams/ExamConduct";
+import AssignHomeworkPage from "@/pages/specialist/Homework/AssignHomeworkPage";
+import HomeworkReviewPage from "@/pages/specialist/Homework/HomeworkReviewPage";
 
 export const specialistRoute = specialistLayoutRoute.addChildren([
   createRoute({
@@ -49,6 +51,11 @@ export const specialistRoute = specialistLayoutRoute.addChildren([
   createRoute({
     getParentRoute: () => specialistLayoutRoute,
     path: "/specialist/diagnostics",
+    component: () => <Diagnostics />,
+  }),
+  createRoute({
+    getParentRoute: () => specialistLayoutRoute,
+    path: "/specialist/diagnostics/$childId",
     component: () => <Diagnostics />,
   }),
   createRoute({
@@ -110,5 +117,15 @@ export const specialistRoute = specialistLayoutRoute.addChildren([
     getParentRoute: () => specialistLayoutRoute,
     path: "/specialist/patients/$patientId/exam",
     component: () => <ExamConduct />,
+  }),
+  createRoute({
+    getParentRoute: () => specialistLayoutRoute,
+    path: "/specialist/groups/$groupId/homework",
+    component: () => <AssignHomeworkPage />,
+  }),
+  createRoute({
+    getParentRoute: () => specialistLayoutRoute,
+    path: "/specialist/groups/$groupId/homework/review",
+    component: () => <HomeworkReviewPage />,
   }),
 ]);

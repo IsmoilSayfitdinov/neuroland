@@ -28,7 +28,7 @@ export const AboutSection = ({ about }: AboutSectionProps) => {
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
               <div className="aspect-4/3 xl:aspect-541/436 relative w-full">
                  <img
-                   src={about.image_url || Image}
+                   src={about.image || Image}
                    alt="Medical Team"
                    className="w-full h-full object-cover"
                  />
@@ -71,7 +71,7 @@ export const AboutSection = ({ about }: AboutSectionProps) => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.missionTitle")}</h3>
                 <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
-                  {about.mission}
+                  {about.mission_text}
                 </p>
               </motion.div>
 
@@ -85,7 +85,7 @@ export const AboutSection = ({ about }: AboutSectionProps) => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{t("about.goalTitle")}</h3>
                 <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
-                   {about.vision}
+                   {about.goal_text}
                 </p>
               </motion.div>
             </div>

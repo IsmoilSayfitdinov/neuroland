@@ -5,6 +5,19 @@ import { TopFamiliesList } from "./components/TopFamiliesList";
 import { ActivityHeatmap } from "./components/ActivityHeatmap";
 import { useActivityAdminPage } from "@/hooks/admin/useActivityAdminPage";
 
+const activityInfo = (
+  <>
+    <p>Bu bo'limda oilalarning platformadagi faolligi va vazifalarni bajarish statistikasini kuzatish mumkin.</p>
+    <p><strong>Asosiy ko'rsatkichlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Vazifa bajarilish foizi va o'sish dinamikasi</li>
+      <li>Qulflangan (to'lov qilmagan) oilalar soni</li>
+      <li>Eng faol oilalar reytingi</li>
+      <li>Haftalik faollik issiqlik xaritasi</li>
+    </ul>
+  </>
+);
+
 export default function ActivityAdmin() {
   const {
     isLoading,
@@ -22,7 +35,7 @@ export default function ActivityAdmin() {
   if (isLoading) {
     return (
       <div className="mx-auto pb-10 space-y-6">
-        <PageHeader title="Faollik" />
+        <PageHeader title="Faollik" infoTitle="Faollik bo'limi" infoContent={activityInfo} />
         <div className="flex items-center justify-center min-h-[300px]">
           <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
         </div>
@@ -32,7 +45,7 @@ export default function ActivityAdmin() {
 
   return (
     <div className="mx-auto pb-10 space-y-6">
-      <PageHeader title="Faollik" />
+      <PageHeader title="Faollik" infoTitle="Faollik bo'limi" infoContent={activityInfo} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Vazifa bajarilishi" value={`${taskCompletion}%`} subtitle={`O'sish: ${taskGrowth}%`} icon={Heart} />

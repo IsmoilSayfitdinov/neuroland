@@ -1,5 +1,8 @@
-import { Users } from "lucide-react";
+import { Users, Pencil, Trash2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { GroupsAPI } from "@/api/groups.api";
+import { toast } from "sonner";
 import type { GroupOut } from "@/types/groups.types";
 
 interface GroupCardProps {
@@ -9,6 +12,16 @@ interface GroupCardProps {
 export function GroupCard({ data }: GroupCardProps) {
   const { name, age_group_name, status, children_count, max_children, specialists } = data;
   const teacherName = specialists && specialists.length > 0 ? specialists[0].fio : "Tayinlanmagan";
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteGroup, isPending: deleting } = useMutation({
+    mutationFn: () => GroupsAPI.deleteGroup(data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      toast.success("Guruh o'chirildi");
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.detail || "O'chirishda xatolik"),
+  });
 
   return (
     <div className="bg-white p-5 rounded-[20px] border border-gray-100 shadow-sm flex flex-col">
@@ -26,7 +39,7 @@ export function GroupCard({ data }: GroupCardProps) {
         </div>
       </div>
 
-      <div className="my-[18px] border-t border-transparent" /> {/* Spacer */}
+      <div className="my-[18px] border-t border-transparent" />
 
       {/* Stats */}
       <div className="space-y-4 mb-6">
@@ -41,13 +54,30 @@ export function GroupCard({ data }: GroupCardProps) {
         </div>
       </div>
 
-      {/* Action Button */}
-      <Link 
-        to={`/admin/groups/${data.id}`}
-        className="mt-auto w-full flex items-center justify-center py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors text-white text-[13px] font-medium rounded-xl"
-      >
-        Guruhni ko'rish
-      </Link>
+      {/* Actions */}
+      <div className="mt-auto flex gap-2">
+        <Link
+          to={`/admin/groups/${data.id}`}
+          className="flex-1 flex items-center justify-center py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors text-white text-[13px] font-medium rounded-xl"
+        >
+          Ko'rish
+        </Link>
+        <Link
+          to={`/admin/groups/${data.id}/edit`}
+          className="w-10 h-10 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-colors border border-blue-100"
+        >
+          <Pencil className="w-4 h-4" />
+        </Link>
+        <button
+          onClick={() => {
+            if (confirm(`"${name}" guruhini o'chirishni tasdiqlaysizmi?`)) deleteGroup();
+          }}
+          disabled={deleting}
+          className="w-10 h-10 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-colors border border-red-100 disabled:opacity-50"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

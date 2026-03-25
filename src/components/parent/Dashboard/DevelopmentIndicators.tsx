@@ -32,7 +32,7 @@ export default function DevelopmentIndicators({ apiData }: Props) {
         {apiData.map((section) => {
           const style = getStyle(section.percentage);
           return (
-            <div key={section.section_id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div key={section.section_name} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
                 style={{ backgroundColor: style.iconBg, color: style.iconColor }}>
                 <Activity className="w-4 h-4" />

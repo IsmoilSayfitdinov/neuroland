@@ -1,4 +1,4 @@
-import { Pencil, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { statusColors, categoryColors, statusProgressColors } from "../constantsData";
 import type { MonthData } from "../constantsData";
@@ -31,9 +31,6 @@ export function MonthCard({ data }: MonthCardProps) {
           >
             {status}
           </span>
-          <button className="text-gray-300 hover:text-gray-500 transition-colors">
-            <Pencil className="w-4 h-4" />
-          </button>
         </div>
       </div>
 

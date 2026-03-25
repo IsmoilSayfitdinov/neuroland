@@ -2,333 +2,348 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { LandingAPI } from "@/api/landing.api";
 import { toast } from "sonner";
 import type {
-  HeroSectionRequest,
   PatchedHeroSectionRequest,
-  AboutSectionRequest,
   PatchedAboutSectionRequest,
-  PlatformSectionRequest,
   PatchedPlatformSectionRequest,
-  ContactInfoRequest,
   PatchedContactInfoRequest,
-  ContactRequestAdminRequest,
   FAQRequest,
-  PatchedFAQRequest,
   GalleryItemRequest,
-  PatchedGalleryItemRequest,
   SuccessStoryRequest,
-  PatchedSuccessStoryRequest,
   TeamMemberRequest,
-  PatchedTeamMemberRequest,
   TestimonialRequest,
-  PatchedTestimonialRequest,
   ValueCardRequest,
-  PatchedValueCardRequest,
 } from "@/types/landing.types";
 
-export const useLanding = () => {
+function useInvalidateLanding() {
   const queryClient = useQueryClient();
-
-  const invalidate = (key: string) => {
+  return (key: string) => {
     queryClient.invalidateQueries({ queryKey: ["landing", key] });
     queryClient.invalidateQueries({ queryKey: ["landing", "all"] });
   };
+}
 
-  // --- All ---
-  const useLandingAll = () => useQuery({
-    queryKey: ["landing", "all"],
-    queryFn: () => LandingAPI.getAll(),
-  });
-
-  // --- Hero ---
-  const useHeroList = () => useQuery({
+// --- Hero (Singleton) ---
+export function useHero() {
+  return useQuery({
     queryKey: ["landing", "hero"],
-    queryFn: () => LandingAPI.listHero(),
+    queryFn: () => LandingAPI.getHero(),
   });
+}
 
-  const useUpdateHero = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: HeroSectionRequest }) =>
-      LandingAPI.updateHero(id, data),
+export function usePatchHero() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: (data: PatchedHeroSectionRequest) => LandingAPI.patchHero(data),
     onSuccess: () => { invalidate("hero"); toast.success("Hero bo'limi yangilandi"); },
     onError: () => toast.error("Hero yangilashda xatolik"),
   });
+}
 
-  const usePatchHero = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PatchedHeroSectionRequest }) =>
-      LandingAPI.patchHero(id, data),
-    onSuccess: () => { invalidate("hero"); toast.success("Hero bo'limi yangilandi"); },
-    onError: () => toast.error("Hero yangilashda xatolik"),
-  });
-
-  // --- About ---
-  const useAboutList = () => useQuery({
+// --- About (Singleton) ---
+export function useAbout() {
+  return useQuery({
     queryKey: ["landing", "about"],
-    queryFn: () => LandingAPI.listAbout(),
+    queryFn: () => LandingAPI.getAbout(),
   });
+}
 
-  const useUpdateAbout = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: AboutSectionRequest }) =>
-      LandingAPI.updateAbout(id, data),
+export function usePatchAbout() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: (data: PatchedAboutSectionRequest) => LandingAPI.patchAbout(data),
     onSuccess: () => { invalidate("about"); toast.success("Biz haqimizda yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const usePatchAbout = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PatchedAboutSectionRequest }) =>
-      LandingAPI.patchAbout(id, data),
-    onSuccess: () => { invalidate("about"); toast.success("Biz haqimizda yangilandi"); },
-    onError: () => toast.error("Yangilashda xatolik"),
-  });
-
-  // --- Platform ---
-  const usePlatformList = () => useQuery({
+// --- Platform (Singleton) ---
+export function usePlatform() {
+  return useQuery({
     queryKey: ["landing", "platform"],
-    queryFn: () => LandingAPI.listPlatform(),
+    queryFn: () => LandingAPI.getPlatform(),
   });
+}
 
-  const useUpdatePlatform = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PlatformSectionRequest }) =>
-      LandingAPI.updatePlatform(id, data),
+export function usePatchPlatform() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: (data: PatchedPlatformSectionRequest) => LandingAPI.patchPlatform(data),
     onSuccess: () => { invalidate("platform"); toast.success("Platforma yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const usePatchPlatform = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PatchedPlatformSectionRequest }) =>
-      LandingAPI.patchPlatform(id, data),
-    onSuccess: () => { invalidate("platform"); toast.success("Platforma yangilandi"); },
-    onError: () => toast.error("Yangilashda xatolik"),
-  });
-
-  // --- Contact Info ---
-  const useContactInfoList = () => useQuery({
+// --- Contact Info (Singleton) ---
+export function useContactInfo() {
+  return useQuery({
     queryKey: ["landing", "contact-info"],
-    queryFn: () => LandingAPI.listContactInfo(),
+    queryFn: () => LandingAPI.getContactInfo(),
   });
+}
 
-  const useUpdateContactInfo = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ContactInfoRequest }) =>
-      LandingAPI.updateContactInfo(id, data),
+export function usePatchContactInfo() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: (data: PatchedContactInfoRequest) => LandingAPI.patchContactInfo(data),
     onSuccess: () => { invalidate("contact-info"); toast.success("Kontakt ma'lumotlari yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const usePatchContactInfo = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PatchedContactInfoRequest }) =>
-      LandingAPI.patchContactInfo(id, data),
-    onSuccess: () => { invalidate("contact-info"); toast.success("Kontakt ma'lumotlari yangilandi"); },
-    onError: () => toast.error("Yangilashda xatolik"),
-  });
-
-  // --- Contact Requests ---
-  const useContactRequests = () => useQuery({
+// --- Contact Requests ---
+export function useContactRequests() {
+  return useQuery({
     queryKey: ["landing", "contact-requests"],
     queryFn: () => LandingAPI.listContactRequests(),
   });
+}
 
-  const useContactRequestStats = () => useQuery({
+export function useContactRequestStats() {
+  return useQuery({
     queryKey: ["landing", "contact-requests-stats"],
     queryFn: () => LandingAPI.getContactRequestStats(),
   });
+}
 
-  const useUpdateContactRequest = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ContactRequestAdminRequest }) =>
-      LandingAPI.patchContactRequest(id, data),
-    onSuccess: () => { invalidate("contact-requests"); toast.success("So'rov yangilandi"); },
-    onError: () => toast.error("Yangilashda xatolik"),
-  });
-
-  const useMarkContactRequestRead = () => useMutation({
+export function useMarkContactRequestRead() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.markContactRequestRead(id),
     onSuccess: () => { invalidate("contact-requests"); invalidate("contact-requests-stats"); },
   });
+}
 
-  const useDeleteContactRequest = () => useMutation({
+export function useDeleteContactRequest() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteContactRequest(id),
     onSuccess: () => { invalidate("contact-requests"); toast.success("So'rov o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  // --- FAQ ---
-  const useFAQList = () => useQuery({
+// --- FAQ ---
+export function useFAQList() {
+  return useQuery({
     queryKey: ["landing", "faqs"],
     queryFn: () => LandingAPI.listFAQs(),
   });
+}
 
-  const useCreateFAQ = () => useMutation({
+export function useCreateFAQ() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: FAQRequest) => LandingAPI.createFAQ(data),
     onSuccess: () => { invalidate("faqs"); toast.success("FAQ qo'shildi"); },
     onError: () => toast.error("FAQ qo'shishda xatolik"),
   });
+}
 
-  const useUpdateFAQ = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: FAQRequest }) =>
-      LandingAPI.updateFAQ(id, data),
+export function useUpdateFAQ() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: FAQRequest }) => LandingAPI.updateFAQ(id, data),
     onSuccess: () => { invalidate("faqs"); toast.success("FAQ yangilandi"); },
     onError: () => toast.error("FAQ yangilashda xatolik"),
   });
+}
 
-  const usePatchFAQ = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: PatchedFAQRequest }) =>
-      LandingAPI.patchFAQ(id, data),
-    onSuccess: () => { invalidate("faqs"); toast.success("FAQ yangilandi"); },
-    onError: () => toast.error("FAQ yangilashda xatolik"),
-  });
-
-  const useDeleteFAQ = () => useMutation({
+export function useDeleteFAQ() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteFAQ(id),
     onSuccess: () => { invalidate("faqs"); toast.success("FAQ o'chirildi"); },
     onError: () => toast.error("FAQ o'chirishda xatolik"),
   });
+}
 
-  // --- Gallery ---
-  const useGalleryList = () => useQuery({
+// --- Gallery ---
+export function useGalleryList() {
+  return useQuery({
     queryKey: ["landing", "gallery"],
     queryFn: () => LandingAPI.listGallery(),
   });
+}
 
-  const useCreateGalleryItem = () => useMutation({
+export function useCreateGalleryItem() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: GalleryItemRequest) => LandingAPI.createGalleryItem(data),
     onSuccess: () => { invalidate("gallery"); toast.success("Galereya elementi qo'shildi"); },
     onError: () => toast.error("Qo'shishda xatolik"),
   });
+}
 
-  const useUpdateGalleryItem = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: GalleryItemRequest }) =>
-      LandingAPI.updateGalleryItem(id, data),
+export function useUpdateGalleryItem() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: GalleryItemRequest }) => LandingAPI.updateGalleryItem(id, data),
     onSuccess: () => { invalidate("gallery"); toast.success("Galereya elementi yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const useDeleteGalleryItem = () => useMutation({
+export function useDeleteGalleryItem() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteGalleryItem(id),
     onSuccess: () => { invalidate("gallery"); toast.success("Galereya elementi o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  // --- Stories ---
-  const useStoriesList = () => useQuery({
+// --- Stories ---
+export function useStoriesList() {
+  return useQuery({
     queryKey: ["landing", "stories"],
     queryFn: () => LandingAPI.listStories(),
   });
+}
 
-  const useCreateStory = () => useMutation({
+export function useCreateStory() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: SuccessStoryRequest) => LandingAPI.createStory(data),
     onSuccess: () => { invalidate("stories"); toast.success("Muvaffaqiyat hikoyasi qo'shildi"); },
     onError: () => toast.error("Qo'shishda xatolik"),
   });
+}
 
-  const useUpdateStory = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: SuccessStoryRequest }) =>
-      LandingAPI.updateStory(id, data),
+export function useUpdateStory() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: SuccessStoryRequest }) => LandingAPI.updateStory(id, data),
     onSuccess: () => { invalidate("stories"); toast.success("Hikoya yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const useDeleteStory = () => useMutation({
+export function useDeleteStory() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteStory(id),
     onSuccess: () => { invalidate("stories"); toast.success("Hikoya o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  // --- Team ---
-  const useTeamList = () => useQuery({
+// --- Team ---
+export function useTeamList() {
+  return useQuery({
     queryKey: ["landing", "team"],
     queryFn: () => LandingAPI.listTeam(),
   });
+}
 
-  const useCreateTeamMember = () => useMutation({
+export function useCreateTeamMember() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: TeamMemberRequest) => LandingAPI.createTeamMember(data),
     onSuccess: () => { invalidate("team"); toast.success("Jamoa a'zosi qo'shildi"); },
     onError: () => toast.error("Qo'shishda xatolik"),
   });
+}
 
-  const useUpdateTeamMember = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: TeamMemberRequest }) =>
-      LandingAPI.updateTeamMember(id, data),
+export function useUpdateTeamMember() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: TeamMemberRequest }) => LandingAPI.updateTeamMember(id, data),
     onSuccess: () => { invalidate("team"); toast.success("Jamoa a'zosi yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const useDeleteTeamMember = () => useMutation({
+export function useDeleteTeamMember() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteTeamMember(id),
     onSuccess: () => { invalidate("team"); toast.success("Jamoa a'zosi o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  // --- Testimonials ---
-  const useTestimonialsList = () => useQuery({
+// --- Testimonials ---
+export function useTestimonialsList() {
+  return useQuery({
     queryKey: ["landing", "testimonials"],
     queryFn: () => LandingAPI.listTestimonials(),
   });
+}
 
-  const useCreateTestimonial = () => useMutation({
+export function useCreateTestimonial() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: TestimonialRequest) => LandingAPI.createTestimonial(data),
     onSuccess: () => { invalidate("testimonials"); toast.success("Sharh qo'shildi"); },
     onError: () => toast.error("Qo'shishda xatolik"),
   });
+}
 
-  const useUpdateTestimonial = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: TestimonialRequest }) =>
-      LandingAPI.updateTestimonial(id, data),
+export function useUpdateTestimonial() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: TestimonialRequest }) => LandingAPI.updateTestimonial(id, data),
     onSuccess: () => { invalidate("testimonials"); toast.success("Sharh yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const useDeleteTestimonial = () => useMutation({
+export function useDeleteTestimonial() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteTestimonial(id),
     onSuccess: () => { invalidate("testimonials"); toast.success("Sharh o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  // --- Values ---
-  const useValuesList = () => useQuery({
+// --- Values ---
+export function useValuesList() {
+  return useQuery({
     queryKey: ["landing", "values"],
     queryFn: () => LandingAPI.listValues(),
   });
+}
 
-  const useCreateValueCard = () => useMutation({
+export function useCreateValueCard() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (data: ValueCardRequest) => LandingAPI.createValueCard(data),
     onSuccess: () => { invalidate("values"); toast.success("Qadriyat qo'shildi"); },
     onError: () => toast.error("Qo'shishda xatolik"),
   });
+}
 
-  const useUpdateValueCard = () => useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ValueCardRequest }) =>
-      LandingAPI.updateValueCard(id, data),
+export function useUpdateValueCard() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: ValueCardRequest }) => LandingAPI.updateValueCard(id, data),
     onSuccess: () => { invalidate("values"); toast.success("Qadriyat yangilandi"); },
     onError: () => toast.error("Yangilashda xatolik"),
   });
+}
 
-  const useDeleteValueCard = () => useMutation({
+export function useDeleteValueCard() {
+  const invalidate = useInvalidateLanding();
+  return useMutation({
     mutationFn: (id: number) => LandingAPI.deleteValueCard(id),
     onSuccess: () => { invalidate("values"); toast.success("Qadriyat o'chirildi"); },
     onError: () => toast.error("O'chirishda xatolik"),
   });
+}
 
-  return {
-    useLandingAll,
-    // Hero
-    useHeroList, useUpdateHero, usePatchHero,
-    // About
-    useAboutList, useUpdateAbout, usePatchAbout,
-    // Platform
-    usePlatformList, useUpdatePlatform, usePatchPlatform,
-    // Contact Info
-    useContactInfoList, useUpdateContactInfo, usePatchContactInfo,
-    // Contact Requests
-    useContactRequests, useContactRequestStats, useUpdateContactRequest,
-    useMarkContactRequestRead, useDeleteContactRequest,
-    // FAQ
-    useFAQList, useCreateFAQ, useUpdateFAQ, usePatchFAQ, useDeleteFAQ,
-    // Gallery
-    useGalleryList, useCreateGalleryItem, useUpdateGalleryItem, useDeleteGalleryItem,
-    // Stories
-    useStoriesList, useCreateStory, useUpdateStory, useDeleteStory,
-    // Team
-    useTeamList, useCreateTeamMember, useUpdateTeamMember, useDeleteTeamMember,
-    // Testimonials
-    useTestimonialsList, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial,
-    // Values
-    useValuesList, useCreateValueCard, useUpdateValueCard, useDeleteValueCard,
-  };
-};
+// --- Backward compat wrapper ---
+export const useLanding = () => ({
+  useHero, usePatchHero,
+  useAbout, usePatchAbout,
+  usePlatform, usePatchPlatform,
+  useContactInfo, usePatchContactInfo,
+  useContactRequests, useContactRequestStats,
+  useMarkContactRequestRead, useDeleteContactRequest,
+  useFAQList, useCreateFAQ, useUpdateFAQ, useDeleteFAQ,
+  useGalleryList, useCreateGalleryItem, useUpdateGalleryItem, useDeleteGalleryItem,
+  useStoriesList, useCreateStory, useUpdateStory, useDeleteStory,
+  useTeamList, useCreateTeamMember, useUpdateTeamMember, useDeleteTeamMember,
+  useTestimonialsList, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial,
+  useValuesList, useCreateValueCard, useUpdateValueCard, useDeleteValueCard,
+});

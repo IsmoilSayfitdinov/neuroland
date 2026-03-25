@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import { useSpecialists } from "@/hooks/admin/useSpecialists";
+import { useTreatmentComplexes } from "@/hooks/admin/useTreatmentComplexes";
 import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 import { cn } from "@/lib/utils";
 import { serializeSleepHabits, deserializeSleepHabits } from "@/lib/anamnesis";
@@ -62,6 +63,8 @@ interface AnamnesisFormProps {
 export default function AnamnesisForm({ child, onSave, isPending, onBack, onComplete }: AnamnesisFormProps) {
   const { useSpecialistsList } = useSpecialists();
   const { data: specialists } = useSpecialistsList();
+  const { useList: useTreatmentComplexList } = useTreatmentComplexes();
+  const { data: treatmentComplexes } = useTreatmentComplexList();
 
   const [step, setStep] = useState(0);
   const [completed, setCompleted] = useState<Set<number>>(new Set());
@@ -98,7 +101,7 @@ export default function AnamnesisForm({ child, onSave, isPending, onBack, onComp
       arrival_date: c?.arrival_date || "",
       preliminary_diagnosis: c?.preliminary_diagnosis || "",
       final_diagnosis: c?.final_diagnosis || "",
-      neuro_complex_name: c?.neuro_complex_name || "",
+      neuro_complex: c?.neuro_complex ?? null as number | null,
       working_period: c?.working_period || "",
       recommendations: c?.recommendations || "",
       group_acceptance_date: c?.group_acceptance_date || "",
@@ -173,7 +176,7 @@ export default function AnamnesisForm({ child, onSave, isPending, onBack, onComp
         arrival_date: form.arrival_date || null,
         preliminary_diagnosis: form.preliminary_diagnosis || null,
         final_diagnosis: form.final_diagnosis || null,
-        neuro_complex_name: form.neuro_complex_name || null,
+        neuro_complex: form.neuro_complex ?? null,
         working_period: form.working_period || null,
         recommendations: form.recommendations || null,
         group_acceptance_date: form.group_acceptance_date || null,
@@ -374,8 +377,19 @@ export default function AnamnesisForm({ child, onSave, isPending, onBack, onComp
               <Field label="Tashxis (diagnosis)">
                 <input className={inputCls} placeholder="ZPRR" value={form.diagnosis} onChange={(e) => set("diagnosis", e.target.value)} />
               </Field>
-              <Field label="Neyropsixologik kompleks nomi">
-                <input className={inputCls} placeholder="Masalan: 1-kompleks" value={form.neuro_complex_name} onChange={(e) => set("neuro_complex_name", e.target.value)} />
+              <Field label="Neyropsixologik kompleks">
+                <select
+                  className={inputCls}
+                  value={form.neuro_complex ?? ""}
+                  onChange={(e) => set("neuro_complex", e.target.value ? Number(e.target.value) : null)}
+                >
+                  <option value="">Tanlang...</option>
+                  {treatmentComplexes?.map((tc) => (
+                    <option key={tc.id} value={tc.id}>
+                      {tc.name} ({tc.age_min_year}-{tc.age_max_year} yosh)
+                    </option>
+                  ))}
+                </select>
               </Field>
               <Field label="Ishlash davri">
                 <input className={inputCls} placeholder="Masalan: 12 oy" value={form.working_period} onChange={(e) => set("working_period", e.target.value)} />

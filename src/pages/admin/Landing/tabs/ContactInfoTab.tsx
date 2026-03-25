@@ -3,19 +3,20 @@ import { useForm } from "react-hook-form";
 import { useLanding } from "@/hooks/admin/useLanding";
 import { Loader2 } from "lucide-react";
 
-export function ContactInfoTab() {
-  const { useContactInfoList, usePatchContactInfo } = useLanding();
-  const { data: contacts, isLoading } = useContactInfoList();
-  const patchMutation = usePatchContactInfo();
+const inputCls = "w-full h-[48px] px-4 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors";
 
-  const contact = contacts?.[0];
+export function ContactInfoTab() {
+  const { useContactInfo, usePatchContactInfo } = useLanding();
+  const { data: contact, isLoading } = useContactInfo();
+  const patchMutation = usePatchContactInfo();
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       phone: "",
       email: "",
       address: "",
-      working_hours: "",
+      work_hours: "",
+      footer_description: "",
     },
   });
 
@@ -25,18 +26,17 @@ export function ContactInfoTab() {
         phone: contact.phone || "",
         email: contact.email || "",
         address: contact.address || "",
-        working_hours: contact.working_hours || "",
+        work_hours: contact.work_hours || "",
+        footer_description: contact.footer_description || "",
       });
     }
   }, [contact, reset]);
 
   const onSubmit = (data: any) => {
-    if (!contact) return;
-    patchMutation.mutate({ id: contact.id, data });
+    patchMutation.mutate(data);
   };
 
   if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2563EB]" /></div>;
-
   if (!contact) return <p className="text-[#9EB1D4] text-center py-8">Kontakt ma'lumotlari topilmadi</p>;
 
   return (
@@ -46,19 +46,23 @@ export function ContactInfoTab() {
       <div className="space-y-4">
         <div>
           <label className="block text-[13px] font-medium text-[#6B7A99] mb-1.5">Telefon</label>
-          <input {...register("phone")} className="w-full h-[48px] px-4 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors" />
+          <input {...register("phone")} className={inputCls} />
         </div>
         <div>
           <label className="block text-[13px] font-medium text-[#6B7A99] mb-1.5">Email</label>
-          <input {...register("email")} type="email" className="w-full h-[48px] px-4 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors" />
+          <input {...register("email")} type="email" className={inputCls} />
         </div>
         <div>
           <label className="block text-[13px] font-medium text-[#6B7A99] mb-1.5">Manzil</label>
-          <input {...register("address")} className="w-full h-[48px] px-4 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors" />
+          <input {...register("address")} className={inputCls} />
         </div>
         <div>
           <label className="block text-[13px] font-medium text-[#6B7A99] mb-1.5">Ish vaqti</label>
-          <input {...register("working_hours")} className="w-full h-[48px] px-4 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors" />
+          <input {...register("work_hours")} className={inputCls} />
+        </div>
+        <div>
+          <label className="block text-[13px] font-medium text-[#6B7A99] mb-1.5">Footer tavsifi</label>
+          <textarea {...register("footer_description")} rows={3} className="w-full px-4 py-3 bg-[#F8F9FB] rounded-[12px] border border-transparent focus:border-[#4D89FF] focus:bg-white outline-none text-[14px] transition-colors resize-none" />
         </div>
       </div>
 

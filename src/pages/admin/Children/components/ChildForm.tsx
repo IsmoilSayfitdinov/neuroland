@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Upload, X } from "lucide-react";
 import { useNavigate, useBlocker } from "@tanstack/react-router";
 import { useSpecialists } from "@/hooks/admin/useSpecialists";
+import { useTreatmentComplexes } from "@/hooks/admin/useTreatmentComplexes";
 import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 import { CustomSelect } from "@/components/ui/custom-select";
 import { IMaskInput } from "react-imask";
@@ -25,6 +26,8 @@ export function ChildForm({ initialData, onSubmit, isPending, isEditMode }: Chil
   const { useSpecialistsList, useSpecialistTypes } = useSpecialists();
   const { data: specialists } = useSpecialistsList();
   const { data: specialistTypes } = useSpecialistTypes();
+  const { useList: useTCList } = useTreatmentComplexes();
+  const { data: treatmentComplexes } = useTCList();
 
   // typeId → specialistId
   const [assignments, setAssignments] = useState<Record<number, number | null>>({});
@@ -165,7 +168,6 @@ export function ChildForm({ initialData, onSubmit, isPending, isEditMode }: Chil
       {/* Form Content */}
       <form
         onSubmit={handleSubmit(onFormSubmit, (formErrors) => {
-          console.error("Form validation errors:", formErrors);
           const firstError = Object.values(formErrors)[0];
           if (firstError?.message) {
             toast.error(String(firstError.message));
@@ -392,6 +394,29 @@ export function ChildForm({ initialData, onSubmit, isPending, isEditMode }: Chil
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Treatment Complex */}
+            {treatmentComplexes && treatmentComplexes.length > 0 && (
+              <div className="space-y-2 mt-6 pt-6 border-t border-gray-100">
+                <label className="text-[13px] font-bold text-[#202532]">Davolash kompleksi</label>
+                <Controller
+                  name="treatment_complex_id"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomSelect
+                      options={[
+                        { label: "Tanlanmagan", value: "" },
+                        ...treatmentComplexes.map((tc) => ({ label: tc.name, value: tc.id })),
+                      ]}
+                      value={field.value ?? ""}
+                      onChange={(val) => field.onChange(val === "" ? null : Number(val))}
+                      placeholder="Kompleks tanlang"
+                      bgBtnColor="bg-[#F8F9FB]"
+                    />
+                  )}
+                />
               </div>
             )}
 

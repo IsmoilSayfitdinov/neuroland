@@ -85,15 +85,19 @@ export class SpecialistsAPI {
    * Mutaxassisni yangilash - Swagger spec requires PUT not PATCH
    */
   static async updateSpecialist(id: number, data: PatchedSpecialistUserUpdateRequest): Promise<SpecialistOut> {
-    const hasFile = data.photo instanceof File;
+    // photo string URL bo'lsa olib tashlash — base64 qoldirish
+    const cleaned = { ...data };
+    if (typeof cleaned.photo === "string" && !cleaned.photo.startsWith("data:") && !cleaned.photo.startsWith("iVBOR")) {
+      delete cleaned.photo;
+    }
+
+    const hasFile = cleaned.photo instanceof File;
 
     if (hasFile) {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
+      Object.entries(cleaned).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          if (typeof value === 'object' && !(value instanceof File)) {
-            formData.append(key, JSON.stringify(value));
-          } else if (key === 'work_days') {
+          if (key === 'work_days' || (typeof value === 'object' && !(value instanceof File))) {
             formData.append(key, JSON.stringify(value));
           } else {
             formData.append(key, value as any);
@@ -106,7 +110,7 @@ export class SpecialistsAPI {
       return response.data;
     }
 
-    const response = await api.put<SpecialistOut>(`/v1/specialists/${id}/`, data);
+    const response = await api.put<SpecialistOut>(`/v1/specialists/${id}/`, cleaned);
     return response.data;
   }
 

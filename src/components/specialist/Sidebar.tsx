@@ -4,7 +4,6 @@ import {
   Users,
   ClipboardList,
   FileEdit,
-  Calendar,
   BookOpen,
   Users2,
   LogIn,
@@ -72,7 +71,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
              <img src={Logo} alt="Neuroland" className="w-[47px] h-[37px] object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[14px] font-bold leading-none text-black">Neuroland</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[14px] font-bold leading-none text-black">Neuroland</span>
+              <span className="px-1.5 py-0.5 bg-amber-100 text-amber-600 text-[8px] font-bold rounded-md uppercase tracking-wider leading-none">Beta</span>
+            </div>
             <span className="text-[10px] text-muted-foreground">Platform</span>
           </div>
         </Link>

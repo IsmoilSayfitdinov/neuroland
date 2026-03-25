@@ -10,6 +10,18 @@ import { CardSkeleton } from "@/components/admin/ui/CardSkeleton";
 import { EmptyState } from "@/components/admin/ui/EmptyState";
 import { Video } from "lucide-react";
 
+const knowledgeInfo = (
+  <>
+    <p>Bu bo'limda ota-onalar uchun ta'limiy videodarslar va materiallarni boshqarish mumkin.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Yangi videodars qo'shish</li>
+      <li>Bo'lim bo'yicha filtrlash</li>
+      <li>Mavjud videolarni tahrirlash va o'chirish</li>
+    </ul>
+  </>
+);
+
 export default function KnowledgeCenterAdmin() {
   const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,8 +51,10 @@ export default function KnowledgeCenterAdmin() {
   return (
     <div className=" mx-auto pb-10 space-y-8">
       {/* Header */}
-      <PageHeader 
-        title="Bilim markazi" 
+      <PageHeader
+        title="Bilim markazi"
+        infoTitle="Bilim markazi"
+        infoContent={knowledgeInfo} 
         action={
           <button 
             onClick={() => setIsModalOpen(true)}

@@ -12,7 +12,7 @@ export default function DinamikaChart({ apiData }: Props) {
   const diff = apiData?.growth ?? 0;
 
   return (
-    <Card className="col-span-2">
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
           <CardTitle className="text-xl font-bold text-slate-800">Bemorlar Rivojlanish Dinamikasi</CardTitle>

@@ -92,7 +92,7 @@ export default function TaskCard({ task }: TaskCardProps) {
             {task.hasWarning && (
               <div className="flex items-center gap-1.5 mt-3 text-[#EF4444]">
                 <AlertCircle className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium">Rad etilgan — qaytadan yuborishingiz mumkin</span>
+                <span className="text-[11px] font-medium">Rad etildi</span>
               </div>
             )}
 
@@ -110,10 +110,17 @@ export default function TaskCard({ task }: TaskCardProps) {
 
             <div className="flex items-center gap-3 mt-4">
               {/* Video button */}
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-100 bg-white text-[13px] font-bold text-[#1E293B] hover:bg-gray-50 transition-colors">
-                <PlayCircle className="w-4 h-4 text-[#3B82F6]" />
-                Video
-              </button>
+              {task.videoUrl && (
+                <a
+                  href={task.videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-100 bg-white text-[13px] font-bold text-[#1E293B] hover:bg-gray-50 transition-colors"
+                >
+                  <PlayCircle className="w-4 h-4 text-[#3B82F6]" />
+                  Video
+                </a>
+              )}
 
               {/* Upload evidence */}
               {canSubmit && (

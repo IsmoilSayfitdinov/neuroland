@@ -11,15 +11,15 @@ export const ReviewsSection = ({ testimonials }: ReviewsSectionProps) => {
 
   const reviews = testimonials.map((item) => ({
     id: item.id,
-    name: item.client_name,
-    role: item.client_role,
-    text: item.testimonial_text,
-    image: item.image_url,
+    name: item.author_name,
+    role: item.author_info,
+    text: item.text,
+    image: item.photo,
   }));
 
   return (
-    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-background" id="reviews">
-      <div className="max-w-[1920px] mx-auto px-4 md:px-8">
+    <section className="w-full mt-[48px] md:mt-[112px] py-[48px] md:py-[112px] bg-background px-8" id="reviews">
+      <div className="max-w-[1920px] mx-auto">
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ export const ReviewsSection = ({ testimonials }: ReviewsSectionProps) => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  mx-auto">
           {/* Column 1 */}
           <div className="space-y-6">
             {reviews[0] && <ReviewCard review={reviews[0]} index={0} />}

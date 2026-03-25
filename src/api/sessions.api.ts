@@ -23,10 +23,10 @@ import type {
 export class SessionsAPI {
   // --- Sessions ---
 
-  static async list(page?: number): Promise<Session[]> {
+  static async list(params?: { page?: number; date?: string; group?: number }): Promise<Session[]> {
     const response = await api.get<PaginatedSessionList | Session[]>(
       "/v1/sessions/",
-      { params: { page } }
+      { params }
     );
     const data = response.data;
     return Array.isArray(data) ? data : data.results ?? [];
@@ -118,7 +118,7 @@ export class SessionsAPI {
 
   // --- Schedule Slots ---
 
-  static async listSlots(params?: { page?: number; group?: number }): Promise<ScheduleSlot[]> {
+  static async listSlots(params?: { page?: number; group?: number; specialist?: number }): Promise<ScheduleSlot[]> {
     const response = await api.get<PaginatedScheduleSlotList | ScheduleSlot[]>(
       "/v1/sessions/schedule-slots/",
       { params }

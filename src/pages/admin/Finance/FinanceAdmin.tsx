@@ -7,6 +7,19 @@ import { cn } from "@/lib/utils";
 import { useAnalytics } from "@/hooks/admin/useAnalytics";
 import { Skeleton } from "@/components/admin/ui/Skeleton";
 
+const financeInfo = (
+  <>
+    <p>Bu bo'limda markazning moliyaviy ko'rsatkichlari va to'lov tarixini kuzatish mumkin.</p>
+    <p><strong>Asosiy ko'rsatkichlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Jami tushum va oylik o'sish foizi</li>
+      <li>Keyingi oy uchun prognoz</li>
+      <li>To'lov tarixi jadvali</li>
+      <li>Moliyaviy diagrammalar</li>
+    </ul>
+  </>
+);
+
 export default function FinanceAdmin() {
   const { useAdminFinance } = useAnalytics();
   const { data: finance, isLoading } = useAdminFinance();
@@ -14,7 +27,7 @@ export default function FinanceAdmin() {
   if (isLoading) {
     return (
       <div className="mx-auto pb-10 space-y-6">
-        <PageHeader title="Moliya" />
+        <PageHeader title="Moliya" infoTitle="Moliya bo'limi" infoContent={financeInfo} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm space-y-4">
@@ -38,7 +51,7 @@ export default function FinanceAdmin() {
 
   return (
     <div className="mx-auto pb-10 space-y-6">
-      <PageHeader title="Moliya" />
+      <PageHeader title="Moliya" infoTitle="Moliya bo'limi" infoContent={financeInfo} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard

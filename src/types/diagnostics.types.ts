@@ -39,5 +39,3 @@ export type DiagnosticResultRequest = {
   comment?: string | null;
   answers: DiagnosticAnswerRequest[];
 }
-
-export const __is_diagnostics_types = true;

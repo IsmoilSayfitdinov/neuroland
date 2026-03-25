@@ -6,155 +6,149 @@ export interface Paginated<T> {
   results: T[];
 }
 
-// --- Hero Section ---
+// --- Hero Section (Singleton) ---
 export interface HeroSection {
-  id: number;
+  id?: number;
   title: string;
   subtitle: string;
-  hero_image_url: string;
-  cta_text: string;
-  cta_link: string;
+  button_text: string;
+  image: string | null;
+  stat_1_value: string;
+  stat_1_label: string;
+  stat_2_value: string;
+  stat_2_label: string;
+  stat_3_value: string;
+  stat_3_label: string;
 }
 
 export interface HeroSectionRequest {
-  title: string;
-  subtitle: string;
-  hero_image_url: string;
-  cta_text: string;
-  cta_link: string;
-}
-
-export interface PatchedHeroSectionRequest {
   title?: string;
   subtitle?: string;
-  hero_image_url?: string;
-  cta_text?: string;
-  cta_link?: string;
+  button_text?: string;
+  image?: File | string | null;
+  stat_1_value?: string;
+  stat_1_label?: string;
+  stat_2_value?: string;
+  stat_2_label?: string;
+  stat_3_value?: string;
+  stat_3_label?: string;
 }
 
-// --- About Section ---
+export type PatchedHeroSectionRequest = Partial<HeroSectionRequest>;
+
+// --- About Section (Singleton) ---
 export interface AboutSection {
-  id: number;
+  id?: number;
   title: string;
   description: string;
-  image_url: string;
-  mission: string;
-  vision: string;
+  image: string | null;
+  mission_title: string;
+  mission_text: string;
+  mission_icon: string;
+  goal_title: string;
+  goal_text: string;
+  goal_icon: string;
 }
 
 export interface AboutSectionRequest {
-  title: string;
-  description: string;
-  image_url: string;
-  mission: string;
-  vision: string;
-}
-
-export interface PatchedAboutSectionRequest {
   title?: string;
   description?: string;
-  image_url?: string;
-  mission?: string;
-  vision?: string;
+  image?: File | string | null;
+  mission_title?: string;
+  mission_text?: string;
+  mission_icon?: string;
+  goal_title?: string;
+  goal_text?: string;
+  goal_icon?: string;
 }
 
-// --- Platform Section ---
+export type PatchedAboutSectionRequest = Partial<AboutSectionRequest>;
+
+// --- Platform Section (Singleton) ---
 export interface PlatformSection {
-  id: number;
+  id?: number;
   title: string;
-  description: string;
-  features: any[];
-  image_url: string;
+  subtitle: string;
+  image: string | null;
+  doctor_title: string;
+  doctor_subtitle: string;
+  doctor_features: Record<string, any>;
+  parent_title: string;
+  parent_subtitle: string;
+  parent_features: Record<string, any>;
 }
 
 export interface PlatformSectionRequest {
-  title: string;
-  description: string;
-  features: any[];
-  image_url: string;
-}
-
-export interface PatchedPlatformSectionRequest {
   title?: string;
-  description?: string;
-  features?: any[];
-  image_url?: string;
+  subtitle?: string;
+  image?: File | string | null;
+  doctor_title?: string;
+  doctor_subtitle?: string;
+  doctor_features?: Record<string, any>;
+  parent_title?: string;
+  parent_subtitle?: string;
+  parent_features?: Record<string, any>;
 }
 
-// --- Contact Info ---
+export type PatchedPlatformSectionRequest = Partial<PlatformSectionRequest>;
+
+// --- Contact Info (Singleton) ---
 export interface ContactInfo {
-  id: number;
+  id?: number;
+  address: string;
   phone: string;
   email: string;
-  address: string;
-  working_hours: string;
-  social_media: Record<string, string>;
+  work_hours: string;
+  footer_description: string;
 }
 
 export interface ContactInfoRequest {
-  phone: string;
-  email: string;
-  address: string;
-  working_hours: string;
-  social_media: Record<string, string>;
-}
-
-export interface PatchedContactInfoRequest {
+  address?: string;
   phone?: string;
   email?: string;
-  address?: string;
-  working_hours?: string;
-  social_media?: Record<string, string>;
+  work_hours?: string;
+  footer_description?: string;
 }
+
+export type PatchedContactInfoRequest = Partial<ContactInfoRequest>;
 
 // --- Contact Requests ---
 export interface ContactRequest {
   id: number;
   name: string;
-  email: string;
   phone: string;
-  subject: string;
+  child_age: string;
   message: string;
   created_at: string;
+  is_read: boolean;
 }
 
 export interface ContactRequestAdmin {
   id: number;
   name: string;
-  email: string;
   phone: string;
-  subject: string;
+  child_age: string;
   message: string;
-  status: string;
-  is_read: boolean;
   created_at: string;
-  response: string | null;
+  is_read: boolean;
 }
 
 export interface ContactRequestCreateData {
   name: string;
-  email: string;
   phone: string;
-  subject: string;
-  message: string;
+  child_age?: string;
+  message?: string;
 }
 
 export interface ContactRequestAdminRequest {
-  response?: string;
-  status?: string;
   is_read?: boolean;
 }
 
-export interface PatchedContactRequestAdminRequest {
-  response?: string;
-  status?: string;
-  is_read?: boolean;
-}
+export type PatchedContactRequestAdminRequest = ContactRequestAdminRequest;
 
 export interface ContactRequestStats {
   total_requests: number;
   unread_count: number;
-  by_status: Record<string, number>;
 }
 
 // --- FAQ ---
@@ -162,162 +156,174 @@ export interface FAQ {
   id: number;
   question: string;
   answer: string;
-  category: string;
   order: number;
+  is_active: boolean;
 }
 
 export interface FAQRequest {
   question: string;
   answer: string;
-  category: string;
-  order: number;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedFAQRequest {
   question?: string;
   answer?: string;
-  category?: string;
   order?: number;
+  is_active?: boolean;
 }
 
 // --- Gallery ---
 export interface GalleryItem {
   id: number;
+  photo: string;
   title: string;
   description: string;
-  image_url: string;
-  category: string;
   order: number;
-  created_at: string;
+  is_active: boolean;
 }
 
 export interface GalleryItemRequest {
+  photo: File | string;
   title: string;
-  description: string;
-  image_url: string;
-  category: string;
-  order: number;
+  description?: string;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedGalleryItemRequest {
+  photo?: File | string;
   title?: string;
   description?: string;
-  image_url?: string;
-  category?: string;
   order?: number;
+  is_active?: boolean;
 }
 
 // --- Success Stories ---
 export interface SuccessStory {
   id: number;
-  title: string;
-  description: string;
-  image_url: string;
   child_name: string;
-  age: number;
-  results: string;
-  testimonial?: string;
-  created_at: string;
+  child_age: string;
+  duration_text: string;
+  diagnosis: string;
+  before_text: string;
+  after_text: string;
+  metrics: Record<string, any>;
+  order: number;
+  is_active: boolean;
 }
 
 export interface SuccessStoryRequest {
-  title: string;
-  description: string;
-  image_url: string;
   child_name: string;
-  age: number;
-  results: string;
-  testimonial?: string;
+  child_age: string;
+  duration_text: string;
+  diagnosis: string;
+  before_text: string;
+  after_text: string;
+  metrics?: Record<string, any>;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedSuccessStoryRequest {
-  title?: string;
-  description?: string;
-  image_url?: string;
   child_name?: string;
-  age?: number;
-  results?: string;
-  testimonial?: string;
+  child_age?: string;
+  duration_text?: string;
+  diagnosis?: string;
+  before_text?: string;
+  after_text?: string;
+  metrics?: Record<string, any>;
+  order?: number;
+  is_active?: boolean;
 }
 
 // --- Team ---
 export interface TeamMember {
   id: number;
+  photo: string | null;
   name: string;
-  title: string;
-  bio: string;
-  image_url: string;
-  email: string;
-  social_links: Record<string, string>;
+  specialty: string;
+  experience_years: number;
+  order: number;
+  is_active: boolean;
+  bio?: string | null;
 }
 
 export interface TeamMemberRequest {
+  photo?: File | string | null;
   name: string;
-  title: string;
-  bio: string;
-  image_url: string;
-  email: string;
-  social_links: Record<string, string>;
+  specialty: string;
+  experience_years?: number;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedTeamMemberRequest {
+  photo?: File | string | null;
   name?: string;
-  title?: string;
-  bio?: string;
-  image_url?: string;
-  email?: string;
-  social_links?: Record<string, string>;
+  specialty?: string;
+  experience_years?: number;
+  order?: number;
+  is_active?: boolean;
 }
 
 // --- Testimonials ---
 export interface Testimonial {
   id: number;
-  client_name: string;
-  client_role: string;
-  testimonial_text: string;
-  rating: number;
-  image_url: string;
-  created_at: string;
+  text: string;
+  author_name: string;
+  author_info: string;
+  photo: string | null;
+  order: number;
+  is_active: boolean;
 }
 
 export interface TestimonialRequest {
-  client_name: string;
-  client_role: string;
-  testimonial_text: string;
-  rating: number;
-  image_url: string;
+  text: string;
+  author_name: string;
+  author_info: string;
+  photo?: File | string | null;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedTestimonialRequest {
-  client_name?: string;
-  client_role?: string;
-  testimonial_text?: string;
-  rating?: number;
-  image_url?: string;
+  text?: string;
+  author_name?: string;
+  author_info?: string;
+  photo?: File | string | null;
+  order?: number;
+  is_active?: boolean;
 }
 
 // --- Values ---
 export interface ValueCard {
   id: number;
+  icon: string;
   title: string;
   description: string;
-  icon_url: string;
+  image: string | null;
   order: number;
-  created_at: string;
+  is_active: boolean;
 }
 
 export interface ValueCardRequest {
+  icon: string;
   title: string;
   description: string;
-  icon_url: string;
-  order: number;
+  image?: File | string | null;
+  order?: number;
+  is_active?: boolean;
 }
 
 export interface PatchedValueCardRequest {
+  icon?: string;
   title?: string;
   description?: string;
-  icon_url?: string;
+  image?: File | string | null;
   order?: number;
+  is_active?: boolean;
 }
 
 // --- Landing All ---

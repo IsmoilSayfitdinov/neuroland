@@ -9,7 +9,7 @@ export const useSessions = () => {
   const useSessionsList = (page?: number) =>
     useQuery({
       queryKey: ["sessions", page],
-      queryFn: () => SessionsAPI.list(page),
+      queryFn: () => SessionsAPI.list({ page }),
     });
 
   const useSessionDetail = (id: number) =>

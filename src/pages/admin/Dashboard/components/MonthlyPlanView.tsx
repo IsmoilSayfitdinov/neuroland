@@ -1,4 +1,4 @@
-import { Activity, CheckCircle2, Loader2 } from "lucide-react";
+import { Activity, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlansAPI } from "@/api/plans.api";
@@ -46,10 +46,10 @@ interface MonthlyPlanViewProps {
   planId: number | null;
 }
 
-export function MonthlyPlanView({ monthlyGoal, monthName, planId }: MonthlyPlanViewProps) {
+export function MonthlyPlanView({ monthlyGoal, monthName }: MonthlyPlanViewProps) {
   const queryClient = useQueryClient();
 
-  const { mutate: toggleMastered, isPending } = useMutation({
+  const { mutate: toggleMastered } = useMutation({
     mutationFn: ({ itemId, isMastered }: { itemId: number; isMastered: boolean }) =>
       PlansAPI.patchMonthlyGoalItem(itemId, { is_mastered: isMastered }),
     onSuccess: () => {
@@ -91,10 +91,10 @@ export function MonthlyPlanView({ monthlyGoal, monthName, planId }: MonthlyPlanV
             <p className="text-[12px] text-[#9EB1D4] mt-1">{monthlyGoal.notes}</p>
           )}
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FF] text-[#4D89FF] hover:bg-[#E5EEFF] transition-colors rounded-[12px] text-[13px] font-semibold">
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FF] text-[#4D89FF] rounded-[12px] text-[13px] font-semibold">
           <Activity className="w-4 h-4" />
           Faol oy
-        </button>
+        </div>
       </div>
 
       {/* Grid of Cards */}

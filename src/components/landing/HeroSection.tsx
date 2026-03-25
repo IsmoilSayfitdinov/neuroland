@@ -50,8 +50,7 @@ export const HeroSection = ({ hero }: HeroSectionProps) => {
       await LandingAPI.createContactRequest({
         name: data.name,
         phone: data.phone,
-        email: "",
-        subject: data.childAge ? `Bola yoshi: ${data.childAge}` : "Konsultatsiya",
+        child_age: data.childAge || "",
         message: data.message || "",
       });
     } catch {
@@ -122,24 +121,30 @@ export const HeroSection = ({ hero }: HeroSectionProps) => {
                 onClick={() => setOpen(true)}
                 className="bg-[#1F61F9] hover:bg-[#1F61F9] text-white px-6 md:px-0 py-3 md:py-0 rounded-[24px] font-semibold text-base md:text-[14px] md:h-[44px] transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 transform cursor-pointer w-full md:w-[207px]"
               >
-                {hero?.cta_text || t("hero.cta")}
+                {hero?.button_text || t("hero.cta")}
               </motion.button>
             </div>
 
             {/* Stats */}
             <div className="flex gap-8 md:gap-12 2xl:gap-8 3xl:gap-12 pb-9 2xl:pb-9 3xl:pb-9 overflow-x-auto md:overflow-visible no-scrollbar" >
-              <div>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">500+</h3>
-                <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t("hero.activeUsers")}</p>
-              </div>
-              <div>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">50+</h3>
-                <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t("hero.clinics")}</p>
-              </div>
-              <div>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">98%</h3>
-                <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t("hero.trust")}</p>
-              </div>
+              {hero?.stat_1_value && (
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">{hero.stat_1_value}</h3>
+                  <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{hero.stat_1_label}</p>
+                </div>
+              )}
+              {hero?.stat_2_value && (
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">{hero.stat_2_value}</h3>
+                  <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{hero.stat_2_label}</p>
+                </div>
+              )}
+              {hero?.stat_3_value && (
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">{hero.stat_3_value}</h3>
+                  <p className="text-[10px] md:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{hero.stat_3_label}</p>
+                </div>
+              )}
             </div>
           </motion.div>
 
@@ -153,7 +158,7 @@ export const HeroSection = ({ hero }: HeroSectionProps) => {
             <div className="relative min-h-[300px] md:min-h-[420px] xl:min-h-[480px] 2xl:min-h-[450px] 3xl:min-h-[594px] w-full lg:min-w-[646px] xl:min-w-[560px] 3xl:min-w-[630px]">
               <div className="absolute inset-0 bg-transparent rounded-[2rem] md:rounded-[3rem] overflow-hidden">
                  <img
-                   src={hero?.hero_image_url || ImageBannerPeople}
+                   src={hero?.image || ImageBannerPeople}
                    alt="3D Doctor Illustration"
                    className="w-full h-full object-contain"
                  />

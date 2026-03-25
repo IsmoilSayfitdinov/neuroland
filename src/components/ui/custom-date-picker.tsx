@@ -11,6 +11,7 @@ interface CustomDatePickerProps {
   error?: string;
   disabled?: boolean;
   className?: string;
+  minDate?: string;
 }
 
 export function CustomDatePicker({
@@ -21,11 +22,14 @@ export function CustomDatePicker({
   error,
   disabled = false,
   className,
+  minDate,
 }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [viewState, setViewState] = React.useState<'year' | 'month' | 'day'>('day');
   const [viewDate, setViewDate] = React.useState(value ? new Date(value) : new Date());
+  const [dropUp, setDropUp] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const selectedDate = value ? new Date(value) : null;
 
@@ -45,6 +49,16 @@ export function CustomDatePicker({
       setViewState(value ? 'day' : 'year');
     }
   }, [isOpen, value]);
+
+  const handleToggle = () => {
+    if (disabled) return;
+    if (!isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setDropUp(spaceBelow < 420);
+    }
+    setIsOpen(!isOpen);
+  };
 
   const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -66,7 +80,7 @@ export function CustomDatePicker({
 
   const months = [
     "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
-    "Iyul", "Avgust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"
+    "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"
   ];
 
   const daysHeader = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
@@ -82,22 +96,26 @@ export function CustomDatePicker({
     }
 
     for (let d = 1; d <= totalDays; d++) {
-      const isSelected = selectedDate?.getDate() === d && 
-                         selectedDate?.getMonth() === viewDate.getMonth() && 
+      const isSelected = selectedDate?.getDate() === d &&
+                         selectedDate?.getMonth() === viewDate.getMonth() &&
                          selectedDate?.getFullYear() === viewDate.getFullYear();
-      const isToday = new Date().getDate() === d && 
-                      new Date().getMonth() === viewDate.getMonth() && 
+      const isToday = new Date().getDate() === d &&
+                      new Date().getMonth() === viewDate.getMonth() &&
                       new Date().getFullYear() === viewDate.getFullYear();
+      const ymd = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const isBeforeMin = minDate ? ymd < minDate : false;
 
       days.push(
         <button
           key={d}
           type="button"
-          onClick={() => handleDateSelect(d)}
+          disabled={isBeforeMin}
+          onClick={() => !isBeforeMin && handleDateSelect(d)}
           className={cn(
-            "h-9 w-9 flex items-center justify-center rounded-full text-[13px] transition-all hover:bg-[#F0F5FF] hover:text-[#4D89FF]",
-            isSelected ? "bg-[#4D89FF] text-white hover:bg-[#4D89FF] hover:text-white font-bold" : "text-[#2D3142]",
-            isToday && !isSelected && "border border-[#4D89FF] text-[#4D89FF]"
+            "h-9 w-9 flex items-center justify-center rounded-full text-[13px] transition-all",
+            isBeforeMin ? "text-gray-200 cursor-not-allowed" : "hover:bg-[#F0F5FF] hover:text-[#4D89FF]",
+            isSelected ? "bg-[#4D89FF] text-white hover:bg-[#4D89FF] hover:text-white font-bold" : !isBeforeMin && "text-[#2D3142]",
+            isToday && !isSelected && !isBeforeMin && "border border-[#4D89FF] text-[#4D89FF]"
           )}
         >
           {d}
@@ -163,8 +181,9 @@ export function CustomDatePicker({
       )}
       <div className="relative">
         <button
+          ref={buttonRef}
           type="button"
-          onClick={() => !disabled && setIsOpen(!isOpen)}
+          onClick={handleToggle}
           className={cn(
             "w-full h-[52px] px-4 flex items-center gap-3 rounded-[12px] bg-[#F8F9FB] border border-transparent transition-all duration-200 outline-none",
             isOpen && "bg-white border-[#4D89FF] shadow-[0_0_0_4px_rgba(77,137,255,0.1)]",
@@ -178,23 +197,28 @@ export function CustomDatePicker({
             "text-[14px]",
             selectedDate ? "text-[#2D3142]" : "text-[#9EB1D4]"
           )}>
-            {selectedDate ? selectedDate.toLocaleDateString('uz-UZ') : placeholder}
+            {selectedDate ? `${selectedDate.getDate()} ${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}` : placeholder}
           </span>
         </button>
 
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 4, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              initial={{ opacity: 0, y: dropUp ? 10 : -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: dropUp ? 10 : -10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute z-50 w-[300px] mt-2 bg-white rounded-[20px] border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] p-4"
+              className={cn(
+                "absolute z-50 w-[300px] bg-white rounded-[20px] border border-gray-100 p-4",
+                dropUp
+                  ? "bottom-full mb-2 shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.15)]"
+                  : "top-full mt-2 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)]"
+              )}
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4 px-1">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     if (viewState === 'day') setViewState('month');
                     else if (viewState === 'month') setViewState('year');
@@ -212,18 +236,18 @@ export function CustomDatePicker({
                     <span>{viewDate.getFullYear()}</span>
                   </div>
                 </button>
-                
+
                 {viewState === 'day' && (
                   <div className="flex items-center gap-1">
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handlePrevMonth}
                       className="p-1.5 hover:bg-[#F8F9FB] rounded-full transition-colors text-[#9EB1D4] hover:text-[#2D3142]"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleNextMonth}
                       className="p-1.5 hover:bg-[#F8F9FB] rounded-full transition-colors text-[#9EB1D4] hover:text-[#2D3142]"
                     >
@@ -254,7 +278,7 @@ export function CustomDatePicker({
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center px-1">
-                <button 
+                <button
                   type="button"
                   onClick={() => {
                     const today = new Date().toISOString().split('T')[0];
@@ -265,9 +289,9 @@ export function CustomDatePicker({
                 >
                   Bugungi sana
                 </button>
-                
+
                 {viewState !== 'year' && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => {
                         if (viewState === 'day') setViewState('month');
@@ -291,4 +315,3 @@ export function CustomDatePicker({
     </div>
   );
 }
-

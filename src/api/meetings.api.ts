@@ -58,7 +58,7 @@ export class MeetingsAPI {
   static async addGoalReviews(id: number, reviews: { monthly_goal_item: number; comment: string }[]): Promise<any> {
     const response = await api.post(
       `/v1/meetings/monthly/${id}/goal-reviews/`,
-      { reviews }
+      reviews
     );
     return response.data;
   }

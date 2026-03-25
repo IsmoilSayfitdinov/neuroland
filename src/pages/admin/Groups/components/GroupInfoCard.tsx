@@ -58,7 +58,10 @@ export function GroupInfoCard({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 min-w-[200px]">
-          <button className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors text-white py-2.5 rounded-[10px] text-[13px] font-medium shadow-sm">
+          <button
+            onClick={() => navigate({ to: "/admin/schedule" })}
+            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors text-white py-2.5 rounded-[10px] text-[13px] font-medium shadow-sm"
+          >
             Guruh jadvalini ko'rish
           </button>
           <button 

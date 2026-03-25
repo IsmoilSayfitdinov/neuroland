@@ -31,6 +31,7 @@ export function SpecialistForm({ initialData, onSubmit, isPending, title }: Spec
   const [isSubmittingInternal, setIsSubmittingInternal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(initialData?.photo || null);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { register, handleSubmit, formState: { errors, isDirty }, setValue, watch, reset, control } = useForm<SpecialistSchema>({
@@ -265,7 +266,7 @@ export function SpecialistForm({ initialData, onSubmit, isPending, title }: Spec
                   <div className="w-[100px] h-[100px] bg-[#F8F9FB] rounded-[24px] border border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
                     {photoPreview ? (
                       <>
-                        <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                        <img src={import.meta.env.VITE_API_MEDIA_URL + photoPreview} alt="Preview" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={removePhoto}
@@ -320,6 +321,7 @@ export function SpecialistForm({ initialData, onSubmit, isPending, title }: Spec
                     onChange={(val) => field.onChange(val)}
                     error={errors.specialist_type_id?.message}
                     placeholder="Mutaxassis turini tanlang"
+                    bgBtnColor="bg-slate-50"
                   />
                 )}
               />

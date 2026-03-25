@@ -9,6 +9,18 @@ import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { TableSkeleton } from "@/components/admin/ui/TableSkeleton";
 import { EmptyState } from "@/components/admin/ui/EmptyState";
 
+const eventsInfo = (
+  <>
+    <p>Bu bo'limda markaz tadbirlarini yaratish va boshqarish mumkin.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Yangi tadbir yaratish (sana, vaqt, guruh)</li>
+      <li>Tadbirni bajarilgan deb belgilash</li>
+      <li>Tadbirlar ro'yxatini ko'rish va o'chirish</li>
+    </ul>
+  </>
+);
+
 export default function EventsAdmin() {
   const [showForm, setShowForm] = useState(false);
 
@@ -29,7 +41,7 @@ export default function EventsAdmin() {
   if (isLoading) {
     return (
       <div className="space-y-8">
-        <PageHeader title="Tadbirlar" />
+        <PageHeader title="Tadbirlar" infoTitle="Tadbirlar bo'limi" infoContent={eventsInfo} />
         <TableSkeleton rows={5} columns={4} />
       </div>
     );

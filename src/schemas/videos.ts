@@ -5,7 +5,6 @@ export const videoSchema = z.object({
   video_url: z.string().url("Noto'g'ri video URL"),
   duration: z.string().optional(),
   equipments: z.string().optional(),
-  age_group_id: z.string().min(1, "Yosh toifasini tanlang"),
   section_id: z.string().min(1, "Bo'limni tanlang"),
   exercise_id: z.string().optional(),
 });

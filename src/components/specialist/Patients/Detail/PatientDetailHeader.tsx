@@ -26,7 +26,7 @@ export default function PatientDetailHeader({
         {/* Avatar */}
         <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden shrink-0">
           {photo ? (
-            <img src={photo} alt={name} className="w-full h-full object-cover" />
+            <img src={import.meta.env.VITE_API_MEDIA_URL + photo} alt={name} className="w-full h-full object-cover" />
           ) : (
             <User className="w-8 h-8 text-blue-400" />
           )}

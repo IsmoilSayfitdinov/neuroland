@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Info } from "lucide-react";
+import { InfoModal } from "@/components/admin/ui/InfoModal";
 import { CustomSelect } from "@/components/ui/custom-select";
 import { useState, useMemo } from "react";
 import { useSpecialists } from "@/hooks/admin/useSpecialists";
@@ -19,7 +20,21 @@ const EVENT_COLORS = [
 
 const DAYS_OF_WEEK = ["Du", "Se", "Cho", "Pa", "Ju", "Sha", "Ya"];
 
+const calendarInfo = (
+  <>
+    <p>Kalendar sahifasida barcha seanslarni vizual ko'rinishda kuzatish mumkin.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Oylik kalendar ko'rinishida seanslarni ko'rish</li>
+      <li>Mutaxassis yoki bola bo'yicha filtrlash</li>
+      <li>Kunlik mashg'ulotlar sonini kuzatish</li>
+      <li>Rang kodlari orqali bo'limlarni farqlash</li>
+    </ul>
+  </>
+);
+
 export default function AdminCalendar() {
+  const [showCalendarInfo, setShowCalendarInfo] = useState(false);
   const [specialistId, setSpecialistId] = useState("all");
   const [childId, setChildId] = useState("all");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -127,7 +142,13 @@ export default function AdminCalendar() {
 
   return (
     <div className="mx-auto pb-10">
-      <h1 className="text-[28px] font-bold text-[#2D3142] mb-8">Kalendar</h1>
+      <div className="flex items-center gap-2.5 mb-8">
+        <h1 className="text-[28px] font-bold text-[#2D3142]">Kalendar</h1>
+        <button type="button" onClick={() => setShowCalendarInfo(true)} className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors">
+          <Info className="w-4 h-4 text-blue-500" />
+        </button>
+      </div>
+      <InfoModal isOpen={showCalendarInfo} onClose={() => setShowCalendarInfo(false)} title="Kalendar">{calendarInfo}</InfoModal>
 
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* Left Sidebar */}

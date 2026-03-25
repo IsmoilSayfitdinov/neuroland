@@ -58,5 +58,24 @@ export const useChildren = () => {
       onError: (error) => toast.error(extractErrorMessage(error, "O'chirishda xatolik")),
     });
 
-  return { useChildrenList, useChildDetail, useCreateChild, useUpdateChild, useDeleteChild };
+  const useTransferChild = () =>
+    useMutation({
+      mutationFn: ({ id, data }: { id: number; data: { new_group_id: number; reason?: string } }) =>
+        ChildrenAPI.transfer(id, data),
+      onSuccess: (_, { id }) => {
+        queryClient.invalidateQueries({ queryKey: [CHILD_KEY, id] });
+        queryClient.invalidateQueries({ queryKey: [CHILDREN_KEY] });
+        toast.success("Bola yangi guruhga o'tkazildi");
+      },
+      onError: (error) => toast.error(extractErrorMessage(error, "Guruhga o'tkazishda xatolik")),
+    });
+
+  const useTransferHistory = (childId: number) =>
+    useQuery({
+      queryKey: [CHILD_KEY, childId, "transfer-history"],
+      queryFn: () => ChildrenAPI.getTransferHistory(childId),
+      enabled: !!childId,
+    });
+
+  return { useChildrenList, useChildDetail, useCreateChild, useUpdateChild, useDeleteChild, useTransferChild, useTransferHistory };
 };

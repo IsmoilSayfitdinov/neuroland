@@ -7,6 +7,18 @@ import { GROUP_SHIFTS, GROUP_STATUS_LABELS } from "@/constants/groups";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { cn } from "@/lib/utils";
 
+const aiPlanInfo = (
+  <>
+    <p>AI Rejalashtiruvchi sun'iy intellekt yordamida guruhlar uchun avtomatik yillik reja tuzish imkonini beradi.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Guruhni tanlab AI orqali reja generatsiya qilish</li>
+      <li>Mavjud rejalarni ko'rish va tahrirlash</li>
+      <li>Guruh holati va smena ma'lumotlarini ko'rish</li>
+    </ul>
+  </>
+);
+
 export default function AIPlanListAdmin() {
   const { data: groups, isLoading: isLoadingGroups } = useQuery({
     queryKey: ["groups"],
@@ -23,7 +35,7 @@ export default function AIPlanListAdmin() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <PageHeader title="AI Rejalashtiruvchi" />
+        <PageHeader title="AI Rejalashtiruvchi" infoTitle="AI Rejalashtiruvchi" infoContent={aiPlanInfo} />
         <div className="flex items-center justify-center min-h-[300px]">
           <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
         </div>
@@ -33,7 +45,7 @@ export default function AIPlanListAdmin() {
 
   return (
     <div className="mx-auto pb-10 space-y-6">
-      <PageHeader title="AI Rejalashtiruvchi" />
+      <PageHeader title="AI Rejalashtiruvchi" infoTitle="AI Rejalashtiruvchi" infoContent={aiPlanInfo} />
 
       {!groups?.length ? (
         <div className="py-20 text-center bg-white rounded-[24px] border border-dashed border-gray-200">

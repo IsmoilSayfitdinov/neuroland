@@ -67,6 +67,10 @@ export class ChildrenAPI {
    * Bola ma'lumotlarini yangilash (Doctor/Admin)
    */
   static async update(childId: number, data: PatchedChildUserUpdateRequest): Promise<ChildOut> {
+    // photo string URL bo'lsa olib tashlash — base64 qoldirish
+    if (typeof data.photo === "string" && !data.photo.startsWith("data:") && !data.photo.startsWith("iVBOR")) {
+      delete data.photo;
+    }
     const hasFile = data.photo instanceof File;
 
     if (hasFile) {
@@ -97,4 +101,19 @@ export class ChildrenAPI {
     await api.delete(`/v1/children/${childId}/`);
   }
 
+  /**
+   * Bolani boshqa guruhga o'tkazish
+   */
+  static async transfer(childId: number, data: { new_group_id: number; reason?: string }): Promise<ChildOut> {
+    const response = await api.post<ChildOut>(`/v1/children/${childId}/transfer/`, data);
+    return response.data;
+  }
+
+  /**
+   * Bolaning guruh o'tkazish tarixi
+   */
+  static async getTransferHistory(childId: number): Promise<any[]> {
+    const response = await api.get(`/v1/children/${childId}/transfer_history/`);
+    return response.data;
+  }
 }

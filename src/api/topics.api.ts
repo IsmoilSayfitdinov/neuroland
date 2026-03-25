@@ -5,7 +5,6 @@ import type {
   TopicListRequest,
   PatchedTopicListRequest,
   TopicExercise,
-  TopicExerciseRequest,
   TopicExerciseProgress,
   PaginatedTopicList,
   PaginatedTopicExerciseList,
@@ -44,7 +43,7 @@ export class TopicsAPI {
     await api.delete(`/v1/topics/${id}/`);
   }
 
-  static async assignGroup(id: number, data: { group: number }): Promise<TopicList> {
+  static async assignGroup(id: number, data: { group: number; week_start?: string }): Promise<TopicList> {
     const response = await api.post<TopicList>(`/v1/topics/${id}/assign-group/`, data);
     return response.data;
   }
@@ -69,8 +68,9 @@ export class TopicsAPI {
     return response.data;
   }
 
-  static async rotateTopics(): Promise<void> {
-    await api.post("/v1/topics/rotate/");
+  static async rotateTopics(groupIds: number[]): Promise<any> {
+    const response = await api.post("/v1/topics/rotate/", { group_ids: groupIds });
+    return response.data;
   }
 
   // --- Topic Exercises (Bilim Markazi - Video) ---

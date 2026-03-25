@@ -2,21 +2,16 @@ import api from "./api";
 import type {
   LandingAll,
   HeroSection,
-  HeroSectionRequest,
   PatchedHeroSectionRequest,
   AboutSection,
-  AboutSectionRequest,
   PatchedAboutSectionRequest,
   PlatformSection,
-  PlatformSectionRequest,
   PatchedPlatformSectionRequest,
   ContactInfo,
-  ContactInfoRequest,
   PatchedContactInfoRequest,
   ContactRequest,
   ContactRequestAdmin,
   ContactRequestCreateData,
-  ContactRequestAdminRequest,
   PatchedContactRequestAdminRequest,
   ContactRequestStats,
   FAQ,
@@ -40,6 +35,46 @@ import type {
   Paginated,
 } from "../types/landing.types";
 
+/** Convert plain object (possibly with File values) to FormData */
+function toFormData(data: Record<string, any>): FormData {
+  const fd = new FormData();
+  for (const [key, value] of Object.entries(data)) {
+    if (value === undefined || value === null) continue;
+    if (value instanceof File) {
+      fd.append(key, value);
+    } else if (typeof value === "object" && !(value instanceof Blob)) {
+      fd.append(key, JSON.stringify(value));
+    } else {
+      fd.append(key, String(value));
+    }
+  }
+  return fd;
+}
+
+/** Check if data contains any File objects */
+function hasFile(data: Record<string, any>): boolean {
+  return Object.values(data).some((v) => v instanceof File);
+}
+
+/** File fields — string URL bo'lsa olib tashlash (backend faqat File kutadi) */
+const FILE_FIELDS = ["image", "photo", "thumbnail"];
+
+function stripStringFiles(data: Record<string, any>): Record<string, any> {
+  const cleaned = { ...data };
+  for (const key of FILE_FIELDS) {
+    if (key in cleaned && typeof cleaned[key] === "string") {
+      delete cleaned[key];
+    }
+  }
+  return cleaned;
+}
+
+/** Send as FormData if files present, otherwise JSON */
+function preparePayload(data: Record<string, any>): FormData | Record<string, any> {
+  const cleaned = stripStringFiles(data);
+  return hasFile(cleaned) ? toFormData(cleaned) : cleaned;
+}
+
 export class LandingAPI {
   // --- Main ---
   static async getAll(): Promise<LandingAll> {
@@ -47,109 +82,56 @@ export class LandingAPI {
     return response.data;
   }
 
-  // --- Hero ---
-  static async listHero(page?: number): Promise<HeroSection[]> {
-    const response = await api.get<Paginated<HeroSection> | HeroSection[]>(
-      "/v1/landing/hero/", { params: { page } }
-    );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getHero(id: number): Promise<HeroSection> {
-    const response = await api.get<HeroSection>(`/v1/landing/hero/${id}/`);
+  // --- Hero (Singleton) ---
+  static async getHero(): Promise<HeroSection> {
+    const response = await api.get<HeroSection>("/v1/landing/hero/");
     return response.data;
   }
 
-  static async updateHero(id: number, data: HeroSectionRequest): Promise<HeroSection> {
-    const response = await api.put<HeroSection>(`/v1/landing/hero/${id}/`, data);
+  static async patchHero(data: PatchedHeroSectionRequest): Promise<HeroSection> {
+    const response = await api.post<HeroSection>("/v1/landing/hero/", preparePayload(data));
     return response.data;
   }
 
-  static async patchHero(id: number, data: PatchedHeroSectionRequest): Promise<HeroSection> {
-    const response = await api.patch<HeroSection>(`/v1/landing/hero/${id}/`, data);
+  // --- About (Singleton) ---
+  static async getAbout(): Promise<AboutSection> {
+    const response = await api.get<AboutSection>("/v1/landing/about/");
     return response.data;
   }
 
-  // --- About ---
-  static async listAbout(page?: number): Promise<AboutSection[]> {
-    const response = await api.get<Paginated<AboutSection> | AboutSection[]>(
-      "/v1/landing/about/", { params: { page } }
-    );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getAbout(id: number): Promise<AboutSection> {
-    const response = await api.get<AboutSection>(`/v1/landing/about/${id}/`);
+  static async patchAbout(data: PatchedAboutSectionRequest): Promise<AboutSection> {
+    const response = await api.post<AboutSection>("/v1/landing/about/", preparePayload(data));
     return response.data;
   }
 
-  static async updateAbout(id: number, data: AboutSectionRequest): Promise<AboutSection> {
-    const response = await api.put<AboutSection>(`/v1/landing/about/${id}/`, data);
+  // --- Platform (Singleton) ---
+  static async getPlatform(): Promise<PlatformSection> {
+    const response = await api.get<PlatformSection>("/v1/landing/platform/");
     return response.data;
   }
 
-  static async patchAbout(id: number, data: PatchedAboutSectionRequest): Promise<AboutSection> {
-    const response = await api.patch<AboutSection>(`/v1/landing/about/${id}/`, data);
+  static async patchPlatform(data: PatchedPlatformSectionRequest): Promise<PlatformSection> {
+    const response = await api.post<PlatformSection>("/v1/landing/platform/", preparePayload(data));
     return response.data;
   }
 
-  // --- Platform ---
-  static async listPlatform(page?: number): Promise<PlatformSection[]> {
-    const response = await api.get<Paginated<PlatformSection> | PlatformSection[]>(
-      "/v1/landing/platform/", { params: { page } }
-    );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getPlatform(id: number): Promise<PlatformSection> {
-    const response = await api.get<PlatformSection>(`/v1/landing/platform/${id}/`);
+  // --- Contact Info (Singleton) ---
+  static async getContactInfo(): Promise<ContactInfo> {
+    const response = await api.get<ContactInfo>("/v1/landing/contact-info/");
     return response.data;
   }
 
-  static async updatePlatform(id: number, data: PlatformSectionRequest): Promise<PlatformSection> {
-    const response = await api.put<PlatformSection>(`/v1/landing/platform/${id}/`, data);
-    return response.data;
-  }
-
-  static async patchPlatform(id: number, data: PatchedPlatformSectionRequest): Promise<PlatformSection> {
-    const response = await api.patch<PlatformSection>(`/v1/landing/platform/${id}/`, data);
-    return response.data;
-  }
-
-  // --- Contact Info ---
-  static async listContactInfo(page?: number): Promise<ContactInfo[]> {
-    const response = await api.get<Paginated<ContactInfo> | ContactInfo[]>(
-      "/v1/landing/contact-info/", { params: { page } }
-    );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getContactInfo(id: number): Promise<ContactInfo> {
-    const response = await api.get<ContactInfo>(`/v1/landing/contact-info/${id}/`);
-    return response.data;
-  }
-
-  static async updateContactInfo(id: number, data: ContactInfoRequest): Promise<ContactInfo> {
-    const response = await api.put<ContactInfo>(`/v1/landing/contact-info/${id}/`, data);
-    return response.data;
-  }
-
-  static async patchContactInfo(id: number, data: PatchedContactInfoRequest): Promise<ContactInfo> {
-    const response = await api.patch<ContactInfo>(`/v1/landing/contact-info/${id}/`, data);
+  static async patchContactInfo(data: PatchedContactInfoRequest): Promise<ContactInfo> {
+    const response = await api.post<ContactInfo>("/v1/landing/contact-info/", preparePayload(data));
     return response.data;
   }
 
   // --- Contact Requests ---
   static async listContactRequests(page?: number): Promise<ContactRequestAdmin[]> {
-    const response = await api.get<Paginated<ContactRequestAdmin> | ContactRequestAdmin[]>(
+    const response = await api.get<Paginated<ContactRequestAdmin>>(
       "/v1/landing/contact-requests/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
+    return response.data.results ?? [];
   }
 
   static async getContactRequest(id: number): Promise<ContactRequestAdmin> {
@@ -159,11 +141,6 @@ export class LandingAPI {
 
   static async createContactRequest(data: ContactRequestCreateData): Promise<ContactRequest> {
     const response = await api.post<ContactRequest>("/v1/landing/contact-requests/", data);
-    return response.data;
-  }
-
-  static async updateContactRequest(id: number, data: ContactRequestAdminRequest): Promise<ContactRequestAdmin> {
-    const response = await api.put<ContactRequestAdmin>(`/v1/landing/contact-requests/${id}/`, data);
     return response.data;
   }
 
@@ -190,16 +167,10 @@ export class LandingAPI {
 
   // --- FAQ ---
   static async listFAQs(page?: number): Promise<FAQ[]> {
-    const response = await api.get<Paginated<FAQ> | FAQ[]>(
+    const response = await api.get<Paginated<FAQ>>(
       "/v1/landing/faqs/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getFAQ(id: number): Promise<FAQ> {
-    const response = await api.get<FAQ>(`/v1/landing/faqs/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createFAQ(data: FAQRequest): Promise<FAQ> {
@@ -223,30 +194,24 @@ export class LandingAPI {
 
   // --- Gallery ---
   static async listGallery(page?: number): Promise<GalleryItem[]> {
-    const response = await api.get<Paginated<GalleryItem> | GalleryItem[]>(
+    const response = await api.get<Paginated<GalleryItem>>(
       "/v1/landing/gallery/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getGalleryItem(id: number): Promise<GalleryItem> {
-    const response = await api.get<GalleryItem>(`/v1/landing/gallery/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createGalleryItem(data: GalleryItemRequest): Promise<GalleryItem> {
-    const response = await api.post<GalleryItem>("/v1/landing/gallery/", data);
+    const response = await api.post<GalleryItem>("/v1/landing/gallery/", preparePayload(data));
     return response.data;
   }
 
   static async updateGalleryItem(id: number, data: GalleryItemRequest): Promise<GalleryItem> {
-    const response = await api.put<GalleryItem>(`/v1/landing/gallery/${id}/`, data);
+    const response = await api.put<GalleryItem>(`/v1/landing/gallery/${id}/`, preparePayload(data));
     return response.data;
   }
 
   static async patchGalleryItem(id: number, data: PatchedGalleryItemRequest): Promise<GalleryItem> {
-    const response = await api.patch<GalleryItem>(`/v1/landing/gallery/${id}/`, data);
+    const response = await api.patch<GalleryItem>(`/v1/landing/gallery/${id}/`, preparePayload(data));
     return response.data;
   }
 
@@ -256,16 +221,10 @@ export class LandingAPI {
 
   // --- Success Stories ---
   static async listStories(page?: number): Promise<SuccessStory[]> {
-    const response = await api.get<Paginated<SuccessStory> | SuccessStory[]>(
+    const response = await api.get<Paginated<SuccessStory>>(
       "/v1/landing/stories/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getStory(id: number): Promise<SuccessStory> {
-    const response = await api.get<SuccessStory>(`/v1/landing/stories/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createStory(data: SuccessStoryRequest): Promise<SuccessStory> {
@@ -289,30 +248,24 @@ export class LandingAPI {
 
   // --- Team ---
   static async listTeam(page?: number): Promise<TeamMember[]> {
-    const response = await api.get<Paginated<TeamMember> | TeamMember[]>(
+    const response = await api.get<Paginated<TeamMember>>(
       "/v1/landing/team/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getTeamMember(id: number): Promise<TeamMember> {
-    const response = await api.get<TeamMember>(`/v1/landing/team/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createTeamMember(data: TeamMemberRequest): Promise<TeamMember> {
-    const response = await api.post<TeamMember>("/v1/landing/team/", data);
+    const response = await api.post<TeamMember>("/v1/landing/team/", preparePayload(data));
     return response.data;
   }
 
   static async updateTeamMember(id: number, data: TeamMemberRequest): Promise<TeamMember> {
-    const response = await api.put<TeamMember>(`/v1/landing/team/${id}/`, data);
+    const response = await api.put<TeamMember>(`/v1/landing/team/${id}/`, preparePayload(data));
     return response.data;
   }
 
   static async patchTeamMember(id: number, data: PatchedTeamMemberRequest): Promise<TeamMember> {
-    const response = await api.patch<TeamMember>(`/v1/landing/team/${id}/`, data);
+    const response = await api.patch<TeamMember>(`/v1/landing/team/${id}/`, preparePayload(data));
     return response.data;
   }
 
@@ -322,30 +275,24 @@ export class LandingAPI {
 
   // --- Testimonials ---
   static async listTestimonials(page?: number): Promise<Testimonial[]> {
-    const response = await api.get<Paginated<Testimonial> | Testimonial[]>(
+    const response = await api.get<Paginated<Testimonial>>(
       "/v1/landing/testimonials/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getTestimonial(id: number): Promise<Testimonial> {
-    const response = await api.get<Testimonial>(`/v1/landing/testimonials/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createTestimonial(data: TestimonialRequest): Promise<Testimonial> {
-    const response = await api.post<Testimonial>("/v1/landing/testimonials/", data);
+    const response = await api.post<Testimonial>("/v1/landing/testimonials/", preparePayload(data));
     return response.data;
   }
 
   static async updateTestimonial(id: number, data: TestimonialRequest): Promise<Testimonial> {
-    const response = await api.put<Testimonial>(`/v1/landing/testimonials/${id}/`, data);
+    const response = await api.put<Testimonial>(`/v1/landing/testimonials/${id}/`, preparePayload(data));
     return response.data;
   }
 
   static async patchTestimonial(id: number, data: PatchedTestimonialRequest): Promise<Testimonial> {
-    const response = await api.patch<Testimonial>(`/v1/landing/testimonials/${id}/`, data);
+    const response = await api.patch<Testimonial>(`/v1/landing/testimonials/${id}/`, preparePayload(data));
     return response.data;
   }
 
@@ -355,30 +302,24 @@ export class LandingAPI {
 
   // --- Values ---
   static async listValues(page?: number): Promise<ValueCard[]> {
-    const response = await api.get<Paginated<ValueCard> | ValueCard[]>(
+    const response = await api.get<Paginated<ValueCard>>(
       "/v1/landing/values/", { params: { page } }
     );
-    const data = response.data;
-    return Array.isArray(data) ? data : data.results ?? [];
-  }
-
-  static async getValueCard(id: number): Promise<ValueCard> {
-    const response = await api.get<ValueCard>(`/v1/landing/values/${id}/`);
-    return response.data;
+    return response.data.results ?? [];
   }
 
   static async createValueCard(data: ValueCardRequest): Promise<ValueCard> {
-    const response = await api.post<ValueCard>("/v1/landing/values/", data);
+    const response = await api.post<ValueCard>("/v1/landing/values/", preparePayload(data));
     return response.data;
   }
 
   static async updateValueCard(id: number, data: ValueCardRequest): Promise<ValueCard> {
-    const response = await api.put<ValueCard>(`/v1/landing/values/${id}/`, data);
+    const response = await api.put<ValueCard>(`/v1/landing/values/${id}/`, preparePayload(data));
     return response.data;
   }
 
   static async patchValueCard(id: number, data: PatchedValueCardRequest): Promise<ValueCard> {
-    const response = await api.patch<ValueCard>(`/v1/landing/values/${id}/`, data);
+    const response = await api.patch<ValueCard>(`/v1/landing/values/${id}/`, preparePayload(data));
     return response.data;
   }
 

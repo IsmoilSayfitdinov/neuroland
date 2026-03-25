@@ -117,8 +117,6 @@ export function DepartmentForm({ initialData, onSubmit, isLoading, onCancel, tit
   const onAddAgeGroup = (data: AgeGroupSchema) => {
     createAgeGroup(data, {
       onSuccess: (newGroup: any) => {
-        console.log(newGroup);
-        
         setIsAgeGroupModalOpen(false);
         if (newGroup?.id) {
           setValue("age_group_id", Number(newGroup.id), { shouldValidate: true });

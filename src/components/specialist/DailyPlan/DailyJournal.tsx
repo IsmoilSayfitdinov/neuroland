@@ -8,9 +8,10 @@ import { toast } from "sonner";
 
 interface DailyJournalProps {
   sessionId: number | null;
+  onReportSaved?: () => void;
 }
 
-export default function DailyJournal({ sessionId }: DailyJournalProps) {
+export default function DailyJournal({ sessionId, onReportSaved }: DailyJournalProps) {
   const queryClient = useQueryClient();
   const [gameName, setGameName] = useState("");
   const [notes, setNotes] = useState("");
@@ -42,11 +43,13 @@ export default function DailyJournal({ sessionId }: DailyJournalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions"] });
-      toast.success("Hisobot muvaffaqiyatli saqlandi!");
+      queryClient.invalidateQueries({ queryKey: ["session-report"] });
+      toast.success("Hisobot saqlandi! Endi uy vazifasi bering.");
       setGameName("");
       setNotes("");
       setVideoFile(null);
       setImageFile(null);
+      onReportSaved?.();
     },
     onError: () => toast.error("Hisobot saqlashda xatolik yuz berdi"),
   });

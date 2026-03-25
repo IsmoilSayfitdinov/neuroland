@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
 import { CustomSelect } from "@/components/ui/custom-select";
+import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 
 interface SelectOption {
   label: string;
@@ -11,6 +12,7 @@ export interface TopicFormData {
   title: string;
   category: string;
   group: string;
+  start_date: string;
 }
 
 interface TopicModalProps {
@@ -27,11 +29,17 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], group
     title: "",
     category: "",
     group: "",
+    start_date: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ title: "", category: "", group: "" });
+      setFormData({
+        title: "",
+        category: "",
+        group: "",
+        start_date: new Date().toISOString().split("T")[0],
+      });
     }
   }, [isOpen]);
 
@@ -49,7 +57,10 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], group
       <div className="relative bg-white rounded-[24px] w-full max-w-[440px] p-7 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-[18px] font-bold text-[#2D3142]">Yangi mavzu</h3>
+          <div>
+            <h3 className="text-[18px] font-bold text-[#2D3142]">Yangi mavzu</h3>
+            <p className="text-[12px] text-[#9EB1D4] mt-0.5">Mavzu 2 haftalik tsiklda ishlaydi</p>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -66,7 +77,7 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], group
             <input
               type="text"
               required
-              placeholder="Mavzu nomini kiriting"
+              placeholder="Masalan: Hayvonlar olami"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full h-[48px] px-4 rounded-[12px] bg-[#F8F9FB] border border-transparent focus:bg-white focus:border-[#4D89FF] focus:outline-none text-[14px] text-[#2D3142] transition-colors placeholder:text-[#9EB1D4]"
@@ -75,23 +86,36 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], group
 
           {/* Bo'lim */}
           <div>
-            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Bo'lim</label>
+            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Bo'lim (kategoriya)</label>
             <CustomSelect
               options={sectionOptions}
               value={formData.category}
               onChange={(val) => setFormData({ ...formData, category: val.toString() })}
-              placeholder="Bo'limni kiriting"
+              placeholder="Bo'limni tanlang"
+              bgBtnColor="bg-[#F8F9FB]"
             />
+          </div>
+
+          {/* Boshlanish sanasi */}
+          <div>
+            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Boshlanish sanasi</label>
+            <CustomDatePicker
+              value={formData.start_date}
+              onChange={(date) => setFormData({ ...formData, start_date: date })}
+              placeholder="Sanani tanlang"
+            />
+            <p className="text-[11px] text-[#9EB1D4] mt-1.5">Tugash sanasi avtomatik +13 kun</p>
           </div>
 
           {/* Guruh */}
           <div>
-            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Guruh</label>
+            <label className="block text-[13px] font-bold text-[#2D3142] mb-2">Guruhga biriktirish</label>
             <CustomSelect
               options={groupOptions}
               value={formData.group}
               onChange={(val) => setFormData({ ...formData, group: val.toString() })}
-              placeholder="Guruhni kiriting"
+              placeholder="Guruhni tanlang"
+              bgBtnColor="bg-[#F8F9FB]"
             />
           </div>
 
@@ -106,7 +130,7 @@ export function TopicModal({ isOpen, onClose, onSave, sectionOptions = [], group
             </button>
             <button
               type="submit"
-              disabled={isLoading || !formData.title}
+              disabled={isLoading || !formData.title || !formData.start_date}
               className="flex-1 h-[48px] rounded-[14px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[14px] font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading

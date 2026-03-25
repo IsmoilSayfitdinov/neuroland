@@ -55,8 +55,4 @@ export class NotificationsAPI {
     await api.delete(`/v1/notifications/${id}/`);
   }
 
-  static async markAsReadPost(id: number): Promise<Notification> {
-    const response = await api.post<Notification>(`/v1/notifications/${id}/mark-read/`);
-    return response.data;
-  }
 }

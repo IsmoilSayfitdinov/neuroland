@@ -10,6 +10,7 @@ import AdminGroupsList from "@/pages/admin/Groups/GroupsAdmin";
 import CreateGroupAdmin from "@/pages/admin/Groups/CreateGroupAdmin";
 import EditGroupAdmin from "@/pages/admin/Groups/EditGroupAdmin";
 import GroupDetailAdmin from "@/pages/admin/Groups/GroupDetailAdmin";
+import AssignHomeworkAdmin from "@/pages/admin/Groups/AssignHomeworkAdmin";
 import AdminSpecialistsList from "@/pages/admin/Specialists/SpecialistsAdmin";
 import SpecialistDetailAdmin from "@/pages/admin/Specialists/SpecialistDetailAdmin";
 import CreateSpecialistAdmin from "@/pages/admin/Specialists/CreateSpecialistAdmin";
@@ -34,6 +35,10 @@ import TopicsAdmin from "@/pages/admin/Topics/TopicsAdmin";
 import TopicDetailAdmin from "@/pages/admin/Topics/TopicDetailAdmin";
 import NotificationsPage from "@/pages/shared/NotificationsPage";
 import LandingAdmin from "@/pages/admin/Landing/LandingAdmin";
+import PlansAdmin from "@/pages/admin/Plans/PlansAdmin";
+import TreatmentComplexesAdmin from "@/pages/admin/TreatmentComplexes/TreatmentComplexesAdmin";
+import YearlyPlansAdmin from "@/pages/admin/YearlyPlans/YearlyPlansAdmin";
+import YearlyPlanDetailAdmin from "@/pages/admin/YearlyPlans/YearlyPlanDetailAdmin";
 
 export const adminRoutes = adminLayoutRoute.addChildren([
   createRoute({
@@ -67,6 +72,11 @@ export const adminRoutes = adminLayoutRoute.addChildren([
     getParentRoute: () => adminLayoutRoute,
     path: "/admin/groups/$id/edit",
     component: EditGroupAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/groups/$id/homework",
+    component: AssignHomeworkAdmin,
   }),
   createRoute({
     getParentRoute: () => adminLayoutRoute,
@@ -207,5 +217,25 @@ export const adminRoutes = adminLayoutRoute.addChildren([
     getParentRoute: () => adminLayoutRoute,
     path: "/admin/landing",
     component: LandingAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/plans",
+    component: PlansAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/treatment-complexes",
+    component: TreatmentComplexesAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/yearly-plans",
+    component: YearlyPlansAdmin,
+  }),
+  createRoute({
+    getParentRoute: () => adminLayoutRoute,
+    path: "/admin/yearly-plans/$id",
+    component: YearlyPlanDetailAdmin,
   }),
 ]);

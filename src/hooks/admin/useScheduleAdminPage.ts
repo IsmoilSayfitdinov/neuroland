@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGroups } from "@/hooks/admin/useGroups";
 import { useTopics } from "@/hooks/admin/useTopics";
@@ -22,10 +22,21 @@ export const useScheduleAdminPage = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlotModalOpen, setIsSlotModalOpen] = useState(false);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [deletingSlotId, setDeletingSlotId] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
 
   const { useGroupsList } = useGroups();
   const { data: groups, isLoading: isLoadingGroups } = useGroupsList();
+
+  // Auto-select first group
+  useEffect(() => {
+    if (!selectedGroupId && groups && groups.length > 0) {
+      setSelectedGroupId(groups[0].id);
+    }
+  }, [groups, selectedGroupId]);
 
   const { useActiveTopic } = useTopics();
   const { data: activeTopic, isLoading: isLoadingTopic } = useActiveTopic(selectedGroupId ?? undefined);
@@ -38,7 +49,38 @@ export const useScheduleAdminPage = () => {
 
   const { data: scheduleSlots, isLoading: isLoadingSlots } = useQuery({
     queryKey: ["schedule-slots", selectedGroupId],
-    queryFn: () => SessionsAPI.listSlots(selectedGroupId ? { group: selectedGroupId } : undefined),
+    queryFn: () => SessionsAPI.listSlots({ group: selectedGroupId! }),
+    enabled: !!selectedGroupId,
+  });
+
+  // Daily sessions — server filter + frontend fallback filter
+  const { data: daySessions = [], isLoading: isLoadingSessions, refetch: refetchSessions } = useQuery({
+    queryKey: ["admin-sessions", selectedDate],
+    queryFn: async () => {
+      const sessions = await SessionsAPI.list({ date: selectedDate });
+      return sessions.filter((s) => s.date === selectedDate);
+    },
+    enabled: !!selectedDate,
+  });
+
+  const createSession = useMutation({
+    mutationFn: (data: { date: string; start_time: string; group?: number | null; specialist?: number | null }) =>
+      SessionsAPI.create({ date: data.date, start_time: data.start_time, group: data.group, specialist: data.specialist }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-sessions"] });
+      toast.success("Seans yaratildi");
+      setIsSessionModalOpen(false);
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.detail || "Xatolik yuz berdi"),
+  });
+
+  const deleteSession = useMutation({
+    mutationFn: (id: number) => SessionsAPI.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-sessions"] });
+      toast.success("Seans o'chirildi");
+    },
+    onError: () => toast.error("O'chirishda xatolik"),
   });
 
   const createTopic = useMutation({
@@ -82,11 +124,11 @@ export const useScheduleAdminPage = () => {
 
   // Transform schedule slots into WeeklySchedule Row format — now with slotId
   const weeklyRows = useMemo(() => {
-    if (!scheduleSlots) return [];
+    if (!scheduleSlots || !selectedGroupId) return [];
 
-    const timeMap = new Map<string, Record<string, { title: string; teacher: string; slotId: number }>>();
+    const timeMap = new Map<string, Record<string, any>>();
 
-    scheduleSlots.forEach((slot) => {
+    scheduleSlots.filter((slot) => slot.group === selectedGroupId).forEach((slot) => {
       const time = slot.start_time.slice(0, 5);
       const dayKey = WEEKDAY_KEY[slot.weekday];
       if (!dayKey) return;
@@ -96,6 +138,10 @@ export const useScheduleAdminPage = () => {
         title: slot.group_name || slot.session_type,
         teacher: slot.specialist_name,
         slotId: slot.id,
+        specialist: slot.specialist,
+        weekday: slot.weekday,
+        session_type: slot.session_type,
+        duration_min: slot.duration_min,
       };
     });
 
@@ -104,7 +150,7 @@ export const useScheduleAdminPage = () => {
       .map(([time, days]) => ({ time, days }));
   }, [scheduleSlots]);
 
-  const isLoading = isLoadingGroups || isLoadingSlots;
+  const isLoading = isLoadingGroups || (!!selectedGroupId && isLoadingSlots);
 
   const currentGroupName = useMemo(() => {
     if (!selectedGroupId || !groups) return groups?.[0]?.name || "";
@@ -114,6 +160,7 @@ export const useScheduleAdminPage = () => {
   return {
     isLoading,
     isLoadingTopic,
+    isLoadingSessions,
     groups,
     groupOptions,
     sectionOptions,
@@ -130,5 +177,15 @@ export const useScheduleAdminPage = () => {
     createTopic,
     deleteSlot: (id: number) => deleteSlot.mutate(id),
     deletingSlotId,
+    // Sessions
+    daySessions,
+    selectedDate,
+    setSelectedDate,
+    isSessionModalOpen,
+    setIsSessionModalOpen,
+    createSession,
+    deleteSession: (id: number) => deleteSession.mutate(id),
+    isDeletingSession: deleteSession.isPending,
+    refetchSessions,
   };
 };

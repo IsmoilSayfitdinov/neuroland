@@ -4,6 +4,7 @@ import TodayTasks from "@/components/parent/Dashboard/TodayTasks";
 import DevelopmentIndicators from "@/components/parent/Dashboard/DevelopmentIndicators";
 import WeeklyActivity from "@/components/parent/Dashboard/WeeklyActivity";
 import ChildAndMotherTask from "@/components/parent/Dashboard/ChildAndMotherTask";
+import HomeworkSection from "@/components/parent/Dashboard/HomeworkSection";
 import { useParentAnalytics } from "@/hooks/parent/useParentAnalytics";
 
 export default function ParentDashboard() {
@@ -11,7 +12,8 @@ export default function ParentDashboard() {
   const { data: dashboard, isLoading } = useParentDashboard();
   const { data: sections } = useParentSections();
   const { data: weeklyActivity } = useParentWeeklyActivity();
-
+  console.log(dashboard);
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -25,6 +27,7 @@ export default function ParentDashboard() {
       <HeroBanner apiData={dashboard} />
       <ChildAndMotherTask />
       <TodayTasks apiData={dashboard?.today_tasks} />
+      <HomeworkSection />
       <DevelopmentIndicators apiData={sections} />
       <WeeklyActivity apiData={weeklyActivity} />
     </div>

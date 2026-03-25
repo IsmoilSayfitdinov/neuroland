@@ -15,12 +15,11 @@ export const SuccessStoriesSection = ({ stories: apiStories }: SuccessStoriesSec
   const stories = apiStories.map((s) => ({
     id: s.id,
     name: s.child_name,
-    age: `${s.age} yosh`,
-    diagnosis: s.title,
-    period: s.results,
-    image: s.image_url,
-    description: s.description,
-    testimonial: s.testimonial || "",
+    age: s.child_age,
+    diagnosis: s.diagnosis,
+    period: s.duration_text,
+    description: s.before_text,
+    testimonial: s.after_text,
   }));
 
   return (

@@ -39,6 +39,15 @@ export const useExams = () => {
     });
   };
 
+  const useExamQuestions = (childId: number, examType: ExamType) => {
+    return useQuery({
+      queryKey: ["exam-questions", childId, examType],
+      queryFn: () => ExamsAPI.getQuestions({ child_id: childId, exam_type: examType }),
+      enabled: !!childId,
+      retry: false,
+    });
+  };
+
   const useSchedules = () => {
     return useQuery({
       queryKey: ["exams", "schedules"],
@@ -59,6 +68,7 @@ export const useExams = () => {
     useResultDetail,
     useCreateResult,
     useGenerateComparison,
+    useExamQuestions,
     useSchedules,
     useScheduleByChild,
   };

@@ -61,8 +61,7 @@ export function PaymentsTab({ child }: PaymentsTabProps) {
         amount: form.amount,
         plan: form.plan ? Number(form.plan) : null,
         method: form.method as any,
-        payment_date: form.payment_date || undefined,
-        note: form.note || undefined,
+        status: "pending" as const,
       },
       { onSuccess: () => { setIsModalOpen(false); resetForm(); } }
     );

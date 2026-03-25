@@ -61,9 +61,9 @@ export default function EditDepartmentAdmin() {
         <h1 className="text-[24px] font-bold text-[#2D3142]">Bo'limni tahrirlash</h1>
       </div>
 
-      <DepartmentForm 
+      <DepartmentForm
         title="Bo'lim ma'lumotlarini tahrirlash"
-        initialData={section}
+        initialData={{ ...section, description: section.description ?? "", icon: section.icon ?? "", color: section.color ?? "" }}
         onSubmit={onSubmit}
         isLoading={isUpdatingSection}
         onCancel={() => navigate({ to: `/admin/departments/${departmentId}` })}

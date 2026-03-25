@@ -1,5 +1,5 @@
 import type { ChildDetailOut } from "@/types/children.types";
-import { ChevronDown, Baby, Clock, User, MessageCircle, Edit3 } from "lucide-react";
+import { Baby, Clock, User, MessageCircle, Edit3 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 interface AnamnesisTabProps {

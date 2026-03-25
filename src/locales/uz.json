@@ -74,6 +74,14 @@
       "Rivojlanish hisobotlari",
       "Shifokor bilan aloqa",
       "Video qo'llanmalar"
+    ],
+    "adminTitle": "Admin",
+    "adminDesc": "Klinika boshqaruvini soddalashtiring",
+    "adminFeatures": [
+      "Foydalanuvchilarni boshqarish",
+      "Moliyaviy hisobotlar",
+      "Tizim sozlamalari",
+      "Ma'lumotlar xavfsizligi"
     ]
   },
   "successStories": {

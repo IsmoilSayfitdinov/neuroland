@@ -9,9 +9,10 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 };
 
 const METHOD_MAP: Record<string, string> = {
+  payme: "Payme",
+  click: "Click",
   cash: "Naqd",
   card: "Karta",
-  transfer: "O'tkazma",
 };
 
 export default function ParentPayments() {
@@ -22,7 +23,15 @@ export default function ParentPayments() {
   const isLoading = subLoading || plansLoading;
 
   const remainingDays = subscription?.remaining_days ?? 0;
-  const totalDays = 31;
+  const totalDays = (() => {
+    if (subscription?.last_payment_date && subscription?.next_payment_date) {
+      const start = new Date(subscription.last_payment_date).getTime();
+      const end = new Date(subscription.next_payment_date).getTime();
+      const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      return days > 0 ? days : 30;
+    }
+    return 30;
+  })();
   const percentage = Math.max(0, Math.min(100, Math.round((remainingDays / totalDays) * 100)));
 
   return (
@@ -183,16 +192,15 @@ export default function ParentPayments() {
                       )}
                     </div>
 
-                    <button
-                      className={cn(
-                        "w-full py-2.5 rounded-xl text-sm font-bold transition-all",
-                        isActive
-                          ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
-                          : "bg-white border border-gray-200 text-[#2D3142] hover:border-gray-300"
-                      )}
-                    >
-                      Tanlash
-                    </button>
+                    {isActive ? (
+                      <div className="w-full py-2.5 rounded-xl text-sm font-bold text-center bg-blue-600 text-white shadow-sm shadow-blue-500/30">
+                        Faol tarif
+                      </div>
+                    ) : (
+                      <div className="w-full py-2.5 rounded-xl text-sm font-medium text-center bg-gray-50 border border-gray-200 text-[#9EB1D4]">
+                        Admin orqali faollashtiring
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -228,8 +236,8 @@ export default function ParentPayments() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {payments.map((item) => {
-                  const statusInfo = STATUS_MAP[item.status] ?? {
-                    label: item.status,
+                  const statusInfo = STATUS_MAP[item.status ?? ""] ?? {
+                    label: item.status ?? "—",
                     color: "bg-gray-50 text-gray-600 ring-gray-600/10",
                   };
                   return (

@@ -16,8 +16,8 @@ export class DiagnosticsAPI {
   /**
    * Barcha diagnostika mashqlarini guruhlangan holda olish
    */
-  static async getQuestions(): Promise<SectionGroupedExercise[]> {
-    const response = await api.get<SectionGroupedExercise[]>("/v1/diagnostics/questions/");
+  static async getQuestions(params?: { treatment_complex_id?: number }): Promise<SectionGroupedExercise[]> {
+    const response = await api.get<SectionGroupedExercise[]>("/v1/diagnostics/questions/", { params });
     return response.data;
   }
 

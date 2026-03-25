@@ -10,9 +10,9 @@ export default function TodayTasks({ apiData }: Props) {
   const tasks = (apiData?.tasks || []).map((t: any) => ({
     id: t.id,
     title: t.title || t.exercise_name || "Mashq",
-    category: t.specialist_name || t.section_name || "Mashq",
-    duration: t.due_date || "",
-    status: t.status === "approved" ? "done" : t.status === "submitted" ? "review" : "pending",
+    category: t.section_name || "Mashq",
+    duration: "",
+    status: t.is_done ? "done" : "pending",
     points: t.xp_reward || 10,
   }));
 

@@ -4,7 +4,6 @@ import { Info, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { DiagnosticsAPI } from "@/api/diagnostics.api";
 import { ChildrenAPI } from "@/api/children.api";
-import { calculateAge } from "@/lib/utils";
 
 interface DiagnosticsSidebarProps {
   childId: number | null;

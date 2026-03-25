@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { BookOpen, Users, Calendar, Plus, Loader2, X, RefreshCw, Link, Trash2 } from "lucide-react";
+import { BookOpen, Users, Calendar, Plus, Loader2, X, RefreshCw, Link, Trash2, Pencil } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { TopicsAPI } from "@/api/topics.api";
 import { GroupsAPI } from "@/api/groups.api";
 import { SkillsAPI } from "@/api/skills.api";
 import { cn } from "@/lib/utils";
+import { PageInfoButton } from "@/components/specialist/PageInfo";
 import { toast } from "sonner";
 import { CustomSelect } from "@/components/ui/custom-select";
 import type { TopicList } from "@/types/topic.types";
@@ -197,10 +198,75 @@ function AssignGroupModal({
   );
 }
 
+/* ─── Edit Topic Modal ─── */
+function EditTopicModal({ topic, onClose }: { topic: TopicList; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState({
+    title: topic.title,
+    start_date: topic.start_date || "",
+    end_date: topic.end_date || "",
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => TopicsAPI.patchTopic(topic.id, { title: form.title, start_date: form.start_date || undefined, end_date: form.end_date || undefined }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["topics"] });
+      toast.success("Mavzu yangilandi!");
+      onClose();
+    },
+    onError: () => toast.error("Yangilashda xatolik"),
+  });
+
+  const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl w-full max-w-[440px] p-7 shadow-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-[18px] font-bold text-[#2D3142]">Mavzuni tahrirlash</h3>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+            <X className="w-4 h-4 text-[#9EB1D4]" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-[13px] font-bold text-[#2D3142]">Mavzu nomi</label>
+            <input className={inputCls} value={form.title} onChange={(e) => set("title", e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <label className="block text-[13px] font-bold text-[#2D3142]">Boshlanish</label>
+              <input type="date" className={inputCls} value={form.start_date} onChange={(e) => set("start_date", e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-[13px] font-bold text-[#2D3142]">Tugash</label>
+              <input type="date" className={inputCls} value={form.end_date} onChange={(e) => set("end_date", e.target.value)} />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={onClose} className="flex-1 h-[46px] rounded-[12px] border border-gray-200 text-[#2D3142] text-[13px] font-bold hover:bg-gray-50 transition-colors">
+            Bekor qilish
+          </button>
+          <button
+            onClick={() => form.title.trim() && mutate()}
+            disabled={!form.title.trim() || isPending}
+            className="flex-1 h-[46px] rounded-[12px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Saqlash"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Topic Card ─── */
 function TopicCard({ topic, onDelete }: { topic: TopicList; onDelete?: () => void }) {
   const [showModal, setShowModal] = useState(false);
   const [showGroupModal, setShowGroupModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
   const isActive = topic.active_groups?.length > 0;
   const groupNames: string[] = topic.active_groups ?? [];
@@ -269,10 +335,17 @@ function TopicCard({ topic, onDelete }: { topic: TopicList; onDelete?: () => voi
             <Plus className="w-4 h-4" />
             Mashq
           </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowEditModal(true); }}
+            className="w-[42px] h-[42px] rounded-xl flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 shrink-0"
+            title="Tahrirlash"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
           {onDelete && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="w-[42px] h-[42px] rounded-xl text-[13px] font-bold transition-colors flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 shrink-0"
+              className="w-[42px] h-[42px] rounded-xl flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 shrink-0"
               title="O'chirish"
             >
               <Trash2 className="w-4 h-4" />
@@ -287,6 +360,9 @@ function TopicCard({ topic, onDelete }: { topic: TopicList; onDelete?: () => voi
       {showGroupModal && (
         <AssignGroupModal topicId={topic.id} onClose={() => setShowGroupModal(false)} />
       )}
+      {showEditModal && (
+        <EditTopicModal topic={topic} onClose={() => setShowEditModal(false)} />
+      )}
     </>
   );
 }
@@ -296,10 +372,13 @@ function CreateTopicModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({ title: "", category: "", start_date: "", end_date: "" });
 
-  const { data: sections } = useQuery({
-    queryKey: ["sections"],
-    queryFn: () => SkillsAPI.listSections(),
+  const { data: ageGroups } = useQuery({
+    queryKey: ["age-groups"],
+    queryFn: () => SkillsAPI.listAgeGroups(),
   });
+  const sectionOptions = ageGroups?.flatMap((ag) =>
+    ag.sections.map((s) => ({ label: `${s.name} (${ag.name})`, value: s.id.toString() }))
+  ) ?? [];
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
@@ -338,7 +417,7 @@ function CreateTopicModal({ onClose }: { onClose: () => void }) {
 
           <CustomSelect
             label="Kategoriya (ixtiyoriy)"
-            options={sections?.map((s) => ({ label: s.name, value: s.id.toString() })) ?? []}
+            options={sectionOptions}
             value={form.category}
             onChange={(val) => set("category", val.toString())}
             placeholder="Kategoriya tanlang..."
@@ -384,13 +463,21 @@ export default function Topics() {
     queryFn: () => TopicsAPI.listTopics(),
   });
 
+  const { data: allGroups } = useQuery({
+    queryKey: ["groups"],
+    queryFn: () => GroupsAPI.listGroups(),
+  });
+
   const { mutate: rotateTopics, isPending: rotating } = useMutation({
-    mutationFn: () => TopicsAPI.rotateTopics(),
+    mutationFn: (groupIds: number[]) => TopicsAPI.rotateTopics(groupIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["topics"] });
       toast.success("Mavzular rotatsiya qilindi!");
     },
-    onError: () => toast.error("Rotatsiyada xatolik yuz berdi"),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail || "Rotatsiyada xatolik yuz berdi";
+      toast.error(msg);
+    },
   });
 
   const { mutate: deleteTopic } = useMutation({
@@ -413,10 +500,26 @@ export default function Topics() {
   return (
     <div className="flex flex-col gap-6 pb-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#2D3142]">Mavzular</h1>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-[#2D3142]">Mavzular</h1>
+          <PageInfoButton title="Mavzular">
+            <p>Mashg'ulot mavzularini boshqarish va guruhlar bilan ishlash.</p>
+            <p><strong>Imkoniyatlar:</strong></p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Yangi mavzu yaratish</li>
+              <li>Mavzuga mashqlar qo'shish</li>
+              <li>Guruhlarni mavzuga biriktirish</li>
+              <li>Mavzularni guruhlar o'rtasida rotatsiya qilish</li>
+            </ul>
+          </PageInfoButton>
+        </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => rotateTopics()}
+            onClick={() => {
+              const ids = allGroups?.map((g) => g.id) || [];
+              if (ids.length < 2) { toast.error("Kamida 2 ta guruh bo'lishi kerak"); return; }
+              rotateTopics(ids);
+            }}
             disabled={rotating}
             className="flex items-center gap-2 h-10 px-4 bg-blue-50 hover:bg-blue-100 text-blue-600 text-[12px] font-bold rounded-xl transition-colors disabled:opacity-60"
           >

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useChildren } from "@/hooks/specialist/useChildren";
 import PatientCard from "@/components/specialist/Patients/PatientCard";
+import { PageInfoButton } from "@/components/specialist/PageInfo";
 import type { ChildOut } from "@/types/children.types";
 
 export default function Patients() {
@@ -35,7 +36,19 @@ export default function Patients() {
 
   return (
     <div className="flex flex-col gap-6 pb-10">
-      <h1 className="text-2xl font-bold text-slate-800">Bemorlarim</h1>
+      <div className="flex items-center gap-2.5">
+        <h1 className="text-2xl font-bold text-slate-800">Bemorlarim</h1>
+        <PageInfoButton title="Bemorlarim">
+          <p>Sizga biriktirilgan barcha bemorlar ro'yxati.</p>
+          <p><strong>Imkoniyatlar:</strong></p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Bemorlar ro'yxatini ko'rish</li>
+            <li>Yangi bemorlarni ajratib ko'rish</li>
+            <li>Bemor profilini batafsil ko'rish</li>
+            <li>Diagnostika o'tkazish</li>
+          </ul>
+        </PageInfoButton>
+      </div>
 
       {/* Tabs */}
       <div className="flex items-center gap-1 bg-white border border-gray-100 p-1 rounded-xl w-fit">

@@ -99,10 +99,13 @@ export default function SpecialistDetailAdmin() {
             <Edit className="w-4 h-4" />
             Tahrirlash
           </Link>
-          <button className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors text-[#2D3142] px-5 py-2.5 rounded-[12px] text-[14px] font-medium shadow-sm">
+          <Link
+            to="/admin/schedule"
+            className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors text-[#2D3142] px-5 py-2.5 rounded-[12px] text-[14px] font-medium shadow-sm"
+          >
             <Calendar className="w-4 h-4" />
             Jadvalni ko'rish
-          </button>
+          </Link>
           <button
             onClick={() => setIsDeleteModalOpen(true)}
             className="w-10 h-10 flex items-center justify-center bg-white border border-red-100 hover:bg-red-50 text-red-400 rounded-[12px] transition-colors shadow-sm"

@@ -161,7 +161,7 @@
 
 ---
 
-## 9. Kunlik reja — `/specialist/daily-plan`
+## 9. Uyga vaziyfa — `/specialist/daily-plan`
 **Fayl:** `pages/specialist/DailyPlan/DailyPlan.tsx`
 
 **Vazifasi:** Bugungi seanslar, uy vazifalari berish

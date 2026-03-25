@@ -9,7 +9,7 @@ export const useDiagnostics = () => {
   const useQuestions = () => {
     return useQuery({
       queryKey: ["diagnostics", "questions"],
-      queryFn: DiagnosticsAPI.getQuestions,
+      queryFn: () => DiagnosticsAPI.getQuestions(),
     });
   };
 

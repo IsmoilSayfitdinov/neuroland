@@ -268,9 +268,28 @@ export interface DoctorPatientsResponse {
 }
 
 export interface DoctorPatientDiagnostics {
-  mental_age: number;
-  scores: any[];
-  radar_chart: any[];
+  child: {
+    id: number;
+    name: string;
+    age_months: number;
+    age_text: string;
+    photo: string | null;
+  };
+  mental_age: {
+    mental_age_months: number;
+    chronological_age_months: number;
+    difference_months: number;
+    total_score: number;
+    max_score: number;
+    percentage: number;
+  };
+  radar: {
+    current: { section_name: string; percentage: number }[];
+    previous: { section_name: string; percentage: number }[];
+    overall_current: number;
+    overall_previous: number;
+    details: { section_name: string; current: number; previous: number; change: number }[];
+  };
 }
 
 // --- Parent Analytics ---
@@ -293,17 +312,32 @@ export interface ParentDashboard {
   };
 }
 
+export interface ParentProgressSection {
+  section_name: string;
+  percentage: number;
+  score?: number;
+  value?: number;
+}
+
+export interface ParentProgressDetail {
+  section_name: string;
+  current: number;
+  previous: number;
+  change: number;
+}
+
 export interface ParentProgress {
-  current: any[];
-  previous: any[];
+  current: ParentProgressSection[];
+  previous: ParentProgressSection[];
   overall_current: number;
   overall_previous: number;
-  details: any[];
+  details: ParentProgressDetail[];
 }
 
 export interface ParentSection {
-  section_id: number;
   section_name: string;
+  icon?: string | null;
+  color?: string | null;
   percentage: number;
   status: string;
 }

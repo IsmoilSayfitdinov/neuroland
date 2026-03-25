@@ -4,11 +4,8 @@ export interface TopicExercise {
   exercise: number | null;
   exercise_name: string;
   title: string;
-  video: number | null;
-  video_url: string | null;
-  video_title?: string | null;
   instruction?: string | null;
-  order?: number;
+  video_url: string | null;
   notes: string | null;
   added_by: number | null;
   added_by_name: string;

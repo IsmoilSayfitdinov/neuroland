@@ -3,6 +3,7 @@ import { BillingAPI } from "@/api/billing.api";
 import type {
   PaymentRequest,
   PlanRequest,
+  PatchedPlanRequest,
   PatchedPaymentRequest,
   SubscriptionRequest,
   PatchedSubscriptionRequest,
@@ -77,6 +78,25 @@ export const useBilling = () => {
     },
   });
 
+  const useUpdatePlan = () => useMutation({
+    mutationFn: ({ id, data }: { id: number; data: PatchedPlanRequest }) =>
+      BillingAPI.patchPlan(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
+      toast.success("Tarif yangilandi");
+    },
+    onError: () => toast.error("Tarif yangilashda xatolik"),
+  });
+
+  const useDeletePlan = () => useMutation({
+    mutationFn: (id: number) => BillingAPI.deletePlan(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
+      toast.success("Tarif o'chirildi");
+    },
+    onError: () => toast.error("Tarif o'chirishda xatolik"),
+  });
+
   // --- Subscriptions ---
   const useSubscriptionsList = () => useQuery({
     queryKey: ["subscriptions"],
@@ -122,6 +142,8 @@ export const useBilling = () => {
     // Plans
     usePlansList,
     useCreatePlan,
+    useUpdatePlan,
+    useDeletePlan,
     // Subscriptions
     useSubscriptionsList,
     useCreateSubscription,

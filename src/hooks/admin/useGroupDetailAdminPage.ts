@@ -22,7 +22,7 @@ export const useGroupDetailAdminPage = () => {
     if (!topics || topics.length === 0) return [];
     return topics.slice(0, 8).map((t, i) => ({
       week: `Hafta ${i + 1}`,
-      topic: t.title || t.name || `Mavzu #${t.id}`,
+      topic: t.title || (t as any).name || `Mavzu #${t.id}`,
     }));
   }, [topics]);
 

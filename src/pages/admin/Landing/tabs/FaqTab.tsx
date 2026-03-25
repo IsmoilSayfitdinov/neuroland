@@ -18,7 +18,7 @@ export function FaqTab() {
 
   const { register, handleSubmit, reset } = useForm();
 
-  const openAdd = () => { reset({ question: "", answer: "", category: "", order: 0 }); setIsAdding(true); setEditing(null); };
+  const openAdd = () => { reset({ question: "", answer: "", order: 0, is_active: true }); setIsAdding(true); setEditing(null); };
   const openEdit = (item: FAQ) => { reset(item); setEditing(item); setIsAdding(false); };
   const closeForm = () => { setIsAdding(false); setEditing(null); };
 
@@ -50,9 +50,12 @@ export function FaqTab() {
           </div>
           <input {...register("question")} placeholder="Savol" className="w-full h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
           <textarea {...register("answer")} placeholder="Javob" rows={3} className="w-full px-4 py-3 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px] resize-none" />
-          <div className="grid grid-cols-2 gap-4">
-            <input {...register("category")} placeholder="Kategoriya" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
-            <input {...register("order", { valueAsNumber: true })} type="number" placeholder="Tartib" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
+          <div className="flex items-center gap-4">
+            <input {...register("order", { valueAsNumber: true })} type="number" placeholder="Tartib" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px] w-32" />
+            <label className="flex items-center gap-2 text-[13px] font-medium text-[#6B7A99] cursor-pointer">
+              <input {...register("is_active")} type="checkbox" className="w-4 h-4 rounded" />
+              Faol
+            </label>
           </div>
           <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-[10px] text-[13px] font-medium disabled:opacity-70">
             {(createMutation.isPending || updateMutation.isPending) ? "Saqlanmoqda..." : "Saqlash"}
@@ -65,9 +68,11 @@ export function FaqTab() {
           <div key={faq.id} className="p-4 bg-[#F8F9FB] rounded-[14px] group hover:bg-[#EEF4FF] transition-colors">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <p className="text-[14px] font-bold text-[#2D3142]">{faq.question}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[14px] font-bold text-[#2D3142]">{faq.question}</p>
+                  {!faq.is_active && <span className="px-1.5 py-0.5 bg-gray-200 text-gray-500 rounded text-[10px] font-bold">Nofaol</span>}
+                </div>
                 <p className="text-[12px] text-[#9EB1D4] mt-1 line-clamp-2">{faq.answer}</p>
-                {faq.category && <span className="inline-block mt-2 px-2 py-0.5 bg-[#EEF4FF] text-[#2563EB] rounded-full text-[11px] font-medium">{faq.category}</span>}
               </div>
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                 <button onClick={() => openEdit(faq)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#4D89FF] hover:bg-blue-50"><Pencil className="w-3.5 h-3.5" /></button>

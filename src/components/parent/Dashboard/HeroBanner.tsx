@@ -1,4 +1,5 @@
 import { Play, TrendingUp } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import ChildIllustration from "@/assets/images/Frame 25.png";
 import type { ParentDashboard } from "@/types/analytics.types";
 
@@ -26,7 +27,7 @@ export default function HeroBanner({ apiData }: Props) {
         <div className="flex flex-col justify-between flex-1">
           <div className="flex items-center gap-3 mb-3">
             {child?.photo ? (
-              <img src={child.photo} alt={firstName} className="w-[52px] h-[52px] rounded-[18px] object-cover" />
+              <img src={import.meta.env.VITE_API_MEDIA_URL + child.photo} alt={firstName} className="w-[52px] h-[52px] rounded-[18px] object-cover" />
             ) : (
               <div className="w-[52px] h-[52px] rounded-[18px] flex items-center justify-center font-bold text-[22px] shrink-0"
                 style={{ backgroundColor: "rgba(255,255,255,0.22)" }}>
@@ -43,10 +44,10 @@ export default function HeroBanner({ apiData }: Props) {
             Farzandingiz barqaror rivojlanmoqda. Bugun {apiData?.today_tasks?.total ?? 0} mashg'ulot rejalashtirilgan.
           </p>
 
-          <button className="self-start cursor-pointer flex items-center gap-2 bg-white text-[#3670E2] font-bold text-[13px] px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95">
+          <Link to="/parent/tasks" className="self-start cursor-pointer flex items-center gap-2 bg-white text-[#3670E2] font-bold text-[13px] px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95">
             <Play className="w-4 h-4 fill-[#3670E2]" />
             Bugungi mashg'ulotni boshlash
-          </button>
+          </Link>
         </div>
 
         <div className="flex flex-col gap-3 justify-center min-w-[200px]">

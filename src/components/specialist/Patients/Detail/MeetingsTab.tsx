@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { Plus, X, CheckCircle2, Clock } from "lucide-react";
+import { Plus, X, CheckCircle2, Clock, FileText } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { useMeetings } from "@/hooks/specialist/useMeetings";
 import { useSpecialists } from "@/hooks/admin/useSpecialists";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MeetingsAPI } from "@/api/meetings.api";
+import { toast } from "sonner";
 import type { MonthlyMeeting } from "@/types/meetings.types";
 
 interface MeetingsTabProps {
@@ -13,13 +16,29 @@ interface MeetingsTabProps {
 }
 
 export default function MeetingsTab({ childId, childName, autoOpenModal, onModalClose }: MeetingsTabProps) {
-  const { useChildMeetings, useCreateMeeting } = useMeetings();
+  const queryClient = useQueryClient();
+  const { useChildMeetings, useCreateMeeting, useUpdateMeeting, useCompleteMeeting } = useMeetings();
   const { useSpecialistsList } = useSpecialists();
   const { data: meetings, isLoading } = useChildMeetings(childId);
   const { data: specialists } = useSpecialistsList();
   const createMeeting = useCreateMeeting();
+  const updateMeeting = useUpdateMeeting();
+  const completeMeeting = useCompleteMeeting();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedMeetingId, setExpandedMeetingId] = useState<number | null>(null);
+  const [reviewNote, setReviewNote] = useState("");
+
+  const { mutate: _addGoalReview } = useMutation({
+    mutationFn: ({ meetingId, reviews }: { meetingId: number; reviews: { monthly_goal_item: number; comment: string }[] }) =>
+      MeetingsAPI.addGoalReviews(meetingId, reviews),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["meetings"] });
+      toast.success("Maqsad sharhi saqlandi");
+      setReviewNote("");
+    },
+    onError: () => toast.error("Xatolik yuz berdi"),
+  });
 
   useEffect(() => {
     if (autoOpenModal) {
@@ -43,15 +62,6 @@ export default function MeetingsTab({ childId, childName, autoOpenModal, onModal
     setIsModalOpen(false);
     onModalClose?.();
     setForm({ scheduled_date: "", specialists: [], notes: "" });
-  };
-
-  const toggleSpecialist = (id: number) => {
-    setForm((prev) => ({
-      ...prev,
-      specialists: prev.specialists.includes(id)
-        ? prev.specialists.filter((s) => s !== id)
-        : [...prev.specialists, id],
-    }));
   };
 
   if (isLoading) {
@@ -114,40 +124,91 @@ export default function MeetingsTab({ childId, childName, autoOpenModal, onModal
               </span>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px]">
-                <thead className="bg-gray-50/50">
-                  <tr>
-                    {["Sana", "Kim bilan", "Mutaxassisligi", "F.I.", "Tavsiyasi", "Imzo"].map((h) => (
-                      <th key={h} className="px-4 py-2.5 text-left text-[11px] font-bold text-[#9EB1D4] uppercase tracking-wide">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  <tr className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-4 py-3 text-[13px] text-[#2D3142] font-medium">
-                      {formatDate(meeting.scheduled_date)}
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
-                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
-                    <td className="px-4 py-3 text-[13px] text-[#2D3142]">—</td>
-                    <td className="px-4 py-3 text-[13px] text-[#9EB1D4]">
-                      {meeting.notes || "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {meeting.is_completed ? (
-                        <span className="text-[#3DB87E] text-[12px] font-bold">✓ Ha</span>
-                      ) : (
-                        <span className="text-[#9EB1D4] text-[12px]">—</span>
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            {/* Info */}
+            <div className="px-5 py-3 space-y-2">
+              <div className="flex items-center gap-4 text-[13px]">
+                <span className="text-[#9EB1D4] font-medium">Sana:</span>
+                <span className="text-[#2D3142] font-bold">{formatDate(meeting.scheduled_date)}</span>
+              </div>
+              {meeting.notes && (
+                <div className="flex items-start gap-4 text-[13px]">
+                  <span className="text-[#9EB1D4] font-medium shrink-0">Izoh:</span>
+                  <span className="text-[#2D3142]">{meeting.notes}</span>
+                </div>
+              )}
             </div>
+
+            {/* Actions & Goal Reviews */}
+            <div className="px-5 py-3 border-t border-gray-50 flex items-center justify-between">
+              <button
+                onClick={() => setExpandedMeetingId(expandedMeetingId === meeting.id ? null : meeting.id)}
+                className="flex items-center gap-1.5 text-[12px] font-bold text-[#4D89FF] hover:text-blue-700 transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                {meeting.goal_reviews?.length ? `${meeting.goal_reviews.length} ta sharh` : "Sharh qo'shish"}
+              </button>
+
+              {!meeting.is_completed && (
+                <button
+                  onClick={() => completeMeeting.mutate({ id: meeting.id })}
+                  disabled={completeMeeting.isPending}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Yakunlash
+                </button>
+              )}
+            </div>
+
+            {/* Expanded goal reviews */}
+            {expandedMeetingId === meeting.id && (
+              <div className="px-5 pb-4 space-y-3 border-t border-gray-50 pt-3">
+                {meeting.goal_reviews?.length > 0 && (
+                  <div className="space-y-2">
+                    {meeting.goal_reviews.map((review) => (
+                      <div key={review.id} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
+                        <span className="text-[13px] text-[#2D3142] font-medium">{review.exercise_name}</span>
+                        <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full",
+                          review.is_completed ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                        )}>
+                          {review.is_completed ? "Bajarildi" : "Jarayonda"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <textarea
+                    value={reviewNote}
+                    onChange={(e) => setReviewNote(e.target.value)}
+                    placeholder="Uchrashuv sharhi..."
+                    className="flex-1 h-[60px] px-3 py-2 bg-[#F8F9FB] rounded-xl text-[13px] outline-none focus:ring-2 focus:ring-blue-100 resize-none"
+                  />
+                  <button
+                    onClick={() => {
+                      if (reviewNote.trim()) {
+                        // Save note as meeting update via PATCH
+                        const existingNotes = meeting.notes || "";
+                        const newNotes = existingNotes
+                          ? `${existingNotes}\n---\n${reviewNote}`
+                          : reviewNote;
+                        updateMeeting.mutate({
+                          id: meeting.id,
+                          data: { notes: newNotes },
+                        }, {
+                          onSuccess: () => setReviewNote(""),
+                        });
+                      }
+                    }}
+                    disabled={updateMeeting.isPending || !reviewNote.trim()}
+                    className="self-end px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[12px] font-bold rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    Saqlash
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))
       )}

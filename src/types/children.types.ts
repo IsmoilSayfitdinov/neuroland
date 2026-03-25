@@ -30,6 +30,7 @@ export interface Consultation {
   arrival_date?: string | null;
   preliminary_diagnosis?: string | null;
   final_diagnosis?: string | null;
+  neuro_complex?: number | null;
   neuro_complex_name?: string | null;
   working_period?: string | null;
   recommendations?: string | null;
@@ -67,6 +68,7 @@ export interface PaymentStub {
   amount: string;
   payment_date: string;
   method: string;
+  status?: string;
 }
 
 export interface GroupInfo {
@@ -99,6 +101,7 @@ export interface ChildOut {
   child_number_in_family?: number | null;
   recommended_by?: string | null;
   diagnosis?: string | null;
+  treatment_complex?: number | null;
   subscription?: SubscriptionStub | null;
   specialist_assignments?: SpecialistAssignment[];
 }
@@ -109,6 +112,25 @@ export interface ChildDetailOut extends ChildOut {
   diagnostic_results?: DiagnosticResult[];
   payments?: PaymentStub[];
   group_info?: GroupInfo | null;
+}
+
+export interface GroupTransferRequest {
+  new_group_id: number;
+  reason?: string;
+}
+
+export interface GroupTransferHistory {
+  id: number;
+  child_id: number;
+  child_name: string;
+  from_group_id: number | null;
+  from_group_name: string;
+  to_group_id: number | null;
+  to_group_name: string;
+  reason?: string | null;
+  transferred_by_id: number | null;
+  transferred_by_name: string;
+  transferred_at: string;
 }
 
 /**

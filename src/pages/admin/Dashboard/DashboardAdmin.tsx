@@ -1,6 +1,7 @@
+import { useState } from "react";
 import {
   Users, UserPlus, GraduationCap, TrendingUp, Brain,
-  AlertTriangle, HeartHandshake, Plus, Sparkles, Loader2,
+  AlertTriangle, HeartHandshake, Plus, Sparkles, Loader2, Info,
 } from "lucide-react";
 import { Skeleton } from "@/components/admin/ui/Skeleton";
 import { CustomSelect } from "@/components/ui/custom-select";
@@ -8,8 +9,27 @@ import { StatCard } from "./components/StatCard";
 import { MonthCard } from "./components/MonthCard";
 import { MonthlyPlanView } from "./components/MonthlyPlanView";
 import { useDashboardAdminPage } from "@/hooks/admin/useDashboardAdminPage";
+import { InfoModal } from "@/components/admin/ui/InfoModal";
 
 const TABS = ["Yillik reja", "Oylik reja"] as const;
+
+const dashboardInfo = (
+  <>
+    <p>Bosh sahifada markazning umumiy statistikasi va rejalashtirish bo'limi joylashgan.</p>
+    <p><strong>Statistik kartalar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Faol bolalar soni va o'sish dinamikasi</li>
+      <li>Yangi qo'shilgan bolalar (shu oy)</li>
+      <li>Bitiruvchilar va o'rtacha o'sish foizi</li>
+      <li>Qarzdorlar soni va ota-onalar faolligi</li>
+    </ul>
+    <p><strong>Rejalashtirish:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Guruh uchun yillik va oylik rejalarni ko'rish</li>
+      <li>AI yordamida avtomatik reja generatsiya qilish</li>
+    </ul>
+  </>
+);
 
 export default function DashboardAdmin() {
   const {
@@ -36,6 +56,8 @@ export default function DashboardAdmin() {
     generateAi,
     MONTH_NAMES,
   } = useDashboardAdminPage();
+
+  const [showDashInfo, setShowDashInfo] = useState(false);
 
   if (isLoading) {
     return (
@@ -119,19 +141,28 @@ export default function DashboardAdmin() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-[28px] font-bold text-[#2D3142]">Bosh sahifa</h1>
+      <div className="flex items-center gap-2.5 mb-8">
+        <h1 className="text-[28px] font-bold text-[#2D3142]">Bosh sahifa</h1>
+        <button type="button" onClick={() => setShowDashInfo(true)} className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors">
+          <Info className="w-4 h-4 text-blue-500" />
+        </button>
+      </div>
+      <InfoModal isOpen={showDashInfo} onClose={() => setShowDashInfo(false)} title="Bosh sahifa">{dashboardInfo}</InfoModal>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => <StatCard key={i} {...stat} />)}
       </div>
 
       {/* Plan Section */}
-      <div className="flex flex-col gap-4 mt-8 mb-6 relative">
-        <h2 className="text-xl font-bold text-[#2D3142]">Guruh bo'yicha reja nazorati</h2>
-        <div className="w-full flex bg-white p-6 rounded-[16px] justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="min-w-[200px]">
-              <CustomSelect options={groupOptions} value={selectedGroupId} onChange={(val) => setSelectedGroupId(val.toString())} placeholder="Guruh tanlang..." />
+      <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6 mt-8 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#EEF4FF] rounded-[12px] flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-[#2563EB]" />
+            </div>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#2D3142]">Rejalashtirish</h2>
+              <p className="text-[12px] text-[#9EB1D4]">Guruh uchun yillik va oylik reja</p>
             </div>
           </div>
           <div className="bg-[#F5F8FF] p-1 rounded-xl flex items-center">
@@ -143,13 +174,36 @@ export default function DashboardAdmin() {
             ))}
           </div>
         </div>
+
+        {/* Group select */}
+        <div className="flex items-center gap-3 p-4 bg-[#F8F9FB] rounded-[16px]">
+          <Users className="w-5 h-5 text-[#9EB1D4] shrink-0" />
+          <div className="min-w-[240px]">
+            <CustomSelect
+              options={groupOptions}
+              value={selectedGroupId}
+              onChange={(val) => setSelectedGroupId(val.toString())}
+              placeholder="Guruh tanlang..."
+              bgBtnColor="bg-white"
+            />
+          </div>
+          {selectedGroupId && (
+            <span className="text-[12px] text-[#9EB1D4] font-medium ml-1">
+              {groupOptions.find((g) => g.value === selectedGroupId)?.label}
+            </span>
+          )}
+        </div>
       </div>
 
       {activeTab === "Yillik reja" && (
         <>
           {!selectedGroupId && (
-            <div className="py-16 text-center bg-white rounded-[24px] border border-dashed border-gray-200">
-              <p className="text-[#9EB1D4] font-medium">Guruhni tanlang</p>
+            <div className="py-20 text-center bg-white rounded-[24px] border border-dashed border-gray-200">
+              <div className="w-16 h-16 bg-[#F8F9FB] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-7 h-7 text-[#9EB1D4]" />
+              </div>
+              <p className="text-[16px] font-bold text-[#2D3142] mb-1">Guruhni tanlang</p>
+              <p className="text-[13px] text-[#9EB1D4]">Yillik rejani ko'rish uchun yuqoridan guruh tanlang</p>
             </div>
           )}
 

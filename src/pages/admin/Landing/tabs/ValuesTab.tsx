@@ -18,15 +18,16 @@ export function ValuesTab() {
 
   const { register, handleSubmit, reset } = useForm();
 
-  const openAdd = () => { reset({ title: "", description: "", icon_url: "", order: 0 }); setIsAdding(true); setEditing(null); };
+  const openAdd = () => { reset({ title: "", description: "", icon: "", order: 0, is_active: true }); setIsAdding(true); setEditing(null); };
   const openEdit = (item: ValueCard) => { reset(item); setEditing(item); setIsAdding(false); };
   const closeForm = () => { setIsAdding(false); setEditing(null); };
 
   const onSubmit = (data: any) => {
+    const payload = { ...data, order: Number(data.order) || 0 };
     if (editing) {
-      updateMutation.mutate({ id: editing.id, data }, { onSuccess: closeForm });
+      updateMutation.mutate({ id: editing.id, data: payload }, { onSuccess: closeForm });
     } else {
-      createMutation.mutate(data, { onSuccess: closeForm });
+      createMutation.mutate(payload, { onSuccess: closeForm });
     }
   };
 
@@ -49,10 +50,16 @@ export function ValuesTab() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input {...register("title")} placeholder="Sarlavha" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
-            <input {...register("icon_url")} placeholder="Ikon URL" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
+            <input {...register("icon")} placeholder="Ikon nomi (heart, star ...)" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px]" />
           </div>
           <textarea {...register("description")} placeholder="Tavsif" rows={2} className="w-full px-4 py-3 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px] resize-none" />
-          <input {...register("order", { valueAsNumber: true })} type="number" placeholder="Tartib" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px] w-32" />
+          <div className="flex items-center gap-4">
+            <input {...register("order", { valueAsNumber: true })} type="number" placeholder="Tartib" className="h-[44px] px-4 bg-white rounded-[10px] border border-gray-100 focus:border-[#4D89FF] outline-none text-[14px] w-32" />
+            <label className="flex items-center gap-2 text-[13px] font-medium text-[#6B7A99] cursor-pointer">
+              <input {...register("is_active")} type="checkbox" className="w-4 h-4 rounded" />
+              Faol
+            </label>
+          </div>
           <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-[10px] text-[13px] font-medium disabled:opacity-70">
             {(createMutation.isPending || updateMutation.isPending) ? "Saqlanmoqda..." : "Saqlash"}
           </button>
@@ -63,10 +70,13 @@ export function ValuesTab() {
         {values?.map((item) => (
           <div key={item.id} className="flex items-center justify-between p-4 bg-[#F8F9FB] rounded-[14px] group hover:bg-[#EEF4FF] transition-colors">
             <div className="flex items-center gap-4">
-              {item.icon_url && <img src={item.icon_url} alt="" className="w-8 h-8 rounded-lg object-cover" />}
+              <div className="w-10 h-10 rounded-xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] font-bold text-[14px]">
+                {item.icon?.charAt(0)?.toUpperCase() || "V"}
+              </div>
               <div>
                 <p className="text-[14px] font-bold text-[#2D3142]">{item.title}</p>
                 <p className="text-[12px] text-[#9EB1D4] line-clamp-1">{item.description}</p>
+                {!item.is_active && <span className="inline-block mt-1 px-1.5 py-0.5 bg-gray-200 text-gray-500 rounded text-[10px] font-bold">Nofaol</span>}
               </div>
             </div>
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

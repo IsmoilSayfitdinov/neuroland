@@ -12,8 +12,8 @@ export function SpecialistProfileCard({ spec }: SpecialistProfileCardProps) {
     .toUpperCase()
     .slice(0, 2);
 
-    console.log(spec);
-    
+
+
 
   return (
     <div className="bg-white p-6 lg:p-8 rounded-[24px] border border-gray-100 shadow-sm">
@@ -22,7 +22,7 @@ export function SpecialistProfileCard({ spec }: SpecialistProfileCardProps) {
         <div className="flex flex-col items-center shrink-0">
           {spec?.photo ? (
             <img
-              src={import.meta.env.VITE_API_BASE_URL + spec.photo}
+              src={import.meta.env.VITE_API_MEDIA_URL + spec.photo}
               alt={spec.fio}
               className="w-[90px] h-[90px] rounded-full object-cover shadow-sm"
             />

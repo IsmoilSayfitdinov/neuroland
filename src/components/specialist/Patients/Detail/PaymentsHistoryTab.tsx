@@ -15,7 +15,6 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   failed: { label: "Rad etilgan", color: "bg-red-50 text-red-500" },
 };
 
-const PAYMENT_METHODS = ["Naqd", "Karta", "Payme", "Click"] as const;
 const METHOD_MAP: Record<string, string> = { cash: "Naqd", card: "Karta", payme: "Payme", click: "Click" };
 
 export default function PaymentsHistoryTab({ childId, payments }: PaymentsHistoryTabProps) {

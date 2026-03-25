@@ -29,11 +29,8 @@ export interface MonthlyMeeting {
 
 export interface MonthlyMeetingRequest {
   child: number;
-  specialist?: number;
-  date?: string;
-  scheduled_date?: string;
-  summary?: string | null;
-  recommendations?: string | null;
+  specialists?: number[];
+  scheduled_date: string;
   is_completed?: boolean;
   notes?: string | null;
 }

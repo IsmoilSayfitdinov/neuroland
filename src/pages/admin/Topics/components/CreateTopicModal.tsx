@@ -16,7 +16,10 @@ interface CreateTopicModalProps {
 
 export function CreateTopicModal({ onClose, onSave, isPending }: CreateTopicModalProps) {
   const [form, setForm] = useState({ title: "", description: "", category: "", start_date: "", end_date: "" });
-  const { data: sections } = useQuery({ queryKey: ["sections"], queryFn: () => SkillsAPI.listSections() });
+  const { data: ageGroups } = useQuery({ queryKey: ["age-groups"], queryFn: () => SkillsAPI.listAgeGroups() });
+  const sectionOptions = ageGroups?.flatMap((ag) =>
+    ag.sections.map((s) => ({ label: `${s.name} (${ag.name})`, value: s.id.toString() }))
+  ) ?? [];
 
   const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -50,7 +53,7 @@ export function CreateTopicModal({ onClose, onSave, isPending }: CreateTopicModa
           </div>
           <CustomSelect
             label="Kategoriya (ixtiyoriy)"
-            options={sections?.map((s) => ({ label: s.name, value: s.id.toString() })) ?? []}
+            options={sectionOptions}
             value={form.category}
             onChange={(val) => set("category", val.toString())}
             placeholder="Kategoriya tanlang..."

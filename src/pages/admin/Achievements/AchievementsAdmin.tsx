@@ -7,7 +7,40 @@ import { EmptyState } from "@/components/admin/ui/EmptyState";
 import { ConfirmModal } from "@/components/admin/ui/ConfirmModal";
 import { BadgeModal } from "./components/BadgeModal";
 import { cn } from "@/lib/utils";
-import type { Badge } from "@/types/gamification.types";
+import type { Badge, ConditionRules } from "@/types/gamification.types";
+
+const TYPE_LABELS: Record<string, string> = {
+  xp_threshold: "XP",
+  tasks_completed: "Vazifa yuborildi",
+  tasks_approved: "Vazifa tasdiqlandi",
+  events_attended: "Tadbirda qatnashdi",
+  and: "AND",
+  or: "OR",
+};
+
+function formatCondition(rules: any): string {
+  if (!rules || typeof rules !== "object") return "—";
+  if (rules.type === "and" || rules.type === "or") {
+    const separator = rules.type === "and" ? " VA " : " YOKI ";
+    return (rules.rules || [])
+      .map((r: any) => `${TYPE_LABELS[r.type] || r.type} ≥ ${r.value}`)
+      .join(separator);
+  }
+  return `${TYPE_LABELS[rules.type] || rules.type} ≥ ${rules.value}`;
+}
+
+const achievementsInfo = (
+  <>
+    <p>Bu bo'limda bolalar uchun motivatsiya badge (nishon) larini boshqarish mumkin.</p>
+    <p><strong>Asosiy imkoniyatlar:</strong></p>
+    <ul className="list-disc list-inside space-y-1">
+      <li>Yangi badge yaratish (nom, rasm, tavsif)</li>
+      <li>Badge olish shartlarini sozlash (XP, vazifalar, tadbirlar)</li>
+      <li>Badge holatini yoqish/o'chirish</li>
+      <li>Shartlar AND/OR mantiqiy operatorlari bilan birlashtiriladi</li>
+    </ul>
+  </>
+);
 
 export default function AchievementsAdmin() {
   const { useBadgesList, useCreateBadge, useUpdateBadge, usePatchBadge, useDeleteBadge } = useGamification();
@@ -25,7 +58,7 @@ export default function AchievementsAdmin() {
   const openEdit = (badge: Badge) => { setEditingBadge(badge); setIsModalOpen(true); };
   const closeModal = () => { setIsModalOpen(false); setEditingBadge(null); };
 
-  const handleSave = (data: { name: string; icon: string; description: string; condition_rules: string; is_active: boolean }) => {
+  const handleSave = (data: { name: string; icon: string; description: string; condition_rules: ConditionRules; is_active: boolean }) => {
     if (editingBadge) {
       updateMutation.mutate({ id: editingBadge.id, data }, { onSuccess: closeModal });
     } else {
@@ -40,7 +73,7 @@ export default function AchievementsAdmin() {
   if (isLoading) {
     return (
       <div className="space-y-8">
-        <PageHeader title="Yutuqlar boshqaruvi" />
+        <PageHeader title="Yutuqlar boshqaruvi" infoTitle="Yutuqlar bo'limi" infoContent={achievementsInfo} />
         <CardSkeleton count={6} />
       </div>
     );
@@ -97,8 +130,8 @@ export default function AchievementsAdmin() {
                       </span>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="text-[14px] text-[#9EB1D4] font-medium">
-                        {badge.condition_rules || "—"}
+                      <span className="text-[13px] text-[#6B7A99] font-medium">
+                        {formatCondition(badge.condition_rules)}
                       </span>
                     </td>
                     <td className="px-6 py-5">

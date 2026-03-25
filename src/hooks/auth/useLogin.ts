@@ -1,13 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { AuthAPI } from "@/api/auth.api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import Role from "@/types/auth";
 import type { LoginRequest, Token } from "@/types/auth.types";
 
-export const useLogin = () => {
-  const navigate = useNavigate();
+export const useLogin = (onSuccess?: (role: Role) => void) => {
   const setLogin = useAuthStore((state) => state.login);
 
   return useMutation({
@@ -23,24 +21,16 @@ export const useLogin = () => {
         role = Role.PARENT;
       }
       setLogin(
-        { 
+        {
           username: data.user_id.toString(),
-          role 
-        }, 
+          role
+        },
         data.access_token,
         data.refresh_token
       );
 
       toast.success("Tizimga muvaffaqiyatli kirdingiz!");
-
-      // Navigate based on role
-      if (role === Role.ADMIN) {
-        navigate({ to: "/admin" });
-      } else if (role === Role.SPECIALIST) {
-        navigate({ to: "/specialist" });
-      } else if (role === Role.PARENT) {
-        navigate({ to: "/parent" });
-      }
+      onSuccess?.(role);
     },
     onError: (error: any) => {
       const message = error.response?.data?.detail?.[0]?.msg || error.message || "Xatolik yuz berdi";

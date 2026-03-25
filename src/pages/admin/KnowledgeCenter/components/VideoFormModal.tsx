@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Loader2, Link2, AlignLeft, Clock, Wrench, BookOpen, Users, Dumbbell, AlertTriangle } from "lucide-react";
+import { X, Loader2, Link2, AlignLeft, Clock, Wrench, BookOpen, Dumbbell, AlertTriangle } from "lucide-react";
 import { CustomSelect } from "@/components/ui/custom-select";
 import { useVideos } from "@/hooks/admin/useVideos";
 import { useSkills } from "@/hooks/admin/useSkills";
@@ -40,7 +40,6 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
       video_url: "",
       duration: "",
       equipments: "",
-      age_group_id: "",
       section_id: "",
       exercise_id: "",
     },
@@ -56,7 +55,6 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
         video_url: video.video_url,
         duration: video.duration || "",
         equipments: video.equipments || "",
-        age_group_id: video.age_group_id.toString(),
         section_id: video.section_id.toString(),
         exercise_id: video.exercise_id?.toString() || "",
       });
@@ -66,7 +64,6 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
         video_url: "",
         duration: "",
         equipments: "",
-        age_group_id: "",
         section_id: "",
         exercise_id: "",
       });
@@ -74,10 +71,17 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
   }, [video, reset, isOpen]);
 
   const onSubmit = (data: VideoSchema) => {
+    // age_group_id bo'limdan avtomatik aniqlanadi
+    const sectionId = Number(data.section_id);
+    const section = sections?.find((s) => s.id === sectionId);
+    const ageGroupId = section?.age_group_id ?? ageGroups?.find((ag) =>
+      ag.sections?.some((s) => s.id === sectionId)
+    )?.id ?? 0;
+
     const payload = {
       ...data,
-      age_group_id: Number(data.age_group_id),
-      section_id: Number(data.section_id),
+      age_group_id: ageGroupId,
+      section_id: sectionId,
       exercise_id: data.exercise_id ? Number(data.exercise_id) : null,
     };
 
@@ -89,12 +93,10 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
   };
 
   const sectionsOptions = useMemo(
-    () => sections?.map((s) => ({ label: s.name, value: s.id.toString() })) || [],
-    [sections]
-  );
-  const ageGroupsOptions = useMemo(
-    () => ageGroups?.map((ag) => ({ label: ag.name, value: ag.id.toString() })) || [],
-    [ageGroups]
+    () => ageGroups?.flatMap((ag) =>
+      ag.sections.map((s) => ({ label: `${s.name} (${ag.name})`, value: s.id.toString() }))
+    ) || sections?.map((s) => ({ label: s.name, value: s.id.toString() })) || [],
+    [ageGroups, sections]
   );
   const exercisesOptions = useMemo(
     () => exercises?.map((e) => ({ label: e.name, value: e.id.toString() })) || [],
@@ -172,44 +174,24 @@ export function VideoFormModal({ isOpen, onClose, video }: VideoFormModalProps) 
               )}
             </div>
 
-            {/* Bo'lim + Yosh toifasi */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="flex items-center gap-1.5 text-[13px] font-bold text-[#2D3142] mb-2">
-                  <BookOpen className="w-3.5 h-3.5 text-[#9EB1D4]" />
-                  Bo'lim
-                </label>
-                <CustomSelect
-                  options={sectionsOptions}
-                  value={watch("section_id")}
-                  onChange={(val) => {
-                    setValue("section_id", val.toString(), { shouldValidate: true });
-                    setValue("exercise_id", "");
-                  }}
-                  placeholder="Tanlang"
-                />
-                {errors.section_id && (
-                  <p className="text-red-500 text-[12px] mt-1">{errors.section_id.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="flex items-center gap-1.5 text-[13px] font-bold text-[#2D3142] mb-2">
-                  <Users className="w-3.5 h-3.5 text-[#9EB1D4]" />
-                  Yosh toifasi
-                </label>
-                <CustomSelect
-                  options={ageGroupsOptions}
-                  value={watch("age_group_id")}
-                  onChange={(val) =>
-                    setValue("age_group_id", val.toString(), { shouldValidate: true })
-                  }
-                  placeholder="Tanlang"
-                />
-                {errors.age_group_id && (
-                  <p className="text-red-500 text-[12px] mt-1">{errors.age_group_id.message}</p>
-                )}
-              </div>
+            {/* Bo'lim */}
+            <div>
+              <label className="flex items-center gap-1.5 text-[13px] font-bold text-[#2D3142] mb-2">
+                <BookOpen className="w-3.5 h-3.5 text-[#9EB1D4]" />
+                Bo'lim
+              </label>
+              <CustomSelect
+                options={sectionsOptions}
+                value={watch("section_id")}
+                onChange={(val) => {
+                  setValue("section_id", val.toString(), { shouldValidate: true });
+                  setValue("exercise_id", "");
+                }}
+                placeholder="Tanlang"
+              />
+              {errors.section_id && (
+                <p className="text-red-500 text-[12px] mt-1">{errors.section_id.message}</p>
+              )}
             </div>
 
             {/* Davomiylik + Mashq */}

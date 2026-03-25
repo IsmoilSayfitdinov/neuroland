@@ -1,6 +1,5 @@
 import type { ChildDetailOut, DiagnosticResult } from "@/types/children.types";
-import { cn, formatDate } from "@/lib/utils";
-import { getScoreLabel } from "@/constants/children";
+import { formatDate } from "@/lib/utils";
 import { useExams } from "@/hooks/specialist/useExams";
 import { Calendar } from "lucide-react";
 
@@ -13,7 +12,8 @@ export function DiagnostikaTab({ child }: Props) {
   const latest = results[results.length - 1] as any;
   const { useScheduleByChild } = useExams();
   const { data: examSchedule } = useScheduleByChild(child.id);
-
+  console.log(examSchedule?.next_monthly_exam);
+  
   if (!latest) {
     return (
       <div className="space-y-4">
@@ -28,13 +28,13 @@ export function DiagnostikaTab({ child }: Props) {
               <div className="p-3 bg-[#F8F9FB] rounded-xl">
                 <p className="text-[11px] text-[#9EB1D4] font-medium">Oylik imtihon</p>
                 <p className="text-[14px] font-bold text-[#2D3142] mt-1">
-                  {(examSchedule as any).next_monthly ? formatDate((examSchedule as any).next_monthly) : "Belgilanmagan"}
+                  {examSchedule.next_monthly_exam ? formatDate(examSchedule.next_monthly_exam) : "Belgilanmagan"}
                 </p>
               </div>
               <div className="p-3 bg-[#F8F9FB] rounded-xl">
                 <p className="text-[11px] text-[#9EB1D4] font-medium">Choraklik imtihon</p>
                 <p className="text-[14px] font-bold text-[#2D3142] mt-1">
-                  {(examSchedule as any).next_quarterly ? formatDate((examSchedule as any).next_quarterly) : "Belgilanmagan"}
+                  {examSchedule.next_quarterly_exam ? formatDate(examSchedule.next_quarterly_exam) : "Belgilanmagan"}
                 </p>
               </div>
             </div>
@@ -53,11 +53,8 @@ export function DiagnostikaTab({ child }: Props) {
   const progressPct = totalAnswers > 0 ? Math.round((completedAnswers / totalAnswers) * 100) : 0;
 
   // Group by section_name
-  const sections = new Map<string, any[]>();
-  for (const a of answers) {
-    if (!sections.has(a.section_name)) sections.set(a.section_name, []);
-    sections.get(a.section_name)!.push(a);
-  }
+
+  
 
   return (
     <div className="space-y-4">
@@ -72,13 +69,13 @@ export function DiagnostikaTab({ child }: Props) {
             <div className="p-3 bg-[#F8F9FB] rounded-xl">
               <p className="text-[11px] text-[#9EB1D4] font-medium">Oylik imtihon</p>
               <p className="text-[14px] font-bold text-[#2D3142] mt-1">
-                {(examSchedule as any).next_monthly ? formatDate((examSchedule as any).next_monthly) : "Belgilanmagan"}
+                {examSchedule.next_monthly_exam ? formatDate(examSchedule.next_monthly_exam) : "Belgilanmagan"}
               </p>
             </div>
             <div className="p-3 bg-[#F8F9FB] rounded-xl">
               <p className="text-[11px] text-[#9EB1D4] font-medium">Choraklik imtihon</p>
               <p className="text-[14px] font-bold text-[#2D3142] mt-1">
-                {(examSchedule as any).next_quarterly ? formatDate((examSchedule as any).next_quarterly) : "Belgilanmagan"}
+                {examSchedule.next_quarterly_exam ? formatDate(examSchedule.next_quarterly_exam) : "Belgilanmagan"}
               </p>
             </div>
           </div>
@@ -106,30 +103,7 @@ export function DiagnostikaTab({ child }: Props) {
         <p className="text-[11px] text-[#9EB1D4] mt-1">Diagnostika jarayoni</p>
       </div>
 
-      {/* Sections */}
-      {Array.from(sections.entries()).map(([section, items]) => (
-        <div key={section} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-50">
-            <h3 className="font-bold text-[#2D3142] text-[14px]">{section}</h3>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {items.map((item: any, i: number) => {
-              const s = getScoreLabel(item.score);
-              return (
-                <div key={i} className="flex items-center justify-between px-6 py-3.5">
-                  <span className="text-[13px] text-[#2D3142]">{item.exercise_name}</span>
-                  <span className={cn(
-                    "text-[11px] font-bold px-3 py-1 rounded-full border",
-                    s.cls
-                  )}>
-                    {s.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+   
     </div>
   );
 }

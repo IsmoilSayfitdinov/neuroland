@@ -45,7 +45,7 @@ export const GallerySection = ({ gallery, contactInfo }: GallerySectionProps) =>
               className="group relative aspect-[4/3] rounded-[24px] md:rounded-[32px] overflow-hidden cursor-pointer"
             >
               <img
-                src={item.image_url}
+                src={item.photo}
                 alt={item.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />

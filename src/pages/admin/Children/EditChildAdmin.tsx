@@ -17,7 +17,7 @@ export default function EditChildAdmin() {
   
   const handleFormSubmit = async (data: ChildSchema, dirtyFields: Partial<Record<keyof ChildSchema, any>>) => {
     try {
-      const sleepHabits = [data.sleep_time, data.sleep_with_who]
+      const sleepHabits = [(data as any).sleep_time, (data as any).sleep_with_who]
         .filter(Boolean)
         .join(" | ");
 
@@ -38,6 +38,7 @@ export default function EditChildAdmin() {
       if (dirtyFields.photo) patchData.photo = data.photo;
       if (dirtyFields.diagnosis) patchData.diagnosis = data.diagnosis;
       if (dirtyFields.group_id) patchData.group_id = data.group_id ? Number(data.group_id) : undefined;
+      // treatment_complex_id consultation.neuro_complex orqali yuboriladi
       
       // Specialist assignments — top-level: { "logoped": 5, "neyropsixolog": 3 }
       // Filter out null values — API expects integer only
@@ -54,10 +55,11 @@ export default function EditChildAdmin() {
       const hasConsultationData = !!(
         data.kelib_tushgan_sana ||
         data.diagnosis ||
-        data.complex_name ||
-        data.duration ||
+        data.neuro_complex !== undefined && data.neuro_complex !== null ||
+        data.treatment_complex_id !== undefined && data.treatment_complex_id !== null ||
+        data.working_period ||
         data.recommendations ||
-        data.group_admission_date ||
+        data.group_acceptance_date ||
         data.consultant_id
       );
 
@@ -66,10 +68,10 @@ export default function EditChildAdmin() {
           arrival_date: data.kelib_tushgan_sana || null,
           preliminary_diagnosis: data.diagnosis || null,
           final_diagnosis: data.diagnosis || null,
-          neuro_complex_name: data.complex_name || null,
-          working_period: data.duration || null,
+          neuro_complex: data.neuro_complex ?? data.treatment_complex_id ?? null,
+          working_period: data.working_period || null,
           recommendations: data.recommendations || null,
-          group_acceptance_date: data.group_admission_date || null,
+          group_acceptance_date: data.group_acceptance_date || null,
           accompanied_by: data.mother_name || data.father_name || null,
         };
       }
@@ -123,7 +125,6 @@ export default function EditChildAdmin() {
       toast.success("Bemor ma'lumotlari yangilandi!");
       navigate({ to: "/admin/child" });
     } catch (error: any) {
-      console.error("Update error:", error);
       const errorMessage = 
         error?.response?.data?.detail?.[0]?.msg || 
         error?.response?.data?.message || 
@@ -168,7 +169,8 @@ export default function EditChildAdmin() {
     photo: child.photo || "",
     specialist_assignments: specialistAssignments,
     group_id: child.group_id?.toString() || "",
-    group_admission_date: child.consultation?.group_acceptance_date || "",
+    group_acceptance_date: child.consultation?.group_acceptance_date || "",
+    treatment_complex_id: child.consultation?.neuro_complex ?? null,
     
     // Anamnesis fields
     pregnancy_1_trimester: child.anamnesis?.pregnancy_1_trimester || "",
@@ -196,8 +198,8 @@ export default function EditChildAdmin() {
     current_vocabulary_count: child.anamnesis?.current_vocabulary_count || "",
     vaccination: child.anamnesis?.vaccination || "",
     // Consultation mapping fields
-    complex_name: child.consultation?.neuro_complex_name || "",
-    duration: child.consultation?.working_period || "",
+    neuro_complex: child.consultation?.neuro_complex ?? null,
+    working_period: child.consultation?.working_period || "",
     recommendations: child.consultation?.recommendations || "",
   } : undefined;
 

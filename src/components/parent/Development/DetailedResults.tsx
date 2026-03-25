@@ -9,8 +9,9 @@ export default function DetailedResults({ apiData }: Props) {
   const areas = details.length > 0
     ? details.map((d: any) => ({
         name: d.section_name || d.name || "",
-        current: Math.round(d.percentage ?? d.score ?? d.current ?? 0),
-        trend: d.trend || d.growth || "",
+        current: Math.round(d.current ?? d.percentage ?? 0),
+        previous: Math.round(d.previous ?? 0),
+        change: d.change ?? 0,
       }))
     : [];
 
@@ -42,6 +43,11 @@ export default function DetailedResults({ apiData }: Props) {
                 style={{ width: `${area.current}%` }} />
             </div>
             <span className="text-[11px] font-bold text-[#1E293B] w-8 text-right">{area.current}%</span>
+            {area.change !== 0 && (
+              <span className={`text-[10px] font-bold w-10 text-right ${area.change > 0 ? "text-emerald-500" : "text-red-500"}`}>
+                {area.change > 0 ? "+" : ""}{area.change}%
+              </span>
+            )}
           </div>
         ))}
       </div>

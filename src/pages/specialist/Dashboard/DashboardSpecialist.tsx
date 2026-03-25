@@ -7,10 +7,12 @@ import DevelopmentRadar from "@/components/specialist/Dashboard/DevelopmentRadar
 import TodaySchedule from "@/components/specialist/Dashboard/TodaySchedule";
 import AttentionNeeded from "@/components/specialist/Dashboard/AttentionNeeded";
 import { useDoctorDashboard } from "@/hooks/specialist/useDoctorDashboard";
+import { PageInfoButton } from "@/components/specialist/PageInfo";
 
 export default function DashboardSpecialist() {
   const {
     isLoading,
+    isLoadingSessions,
     dynamics,
     aiPlan,
     homework,
@@ -18,6 +20,8 @@ export default function DashboardSpecialist() {
     globalRadar,
     todaySchedule,
     attentionNeeded,
+    refetchToday,
+    invalidateToday,
   } = useDoctorDashboard();
 
   if (isLoading) {
@@ -30,11 +34,26 @@ export default function DashboardSpecialist() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <h1 className="text-2xl font-bold text-slate-800">Bosh sahifa</h1>
+      <div className="flex items-center gap-2.5">
+        <h1 className="text-2xl font-bold text-slate-800">Bosh sahifa</h1>
+        <PageInfoButton title="Bosh sahifa">
+          <p>Bu sahifada sizning kunlik ish faoliyatingiz haqida umumiy ma'lumot ko'rsatiladi.</p>
+          <p><strong>Ko'rsatkichlar:</strong></p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>Rivojlanish dinamikasi grafigi</li>
+            <li>AI reja bajarilishi</li>
+            <li>Uy vazifalar holati</li>
+            <li>Samaradorlik statistikasi</li>
+            <li>Bugungi jadval va e'tibor kerak bolalar</li>
+          </ul>
+        </PageInfoButton>
+      </div>
 
       {/* Top Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <DinamikaChart apiData={dynamics} />
+        <div className="lg:col-span-2">
+          <DinamikaChart apiData={dynamics} />
+        </div>
         <AIPlanProgress apiData={aiPlan} />
       </div>
 
@@ -49,7 +68,12 @@ export default function DashboardSpecialist() {
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TodaySchedule apiData={todaySchedule} />
+        <TodaySchedule
+          apiData={todaySchedule}
+          isLoading={isLoadingSessions}
+          onRefetch={refetchToday}
+          onSessionChange={invalidateToday}
+        />
         <AttentionNeeded apiData={attentionNeeded} />
       </div>
     </div>

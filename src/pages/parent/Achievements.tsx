@@ -4,11 +4,11 @@ import { useGamification } from "@/hooks/admin/useGamification";
 
 export default function AchievementsPage() {
   const { data: child, isLoading: childLoading } = useMyChild(false);
-  const childId = child?.id;
+  const childId = child?.id ?? 0;
 
   const { useChildBadges, useChildTotalXp } = useGamification();
-  const { data: childBadges, isLoading: badgesLoading } = useChildBadges(childId!);
-  const { data: totalXp, isLoading: xpLoading } = useChildTotalXp(childId!);
+  const { data: childBadges, isLoading: badgesLoading } = useChildBadges(childId);
+  const { data: totalXp, isLoading: xpLoading } = useChildTotalXp(childId);
 
   const isLoading = childLoading || badgesLoading || xpLoading;
 
@@ -64,12 +64,8 @@ export default function AchievementsPage() {
               key={cb.id}
               className="bg-white rounded-[20px] border border-gray-100 p-5 text-center shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-yellow-50 flex items-center justify-center">
-                {cb.badge.icon ? (
-                  <img src={cb.badge.icon} alt={cb.badge.name} className="w-8 h-8" />
-                ) : (
-                  <Star className="w-7 h-7 text-yellow-500" />
-                )}
+              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-yellow-50 flex items-center justify-center text-[28px]">
+                {cb.badge.icon || <Star className="w-7 h-7 text-yellow-500" />}
               </div>
               <h3 className="font-bold text-[#1E293B] text-[14px] mb-1">{cb.badge.name}</h3>
               <p className="text-[11px] text-[#9EB1D4] leading-tight mb-2">{cb.badge.description}</p>

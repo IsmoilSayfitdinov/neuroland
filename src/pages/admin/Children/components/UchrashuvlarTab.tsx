@@ -142,11 +142,8 @@ function CreateMeetingModal({ childId, specialistOptions, onClose }: {
   const { mutate, isPending } = useMutation({
     mutationFn: () => MeetingsAPI.createMonthlyMeeting({
       child: childId,
-      specialist: form.specialist ? Number(form.specialist) : undefined,
-      date: form.date || undefined,
-      scheduled_date: form.date || undefined,
-      summary: form.summary || null,
-      recommendations: form.recommendations || null,
+      specialists: form.specialist ? [Number(form.specialist)] : undefined,
+      scheduled_date: form.date || "",
       notes: [form.summary, form.recommendations].filter(Boolean).join("\n\n") || null,
     }),
     onSuccess: () => {

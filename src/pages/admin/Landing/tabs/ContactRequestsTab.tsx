@@ -51,9 +51,11 @@ export function ContactRequestsTab() {
                       <p className="text-[14px] font-bold text-[#2D3142]">{req.name}</p>
                       {!req.is_read && <span className="px-1.5 py-0.5 bg-[#2563EB] text-white rounded text-[10px] font-bold">Yangi</span>}
                     </div>
-                    <p className="text-[12px] text-[#9EB1D4]">{req.phone} · {req.email}</p>
-                    {req.subject && <p className="text-[13px] text-[#6B7A99] font-medium mt-1">{req.subject}</p>}
-                    <p className="text-[12px] text-[#9EB1D4] mt-1 line-clamp-2">{req.message}</p>
+                    <p className="text-[12px] text-[#9EB1D4]">
+                      {req.phone}
+                      {req.child_age && <> · Bola yoshi: {req.child_age}</>}
+                    </p>
+                    {req.message && <p className="text-[12px] text-[#9EB1D4] mt-1 line-clamp-2">{req.message}</p>}
                     <p className="text-[11px] text-[#9EB1D4] mt-2">{new Date(req.created_at).toLocaleDateString("uz-UZ")}</p>
                   </div>
                 </div>

@@ -30,12 +30,15 @@ export const useTopicsAdminPage = () => {
   });
 
   const rotateTopics = useMutation({
-    mutationFn: () => TopicsAPI.rotateTopics(),
+    mutationFn: (groupIds: number[]) => TopicsAPI.rotateTopics(groupIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-topics"] });
       toast.success("Mavzular rotatsiya qilindi!");
     },
-    onError: () => toast.error("Rotatsiyada xatolik"),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail || "Rotatsiyada xatolik";
+      toast.error(msg);
+    },
   });
 
   const createTopic = useMutation({

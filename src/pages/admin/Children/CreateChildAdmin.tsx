@@ -31,7 +31,6 @@ export default function CreateChildAdmin() {
       navigate({ to: "/admin/child" });
 
     } catch (error: any) {
-      console.error("Create error details:", error?.response?.data);
       const errorMessage =
         typeof error?.response?.data === "object"
           ? JSON.stringify(error?.response?.data)

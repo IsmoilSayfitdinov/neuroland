@@ -30,14 +30,21 @@ export default function DevelopmentRadar({ apiData }: Props) {
         <CardTitle className="text-sm font-bold text-slate-800">Rivojlanish Xaritasi (Global)</CardTitle>
       </CardHeader>
       <CardContent className="h-[300px] flex items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
-            <PolarGrid stroke="#E2E8F0" />
-            <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 10 }} />
-            <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-            <Radar name="Natija" dataKey="A" stroke="#2ECC71" fill="#2ECC71" fillOpacity={hasData ? 0.6 : 0.1} />
-          </RadarChart>
-        </ResponsiveContainer>
+        {!hasData ? (
+          <div className="text-center">
+            <p className="text-[14px] text-[#9EB1D4] font-medium">Ma'lumot mavjud emas</p>
+            <p className="text-[12px] text-[#C5D0E6] mt-1">Diagnostika o'tkazilgandan keyin ko'rsatiladi</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
+              <PolarGrid stroke="#E2E8F0" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 10 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+              <Radar name="Natija" dataKey="A" stroke="#2ECC71" fill="#2ECC71" fillOpacity={0.6} />
+            </RadarChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

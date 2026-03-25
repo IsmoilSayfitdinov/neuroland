@@ -64,14 +64,19 @@ export default function TopicDetail() {
     queryFn: () => TopicsAPI.getTopicById(Number(topicId)),
   });
 
-  const { data: sections } = useQuery({
-    queryKey: ["sections"],
-    queryFn: () => SkillsAPI.listSections(),
+  const { data: ageGroups } = useQuery({
+    queryKey: ["age-groups"],
+    queryFn: () => SkillsAPI.listAgeGroups(),
   });
 
-  const categoryName = topic?.category && sections
-    ? sections.find((s) => s.id === topic.category)?.name ?? `Kategoriya #${topic.category}`
-    : null;
+  const categoryName = (() => {
+    if (!topic?.category || !ageGroups) return null;
+    for (const ag of ageGroups) {
+      const section = ag.sections.find((s) => s.id === topic.category);
+      if (section) return `${section.name} (${ag.name})`;
+    }
+    return `Kategoriya #${topic.category}`;
+  })();
 
   if (isLoading) {
     return (
