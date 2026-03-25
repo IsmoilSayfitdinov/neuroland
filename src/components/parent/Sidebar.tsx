@@ -8,6 +8,7 @@ import {
   BookOpen,
   Baby,
   CreditCard,
+  Users,
   LogIn,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,7 @@ const sidebarItems = [
     icon: Baby,
     href: "/parent/child-info",
   },
+ 
   {
     title: "To'lovlar",
     icon: CreditCard,

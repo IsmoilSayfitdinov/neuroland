@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { ChildDetailOut } from "@/types/children.types";
 import { cn, formatDate } from "@/lib/utils";
 import { useExams } from "@/hooks/specialist/useExams";
+import { useDiagnostics } from "@/hooks/admin/useDiagnostics";
 import { AnalyticsAPI } from "@/api/analytics.api";
-import { Brain, Loader2, TrendingUp, TrendingDown, BarChart3, Info } from "lucide-react";
+import { Brain, Loader2, TrendingUp, TrendingDown, BarChart3, Info, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   child: ChildDetailOut;
@@ -30,11 +32,12 @@ function scoreStatus(score: number): { label: string; cls: string } {
 }
 
 export function DiagnostikaNatijalaTab({ child }: Props) {
-  const diagnosticResults: any[] = (child.diagnostic_results as any) ?? [];
+  const { useResultsByChild, useGenerateAI } = useDiagnostics();
+  const { data: diagnosticResults, isLoading: resultsLoading } = useResultsByChild(child.id);
   const { useResultsList } = useExams();
   const { data: examResults, isLoading: examsLoading } = useResultsList({ child_id: child.id });
-  console.log(diagnosticResults);
-  
+  const generateAI = useGenerateAI();
+
   // Analytics API — radar + mental age
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ["doctor-patient-diagnostics", child.id],
@@ -43,7 +46,7 @@ export function DiagnostikaNatijalaTab({ child }: Props) {
 
   // Diagnostika — grouped by section (for table view)
   const sectionMap = new Map<string, { exercise_name: string; score: number; date: string }[]>();
-  for (const result of diagnosticResults) {
+  for (const result of diagnosticResults ?? []) {
     for (const answer of result.answers ?? []) {
       if (!sectionMap.has(answer.section_name)) sectionMap.set(answer.section_name, []);
       const existing = sectionMap.get(answer.section_name)!;
@@ -56,7 +59,17 @@ export function DiagnostikaNatijalaTab({ child }: Props) {
     }
   }
 
-  const isLoading = analyticsLoading || examsLoading;
+  const isLoading = analyticsLoading || examsLoading || resultsLoading;
+
+  const handleGenerateAI = () => {
+    generateAI.mutate(child.id, {
+      onSuccess: () => toast.success("AI tahlil muvaffaqiyatli generatsiya qilindi!"),
+      onError: (err: any) => {
+        const msg = err?.response?.data?.detail;
+        toast.error(Array.isArray(msg) ? msg.join(", ") : msg || "AI tahlil generatsiya qilishda xatolik");
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -66,8 +79,44 @@ export function DiagnostikaNatijalaTab({ child }: Props) {
     );
   }
 
+  const hasResults = (diagnosticResults?.length ?? 0) > 0;
+
   return (
     <div className="space-y-6">
+      {/* Generate AI button */}
+      {hasResults && (
+        <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-5 border border-blue-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[14px] font-bold text-[#2D3142]">AI tahlil generatsiya qilish</p>
+              <p className="text-[12px] text-[#9EB1D4]">
+                Diagnostika natijalariga asosan aqliy yoshni hisoblash va konsultatsiya kartasini to'ldirish
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleGenerateAI}
+            disabled={generateAI.isPending}
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold rounded-[14px] transition-colors disabled:opacity-50 shrink-0"
+          >
+            {generateAI.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generatsiya qilinmoqda...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                AI tahlilni boshlash
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* ── Qisqa tahlil ── */}
       {analytics && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -77,28 +126,6 @@ export function DiagnostikaNatijalaTab({ child }: Props) {
           </div>
 
           <div className="p-6 space-y-5">
-            {/* Info row */}
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-[11px] text-[#9EB1D4] font-medium">Yoshi</p>
-                <p className="text-[14px] font-bold text-[#2D3142] mt-0.5">
-                  {analytics.child.age_text || `${Math.floor(analytics.child.age_months / 12)} yil ${analytics.child.age_months % 12} oy`}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] text-[#9EB1D4] font-medium">Tashxis</p>
-                <p className="text-[14px] font-bold text-[#2D3142] mt-0.5">
-                  {child.diagnosis || "—"}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] text-[#9EB1D4] font-medium">Tavsiya yo'nalishi</p>
-                <p className="text-[14px] font-bold text-[#2D3142] mt-0.5">
-                  {(child as any).treatment_complex_name || "—"}
-                </p>
-              </div>
-            </div>
-
             {/* Section progress bars */}
             <div className="space-y-3 pt-1">
               {analytics.radar.details.map((detail) => {

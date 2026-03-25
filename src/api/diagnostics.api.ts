@@ -50,9 +50,35 @@ export class DiagnosticsAPI {
   }
 
   /**
+   * Diagnostika natijasini to'liq yangilash (PUT)
+   */
+  static async updateResult(id: number, data: DiagnosticResultRequest): Promise<DiagnosticResult> {
+    const response = await api.put<DiagnosticResult>(`/v1/diagnostics/results/${id}/`, data);
+    return response.data;
+  }
+
+  /**
+   * Diagnostika natijasini qisman yangilash (PATCH)
+   */
+  static async patchResult(id: number, data: Partial<DiagnosticResultRequest>): Promise<DiagnosticResult> {
+    const response = await api.patch<DiagnosticResult>(`/v1/diagnostics/results/${id}/`, data);
+    return response.data;
+  }
+
+  /**
    * Diagnostika natijasini o'chirish (Faqat Admin)
    */
   static async deleteResult(id: number): Promise<void> {
     await api.delete(`/v1/diagnostics/results/${id}/`);
+  }
+
+  /**
+   * AI tahlil generatsiya qilish
+   */
+  static async generateAI(childId: number): Promise<DiagnosticResult> {
+    const response = await api.post<DiagnosticResult>("/v1/diagnostics/results/generate-ai/", {
+      child_id: childId,
+    });
+    return response.data;
   }
 }

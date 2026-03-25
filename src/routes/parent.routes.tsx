@@ -8,6 +8,7 @@ import ParentAchievements from "@/pages/parent/Achievements";
 import ParentKnowledge from "@/pages/parent/Knowledge";
 import ParentChildInfo from "@/pages/parent/ChildInfo";
 import ParentPayments from "@/pages/parent/Payments";
+import ParentMeetings from "@/pages/parent/Meetings";
 import NotificationsPage from "@/pages/shared/NotificationsPage";
 
 export const parentRoute = parentLayoutRoute.addChildren([
@@ -52,6 +53,11 @@ export const parentRoute = parentLayoutRoute.addChildren([
     getParentRoute: () => parentLayoutRoute,
     path: "/parent/child-info",
     component: () => <ParentChildInfo />,
+  }),
+  createRoute({
+    getParentRoute: () => parentLayoutRoute,
+    path: "/parent/meetings",
+    component: () => <ParentMeetings />,
   }),
   createRoute({
     getParentRoute: () => parentLayoutRoute,

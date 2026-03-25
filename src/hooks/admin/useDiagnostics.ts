@@ -40,6 +40,30 @@ export const useDiagnostics = () => {
       });
   };
 
+  // Update Result (PUT)
+  const useUpdateResult = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: number; data: DiagnosticResultRequest }) =>
+        DiagnosticsAPI.updateResult(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["diagnostics"] });
+        queryClient.invalidateQueries({ queryKey: ["diagnostics-results"] });
+      },
+    });
+  };
+
+  // Patch Result (PATCH)
+  const usePatchResult = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: number; data: Partial<DiagnosticResultRequest> }) =>
+        DiagnosticsAPI.patchResult(id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["diagnostics"] });
+        queryClient.invalidateQueries({ queryKey: ["diagnostics-results"] });
+      },
+    });
+  };
+
   // Delete Result
   const useDeleteResult = () => {
       return useMutation({
@@ -50,11 +74,36 @@ export const useDiagnostics = () => {
       });
   };
 
+  // Results by child
+  const useResultsByChild = (childId: number) => {
+    return useQuery({
+      queryKey: ["diagnostics", "results", childId],
+      queryFn: () => DiagnosticsAPI.getResults({ child_id: childId }),
+      enabled: !!childId,
+    });
+  };
+
+  // Generate AI analysis
+  const useGenerateAI = () => {
+    return useMutation({
+      mutationFn: (childId: number) => DiagnosticsAPI.generateAI(childId),
+      onSuccess: (_, childId) => {
+        queryClient.invalidateQueries({ queryKey: ["diagnostics", "results", childId] });
+        queryClient.invalidateQueries({ queryKey: ["diagnostics", "results"] });
+        queryClient.invalidateQueries({ queryKey: ["doctor-patient-diagnostics", childId] });
+      },
+    });
+  };
+
   return {
     useQuestions,
     useResultsList,
     useResultDetail,
     useCreateResult,
+    useUpdateResult,
+    usePatchResult,
     useDeleteResult,
+    useResultsByChild,
+    useGenerateAI,
   };
 };

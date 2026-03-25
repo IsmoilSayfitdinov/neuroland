@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChildren } from "@/hooks/specialist/useChildren";
 import { useTreatmentComplexes } from "@/hooks/admin/useTreatmentComplexes";
@@ -8,7 +8,10 @@ import { toast } from "sonner";
 import { DiagnosticsAPI } from "@/api/diagnostics.api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SectionGroupedExercise } from "@/types/diagnostics.types";
+import type { DiagnosticResult } from "@/types/diagnostics.types";
 import { PageInfoButton } from "@/components/specialist/PageInfo";
+import DiagnosticsSidebar from "@/components/specialist/Diagnostics/DiagnosticsSidebar";
+import { formatDate } from "@/lib/utils";
 
 const SCORE_BUTTONS = [
   { value: 0.0, label: "Bajarmadi", color: "bg-red-500", activeColor: "bg-red-500 text-white", idle: "text-slate-400 hover:text-slate-600" },
@@ -35,6 +38,9 @@ export default function Diagnostics() {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [scores, setScores] = useState<Record<number, number>>({});
   const [comment, setComment] = useState("");
+
+  // Currently selected saved result (scores loaded into form for editing)
+  const [viewingResult, setViewingResult] = useState<DiagnosticResult | null>(null);
 
   // Auto-select first treatment complex
   useEffect(() => {
@@ -81,10 +87,28 @@ export default function Diagnostics() {
       toast.success("Diagnostika natijalari saqlandi!");
       setScores({});
       setComment("");
+      setViewingResult(null);
     },
     onError: (err: any) => {
       const msg = err?.response?.data?.detail;
       toast.error(Array.isArray(msg) ? msg.join(", ") : msg || "Saqlashda xatolik yuz berdi");
+    },
+  });
+
+  const { mutate: patchResult, isPending: isPatching } = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: { comment?: string; answers: { exercise: number; score: string }[] } }) =>
+      DiagnosticsAPI.patchResult(id, data as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["diagnostics"] });
+      queryClient.invalidateQueries({ queryKey: ["diagnostics-results", selectedChildId] });
+      toast.success("Diagnostika natijalari yangilandi!");
+      setScores({});
+      setComment("");
+      setViewingResult(null);
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.detail;
+      toast.error(Array.isArray(msg) ? msg.join(", ") : msg || "Yangilashda xatolik yuz berdi");
     },
   });
 
@@ -109,7 +133,46 @@ export default function Diagnostics() {
       toast.error("Kamida bitta mashqni baholang!");
       return;
     }
-    saveResult({ child: selectedChildId, comment, answers });
+
+    if (viewingResult) {
+      // PATCH — mavjud natijani yangilash
+      patchResult({ id: viewingResult.id, data: { comment, answers } });
+    } else {
+      // POST — yangi natija yaratish
+      saveResult({ child: selectedChildId, comment, answers });
+    }
+  };
+
+  // When selecting a saved result from sidebar
+  const handleSelectResult = (result: DiagnosticResult) => {
+    if (viewingResult?.id === result.id) {
+      setViewingResult(null);
+      setScores({});
+      setComment("");
+      return;
+    }
+
+    setViewingResult(result);
+    const newScores: Record<number, number> = {};
+    for (const answer of result.answers ?? []) {
+      newScores[answer.exercise] = answer.score;
+    }
+    setScores(newScores);
+    setComment(result.comment ?? "");
+    // Open all sections that have answers
+    const sectionsWithAnswers = new Set((result.answers ?? []).map((a) => a.section_name));
+    setOpenSections((prev) => {
+      const next = { ...prev };
+      sectionsWithAnswers.forEach((s) => { next[s] = true; });
+      return next;
+    });
+  };
+
+  // Exit view mode
+  const handleExitViewMode = () => {
+    setViewingResult(null);
+    setScores({});
+    setComment("");
   };
 
   // Count scored exercises per section
@@ -180,6 +243,7 @@ export default function Diagnostics() {
                 setSelectedTCId(val.toString());
                 setScores({});
                 setOpenSections({});
+                setViewingResult(null);
               }}
               options={treatmentComplexes?.map((tc) => ({ label: tc.name, value: tc.id.toString() })) || []}
               placeholder="Kompleks tanlang"
@@ -190,7 +254,12 @@ export default function Diagnostics() {
           <div className="min-w-[200px]">
             <CustomSelect
               value={selectedChildId ?? ""}
-              onChange={(val) => setSelectedChildId(Number(val))}
+              onChange={(val) => {
+                setSelectedChildId(Number(val));
+                setViewingResult(null);
+                setScores({});
+                setComment("");
+              }}
               options={children?.map((c) => ({ label: c.fio, value: c.id })) || []}
               placeholder="Bolani tanlang"
               bgBtnColor="bg-white"
@@ -200,9 +269,25 @@ export default function Diagnostics() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 items-start">
+      {/* Selected result banner */}
+      {viewingResult && (
+        <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-2xl px-5 py-3">
+          <p className="text-[13px] font-bold text-blue-700">
+            {formatDate(viewingResult.date)} natijasi yuklandi — o'zgartirib saqlashingiz mumkin
+          </p>
+          <button
+            onClick={handleExitViewMode}
+            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-blue-200 rounded-xl text-[12px] font-bold text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+            Tozalash
+          </button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
         {/* Main content */}
-        <div className="lg:col-span-8 space-y-3">
+        <div className="space-y-3">
           {!sections || sections.length === 0 ? (
             <div className="py-16 text-center bg-white rounded-2xl border border-dashed border-gray-200">
               <p className="text-[#9EB1D4] font-medium">Diagnostika mashqlari mavjud emas</p>
@@ -269,7 +354,7 @@ export default function Diagnostics() {
                         </div>
                       ))}
 
-                      {/* Comment & Save (only in open section) */}
+                      {/* Comment & Save */}
                       {openSections[section.name] && (
                         <div className="px-6 py-4 border-t border-gray-100 space-y-3">
                           <div>
@@ -284,10 +369,10 @@ export default function Diagnostics() {
                           <div className="flex gap-3">
                             <button
                               onClick={handleSave}
-                              disabled={isSaving}
+                              disabled={isSaving || isPatching}
                               className="px-8 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[13px] font-bold rounded-[12px] transition-colors disabled:opacity-50"
                             >
-                              {isSaving ? "Saqlanmoqda..." : "Saqlash"}
+                              {(isSaving || isPatching) ? "Saqlanmoqda..." : viewingResult ? "Yangilash" : "Saqlash"}
                             </button>
                             <button
                               onClick={() => { setScores({}); setComment(""); }}
@@ -306,6 +391,14 @@ export default function Diagnostics() {
           )}
         </div>
 
+        {/* Sidebar — results */}
+        <div className="lg:sticky lg:top-6">
+          <DiagnosticsSidebar
+            childId={selectedChildId}
+            onSelectResult={handleSelectResult}
+            selectedResultId={viewingResult?.id ?? null}
+          />
+        </div>
       </div>
     </div>
   );
