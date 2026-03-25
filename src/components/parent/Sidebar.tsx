@@ -8,7 +8,6 @@ import {
   BookOpen,
   Baby,
   CreditCard,
-  Users,
   LogIn,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
